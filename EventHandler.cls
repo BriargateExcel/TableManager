@@ -28,7 +28,6 @@ Private pComboObj As MSForms.ComboBox
 Private pTableObj As TableClass
 
 Private pName As String
-Private pTableName As String
 
 Private Sub ButtonEvent_Click()
     Dim Target As Range

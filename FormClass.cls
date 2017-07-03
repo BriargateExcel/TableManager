@@ -132,12 +132,13 @@ Public Function BuildForm( _
                         With Ctl
                             .Top = Top
                             .Left = DataLeft
-                            .Width = Application.Max(Field.ColumnWidth * 5, 60)
+                            .Width = Field.ColumnWidth * 4 + 20
                             If Field.Wrap Then
                             If .Width > MaxFieldWidth Then MaxFieldWidth = .Width
                                 .Height = 54
                                 .WordWrap = True
                                 .MultiLine = True
+                                .ScrollBars = fmScrollBarsVertical
                             Else
                                 .WordWrap = False
                             End If
@@ -154,7 +155,7 @@ Public Function BuildForm( _
                         With Ctl
                             .Top = Top
                             .Left = DataLeft
-                            .Width = Application.Max(Field.ColumnWidth * 5, 60)
+                            .Width = Field.ColumnWidth * 4
                             If .Width > MaxFieldWidth Then MaxFieldWidth = .Width
                             For Each ValListItem In Field.ValidationList
                                 .AddItem CStr(ValListItem)
@@ -356,12 +357,6 @@ Public Function BuildForm( _
         Set Ctls.Item(Ctl.Name).FormObj = pFormObj
         Set Ctls.Item(Ctl.Name).TableObj = Tbl
         
-'       Set Properties for TempForm
-        .Caption = Tbl.Name
-        .Width = Application.Max(MaxLabelWidth + MaxFieldWidth + 30, 666)
-        .Height = Top + 90
-        Set BuildForm = pFormObj
-        
 '       Add Delete button
         Set Ctl = .Controls.Add("Forms.CommandButton.1")
         With Ctl
@@ -378,8 +373,8 @@ Public Function BuildForm( _
         
 '       Set Properties for TempForm
         .Caption = Tbl.Name
-        .Width = Application.Max(MaxLabelWidth + MaxFieldWidth + 30, 666)
-        .Height = Top + 90
+        .Width = Application.Max(MaxLabelWidth + MaxFieldWidth + 30, 0)
+        .Height = Top + 60
         Set BuildForm = pFormObj
         
     End With
@@ -397,7 +392,8 @@ ErrHandler:
 
 End Function ' BuildForm
 
-Public Function PopulateForm(ByVal Tbl As TableClass, _
+Public Function PopulateForm( _
+    ByVal Tbl As TableClass, _
     Target As Range) As MSForms.UserForm
 
 '   Description: Populates the controls on a form with the data in the row
@@ -413,7 +409,6 @@ Public Function PopulateForm(ByVal Tbl As TableClass, _
 
 '   Declarations
     Const Routine_Name = Module_Name & "PopulateForm"
-    Dim TempForm As VBComponent
     
     Dim Field As CellClass
     Dim DBRange As Range: Set DBRange = Target.ListObject.DataBodyRange

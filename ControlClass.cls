@@ -18,7 +18,6 @@ Private pNumberFormat As Variant
 Private pCellType As XlDVType   ' https://msdn.microsoft.com/en-us/library/office/ff840715.aspx
 Private pIgnoreBlank As Boolean
 Private pValidAlertStyle As XlDVAlertStyle ' https://translate.google.com/translate?hl=en&sl=ja&u=https://msdn.microsoft.com/ja-jp/library/office/ff841223.aspx&prev=search
-Private pHasValidation As Boolean
 Private pWrap As Boolean
 Private pValidationFormula As String
 Private pValidationList As Variant
@@ -73,48 +72,6 @@ ErrHandler:
     End Select
 
 End Function ' SetHeader
-
-Private Function HasVal(ByVal oTarget As Range) As Boolean
-
-'   Description:Determine if a cell has validation
-'   Inputs:     oTarget     A single cell
-'   Outputs:    me          TRUE/FALSE
-'   Requisites: *None
-'   Example:    ?HasVal(Selection)
-
-'     Date   Ini Modification
-'   04/16/2011 CWH Initial Programming
-'   05/14/2017 RRD Moved to CellClass
-'                   Made Private
-'                   Changed name from HasValidation to HasVal
-'                   Changed to Routine_Name
-
-'   Declarations
-    Const Routine_Name = Module_Name & "HasValidation"
-    Dim v               As Variant
-    
-'   Error Handling Initialization
-    On Error GoTo ErrHandler
-    HasVal = False
-
-'   Procedure
-    v = oTarget.Validation.Type
-    pHasValidation = True
-    HasVal = True
-        
-ErrHandler:
-    Select Case Err.Number
-        Case Is = NoError:                          'Do nothing
-        Case Is = 1004:                             'Ignore: No Validation
-        Case Else:
-            Select Case DspErrMsg(Routine_Name)
-                Case Is = vbAbort:  Stop: Resume    'Debug mode - Trace
-                Case Is = vbRetry:  Resume          'Try again
-                Case Is = vbIgnore:                 'End routine
-            End Select
-    End Select
-
-End Function
 
 
 Public Property Get ColumnWidth() As Single: ColumnWidth = pColumnWidth: End Property

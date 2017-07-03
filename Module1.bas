@@ -55,7 +55,8 @@ Public Sub DeleteForm()
     Next UserFrm
 End Sub
     
-Public Function BuildTable(ByVal WS As Worksheet, _
+Public Function BuildTable( _
+    ByVal WS As Worksheet, _
     ByVal TableName As String, _
     Target As Range) As Boolean
 
@@ -122,4 +123,38 @@ Public Function ActiveTable() As TableClass
     Set ActiveTable = Tbl
 End Function
 
+
+Sub colors56()
+'   57 colors, 0 to 56
+    Application.ScreenUpdating = False
+    Application.Calculation = xlCalculationManual   'pre XL97 xlManual
+    Dim i As Long
+    Dim str0 As String, str As String
+    
+    For i = 0 To 56
+        Cells(i + 1, 1).Interior.ColorIndex = i
+        Cells(i + 1, 1).Value = "[Color " & i & "]"
+        
+        Cells(i + 1, 2).Font.ColorIndex = i
+        Cells(i + 1, 2).Value = "[Color " & i & "]"
+        
+        str0 = Right("000000" & Hex(Cells(i + 1, 1).Interior.Color), 6)
+'       Excel shows nibbles in reverse order so make it as RGB
+        str = Right(str0, 2) & Mid(str0, 3, 2) & Left(str0, 2)
+'       generating 2 columns in the HTML table
+        Cells(i + 1, 3) = "#" & str & "#" & str & ""
+        
+        Cells(i + 1, 4).Formula = "=Hex2dec(""" & Right(str0, 2) & """)"
+        
+        Cells(i + 1, 5).Formula = "=Hex2dec(""" & Mid(str0, 3, 2) & """)"
+        
+        Cells(i + 1, 6).Formula = "=Hex2dec(""" & Left(str0, 2) & """)"
+        
+        Cells(i + 1, 7) = "[Color " & i & ")"
+    Next i
+    
+done:
+    Application.Calculation = xlCalculationAutomatic  'pre XL97 xlAutomatic
+    Application.ScreenUpdating = True
+End Sub
 
