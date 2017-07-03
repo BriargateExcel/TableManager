@@ -25,6 +25,10 @@ Public WithEvents ComboEvent As MSForms.ComboBox
 Attribute ComboEvent.VB_VarHelpID = -1
 Private pComboObj As MSForms.ComboBox
 
+Public WithEvents ImageEvent As MSForms.Image
+Attribute ImageEvent.VB_VarHelpID = -1
+Private pImageObj As Object
+
 Private pTableObj As TableClass
 
 Private pName As String
@@ -66,23 +70,28 @@ Private Sub ButtonEvent_Click()
     If Me.ButtonEvent.Caption = "Insert Above" Then
         pTableObj.ActiveTarget.ListObject.ListRows.Add pTableObj.ActiveRow
         Set pTableObj.ActiveTarget = pTableObj.ActiveTarget.Offset(-1, 0)
+        ActiveForm.PopulateForm pTableObj, pTableObj.ActiveTarget
         Exit Sub
     End If
 
     If Me.ButtonEvent.Caption = "Insert Below" Then
         pTableObj.ActiveTarget.ListObject.ListRows.Add pTableObj.ActiveRow + 1
         Set pTableObj.ActiveTarget = pTableObj.ActiveTarget.Offset(1, 0)
+        ActiveForm.PopulateForm pTableObj, pTableObj.ActiveTarget
         Exit Sub
     End If
 
-    If Me.ButtonEvent.Caption = "Insert at Top" Then
+    If Me.ButtonEvent.Caption = "Insert At Top" Then
         pTableObj.ActiveTarget.ListObject.ListRows.Add 1
-        Set pTableObj.ActiveTarget = pTableObj.ActiveTarget.Offset(1, 0)
+        Set pTableObj.ActiveTarget = pTableObj.FirstCell
+        ActiveForm.PopulateForm pTableObj, pTableObj.ActiveTarget
         Exit Sub
     End If
 
     If Me.ButtonEvent.Caption = "Insert At End" Then
         pTableObj.ActiveTarget.ListObject.ListRows.Add
+        Set pTableObj.ActiveTarget = pTableObj.LastCell
+        ActiveForm.PopulateForm pTableObj, pTableObj.ActiveTarget
         Exit Sub
     End If
 
@@ -110,27 +119,32 @@ Private Sub ButtonEvent_Click()
 
 End Sub
 
-Private Sub FormEvent_MouseMove(ByVal Button As Integer, _
-    ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
+Private Sub FormEvent_MouseMove( _
+    ByVal Button As Integer, _
+    ByVal Shift As Integer, _
+    ByVal X As Single, _
+    ByVal Y As Single)
     
 Dim Ctl As Object
 
     For Each Ctl In pFormObj.Controls
-        If Left(Ctl.Name, 3) = "fld" And Ctl.ForeColor = vbWhite Then
-            With Ctl
-                .ForeColor = vbBlack
-                .BackColor = vbWhite
-            End With
-        ElseIf Left(Ctl.Name, 3) = "cmb" And Ctl.ForeColor = vbWhite Then
-            With Ctl
-                .ForeColor = vbBlack
-                .BackColor = vbWhite
-            End With
-        ElseIf Left(Ctl.Name, 3) = "Com" And Ctl.ForeColor = vbWhite Then
-            With Ctl
-                .ForeColor = vbBlack
-                .BackColor = vbWhite
-            End With
+        If Left(Ctl.Name, 5) <> "Image" Then
+            If Left(Ctl.Name, 3) = "fld" And Ctl.ForeColor = vbWhite Then
+'                With Ctl
+'                    .ForeColor = vbBlack
+'                    .BackColor = vbWhite
+'                End With
+            ElseIf Left(Ctl.Name, 3) = "cmb" And Ctl.ForeColor = vbWhite Then
+'                With Ctl
+'                    .ForeColor = vbBlack
+'                    .BackColor = vbWhite
+'                End With
+            ElseIf Left(Ctl.Name, 3) = "Com" And Ctl.ForeColor = ButtonHighLightFont Then
+                With Ctl
+                    .ForeColor = ButtonNothingFont
+                    .BackColor = ButtonNothingBackGround
+                End With
+            End If
         End If
     Next Ctl
     
@@ -145,101 +159,118 @@ Public Property Set TableObj(ByVal Vbl As Object)
     Set pTableObj = Vbl
 End Property
 
-Private Sub ButtonEvent_MouseMove(ByVal Button As Integer, _
-    ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
+Public Property Set ImageObj(ByVal Vbl As Object)
+    Set pImageObj = Vbl
+    Set Me.ImageEvent = Vbl
+End Property
+
+Private Sub ButtonEvent_MouseMove( _
+    ByVal Button As Integer, _
+    ByVal Shift As Integer, _
+    ByVal X As Single, _
+    ByVal Y As Single)
     
     With pButtonObj
-        .ForeColor = vbWhite
-        .BackColor = vbBlack
+        .ForeColor = ButtonHighLightFont
+        .BackColor = ButtonHighLightBackGround
     End With
     
 End Sub
 
-Public Sub ButtonObj(ByVal Btn As MSForms.CommandButton, _
-                                ByVal BtnName As String)
+Public Sub ButtonObj( _
+    ByVal Btn As MSForms.CommandButton, _
+    ByVal BtnName As String)
+    
     Set ButtonEvent = Btn
     Set pButtonObj = Btn
     pName = BtnName
 End Sub
 
-Private Sub TextEvent_MouseMove(ByVal Button As Integer, _
-    ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
+Private Sub TextEvent_MouseMove( _
+    ByVal Button As Integer, _
+    ByVal Shift As Integer, _
+    ByVal X As Single, _
+    ByVal Y As Single)
     
 Dim Ctl As Object
 
     For Each Ctl In pFormObj.Controls
-        If Left(Ctl.Name, 3) = "fld" And Ctl.ForeColor = vbWhite Then
-            With Ctl
-                .ForeColor = vbBlack
-                .BackColor = vbWhite
-            End With
-        ElseIf Left(Ctl.Name, 3) = "cmb" And Ctl.ForeColor = vbWhite Then
-            With Ctl
-                .ForeColor = vbBlack
-                .BackColor = vbWhite
-            End With
-        ElseIf Left(Ctl.Name, 3) = "Com" And Ctl.ForeColor = vbWhite Then
-            With Ctl
-                .Forelor = vbBlack
-                .BackColor = vbWhite
-            End With
-        End If
-        If Ctl.Name = Me.Name Then
-            With pTextObj
-                .ForeColor = vbWhite
-                
-                .BackColor = vbBlack
-            End With
+        If Left(Ctl.Name, 5) <> "Image" Then
+            If Left(Ctl.Name, 3) = "fld" And Ctl.ForeColor = vbWhite Then
+'                With Ctl
+'                    .ForeColor = vbBlack
+'                    .BackColor = vbWhite
+'                End With
+            ElseIf Left(Ctl.Name, 3) = "cmb" And Ctl.ForeColor = vbWhite Then
+'                With Ctl
+'                    .ForeColor = vbBlack
+'                    .BackColor = vbWhite
+'                End With
+            ElseIf Left(Ctl.Name, 3) = "Com" And Ctl.ForeColor = vbWhite Then
+                With Ctl
+                    .ForeColor = ButtonNothingFont
+                    .BackColor = ButtonNothingBackGround
+                End With
+            End If
+            If Ctl.Name = Me.Name Then
+'                With pTextObj
+'                    .ForeColor = vbWhite
+'                    .BackColor = vbBlack
+'                End With
+            End If
         End If
     Next Ctl
 
 End Sub
 
 
-Public Sub TextObj(ByVal Txt As MSForms.TextBox, _
-                            ByVal TxtName As String)
+Public Sub TextObj(ByVal Txt As MSForms.TextBox)
     Set TextEvent = Txt
     Set pTextObj = Txt
-    pName = TxtName
+    pName = Txt.Name
 End Sub
 
-Private Sub ComboEvent_MouseMove(ByVal Combo As Integer, _
-    ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
+Private Sub ComboEvent_MouseMove( _
+    ByVal Combo As Integer, _
+    ByVal Shift As Integer, _
+    ByVal X As Single, _
+    ByVal Y As Single)
     
 Dim Ctl As Object
 
     For Each Ctl In pFormObj.Controls
-        If Left(Ctl.Name, 3) = "fld" And Ctl.ForeColor = vbWhite Then
-            With Ctl
-                .ForeColor = vbBlack
-                .BackColor = vbWhite
-            End With
-        ElseIf Left(Ctl.Name, 3) = "cmb" And Ctl.ForeColor = vbWhite Then
-            With Ctl
-                .ForeColor = vbBlack
-                .BackColor = vbWhite
-            End With
-        ElseIf Left(Ctl.Name, 3) = "Com" And Ctl.ForeColor = vbWhite Then
-            With Ctl
-                .ForeColor = vbBlack
-                .BackColor = vbWhite
-            End With
-        End If
-        If Ctl.Name = Me.Name Then
-            With pComboObj
-                .ForeColor = vbWhite
-                .BackColor = vbBlack
-            End With
+        If Left(Ctl.Name, 5) <> "Image" Then
+            If Left(Ctl.Name, 3) = "fld" And Ctl.ForeColor = vbWhite Then
+'                With Ctl
+'                    .ForeColor = vbBlack
+'                    .BackColor = vbWhite
+'                End With
+            ElseIf Left(Ctl.Name, 3) = "cmb" And Ctl.ForeColor = vbWhite Then
+'                With Ctl
+'                    .ForeColor = vbBlack
+'                    .BackColor = vbWhite
+'                End With
+            ElseIf Left(Ctl.Name, 3) = "Com" And Ctl.ForeColor = vbWhite Then
+                With Ctl
+                    .ForeColor = ButtonNothingFont
+                    .BackColor = ButtonNothingBackGround
+                End With
+            End If
+            If Ctl.Name = Me.Name Then
+'                With pComboObj
+'                    .ForeColor = vbWhite
+'                    .BackColor = vbBlack
+'                End With
+            End If
         End If
     Next Ctl
     
 End Sub
 
-Public Sub ComboObj(ByVal Cmb As MSForms.ComboBox, _
-                                ByVal CmbName As String)
+Public Sub ComboObj(ByVal Cmb As MSForms.ComboBox)
     Set ComboEvent = Cmb
     Set pComboObj = Cmb
-    pName = CmbName
+    pName = Cmb.Name
 End Sub
 
 Public Property Get Name() As String: Name = pName: End Property

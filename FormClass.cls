@@ -55,6 +55,9 @@ Public Function BuildForm( _
     Dim MaxFieldWidth As Single
     Dim DataLeft As Single
     Dim ValListItem As Variant
+    Dim LogoHeight As Single
+    Dim LogoWidth As Single
+    Dim Logo As Control
     
 '   Error Handling Initialization
     On Error GoTo ErrHandler
@@ -73,33 +76,60 @@ Public Function BuildForm( _
     
     With pFormObj
         
-'       Build the field labels
+'   Add a background texture
+    If Dir(Application.ActiveWorkbook.Path & "\texture.jpg") <> "" Then
+        Set .Picture = LoadPicture(Application.ActiveWorkbook.Path & "\texture.jpg")
+    End If
+    
+'   Add a Logo
+    If Dir(Application.ActiveWorkbook.Path & "\logo.jpg") <> "" Then
+        Set Logo = .Controls.Add("Forms.Image.1")
+        With Logo
+            Set .Picture = LoadPicture(Application.ActiveWorkbook.Path & "\logo.jpg")
+            .PictureAlignment = fmPictureAlignmentTopRight
+            .PictureSizeMode = fmPictureSizeModeZoom
+            .BorderStyle = fmBorderStyleNone
+            .BackStyle = fmBackStyleTransparent
+            .AutoSize = True
+            LogoHeight = .Height + 12
+            LogoWidth = .Width
+        End With
+        Ctls.Add Logo
+        Top = LogoHeight
+    Else
         Top = 6
+    End If
+    
+'       Build the field labels
         For Each Field In Tbl.TableCells
             Set Ctl = .Controls.Add("Forms.Label.1", "lbl" & Field.Name, True)
             With Ctl
                 .Top = Top
                 .Left = 6
-                .Height = 12
+                .Height = 18
                 If Field.Wrap Then
-                    .Height = 36 ' data field is three lines high
+                    .Height = 54 ' data field is three lines high
                     Top = Top + 54 ' 48 for data field height + 6 for gap between labels
                 Else
-                    .Height = 12 ' data field is one line high
+                    .Height = 18 ' data field is one line high
                     Top = Top + 18 ' 12 for data field height + 6 for gap between labels
                 End If
                 .Caption = Field.HeaderText
                 .TextAlign = fmTextAlignRight
                 .WordWrap = False
-                .AutoSize = True
+                .BackColor = LabelBackGround
+                .ForeColor = LabelFont
                 If .Width > MaxLabelWidth Then MaxLabelWidth = .Width
-
             End With
             Ctls.Add Ctl
         Next Field
         
         DataLeft = MaxLabelWidth + 12
-        Top = 6
+        If Dir(Application.ActiveWorkbook.Path & "\logo.jpg") <> "" Then
+            Top = LogoHeight
+        Else
+            Top = 6
+        End If
         
 '       Build the data fields
         For Each Field In Tbl.TableCells
@@ -109,9 +139,10 @@ Public Function BuildForm( _
                 With Ctl
                     .Top = Top
                     .Left = DataLeft
-                    .Height = 12 ' data field is one line high
+                    .Height = 18 ' data field is one line high
                     .WordWrap = False
-                    .AutoSize = True
+                    .BackColor = LabelBackGround
+                    .ForeColor = LabelFont
                     If .Width > MaxFieldWidth Then MaxFieldWidth = .Width
                 End With
                 Set Field.FormControl = Ctl
@@ -145,9 +176,8 @@ Public Function BuildForm( _
                         End With
                         
                         Ctls.Add Ctl
-                        Ctls.Item(Ctl.Name).TextObj Ctl, Ctl.Name
-                        Set Ctls.Item(Ctl.Name).FormObj = pFormObj
-                        Frm.TextObj Ctl, Ctl.Name
+                        Ctls.Item(Ctl.Name).TextObj Ctl
+                        Frm.TextObj Ctl
                         
                     Case xlValidateList
 '                       Set this up as a combobox
@@ -162,8 +192,8 @@ Public Function BuildForm( _
                             Next ValListItem
                         End With
                         Ctls.Add Ctl
-                        Ctls.Item(Ctl.Name).ComboObj Ctl, Ctl.Name
-                        Frm.ComboObj Ctl, Ctl.Name
+                        Ctls.Item(Ctl.Name).ComboObj Ctl
+                        Frm.ComboObj Ctl
                     
                     Case xlValidateTextLength: Stop
                     
@@ -174,6 +204,8 @@ Public Function BuildForm( _
                     Case Else
                         Stop
                 End Select
+                Ctl.BackColor = vbWhite
+                Ctl.ForeColor = vbBlack
                 Set Field.FormControl = Ctl
                 Set Ctls.Item(Ctl.Name).FormObj = pFormObj
             End If ' Field is locked
@@ -197,187 +229,38 @@ Public Function BuildForm( _
         
         Top = Top + 6
             
-'       Add Copy To Table Button
-        Set Ctl = .Controls.Add("Forms.CommandButton.1")
-        With Ctl
-            .Caption = "Copy To Table"
-            .Top = Top
-            .Left = 20
-            .Height = 24
-            .Width = 72
-        End With
-        Ctls.Add Ctl
-        Ctls.Item(Ctl.Name).ButtonObj Ctl, Ctl.Name
-        Set Ctls.Item(Ctl.Name).FormObj = pFormObj
-        Set Ctls.Item(Ctl.Name).TableObj = Tbl
+'       Add First Row of Buttons
+        BuildButton "Copy To Table", Top, 20, Tbl
+        BuildButton "Cancel", Top, 98, Tbl
+        BuildButton "Next Row", Top, 176, Tbl
+        BuildButton "Previous Row", Top, 254, Tbl
         
-'       Add Cancel button
-        Set Ctl = .Controls.Add("Forms.CommandButton.1")
-        With Ctl
-            .Caption = "Cancel"
-            .Top = Top
-            .Left = 98
-            .Height = 24
-            .Width = 72
-        End With
-        Ctls.Add Ctl
-        Ctls.Item(Ctl.Name).ButtonObj Ctl, Ctl.Name
-        Set Ctls.Item(Ctl.Name).FormObj = pFormObj
-        Set Ctls.Item(Ctl.Name).TableObj = Tbl
-        
-'       Add Next Row button
-        Set Ctl = .Controls.Add("Forms.CommandButton.1")
-        With Ctl
-            .Caption = "Next Row"
-            .Top = Top
-            .Left = 176
-            .Height = 24
-            .Width = 72
-        End With
-        Ctls.Add Ctl
-        Ctls.Item(Ctl.Name).ButtonObj Ctl, Ctl.Name
-        Set Ctls.Item(Ctl.Name).FormObj = pFormObj
-        Set Ctls.Item(Ctl.Name).TableObj = Tbl
-        
-'       Add Previous Row button
-        Set Ctl = .Controls.Add("Forms.CommandButton.1")
-        With Ctl
-            .Caption = "Previous Row"
-            .Top = Top
-            .Left = 254
-            .Height = 24
-            .Width = 72
-        End With
-        Ctls.Add Ctl
-        Ctls.Item(Ctl.Name).ButtonObj Ctl, Ctl.Name
-        Set Ctls.Item(Ctl.Name).FormObj = pFormObj
-        Set Ctls.Item(Ctl.Name).TableObj = Tbl
-
 '       Second row of buttons
         Top = Top + 30
-        
-'       Add Insert Above button
-        Set Ctl = .Controls.Add("Forms.CommandButton.1")
-        With Ctl
-            .Caption = "Insert Above"
-            .Top = Top
-            .Left = 20
-            .Height = 24
-            .Width = 72
-        End With
-        Ctls.Add Ctl
-        Ctls.Item(Ctl.Name).ButtonObj Ctl, Ctl.Name
-        Set Ctls.Item(Ctl.Name).FormObj = pFormObj
-        Set Ctls.Item(Ctl.Name).TableObj = Tbl
-        
-'       Add Insert Below button
-        Set Ctl = .Controls.Add("Forms.CommandButton.1")
-        With Ctl
-            .Caption = "Insert Below"
-            .Top = Top
-            .Left = 98
-            .Height = 24
-            .Width = 72
-        End With
-        Ctls.Add Ctl
-        Ctls.Item(Ctl.Name).ButtonObj Ctl, Ctl.Name
-        Set Ctls.Item(Ctl.Name).FormObj = pFormObj
-        Set Ctls.Item(Ctl.Name).TableObj = Tbl
-        
-'       Add Insert at Top button
-        Set Ctl = .Controls.Add("Forms.CommandButton.1")
-        With Ctl
-            .Caption = "Insert at Top"
-            .Top = Top
-            .Left = 176
-            .Height = 24
-            .Width = 72
-        End With
-        Ctls.Add Ctl
-        Ctls.Item(Ctl.Name).ButtonObj Ctl, Ctl.Name
-        Set Ctls.Item(Ctl.Name).FormObj = pFormObj
-        Set Ctls.Item(Ctl.Name).TableObj = Tbl
-        
-'       Add Insert At End button
-        Set Ctl = .Controls.Add("Forms.CommandButton.1")
-        With Ctl
-            .Caption = "Insert At End"
-            .Top = Top
-            .Left = 254
-            .Height = 24
-            .Width = 72
-        End With
-        Ctls.Add Ctl
-        Ctls.Item(Ctl.Name).ButtonObj Ctl, Ctl.Name
-        Set Ctls.Item(Ctl.Name).FormObj = pFormObj
-        Set Ctls.Item(Ctl.Name).TableObj = Tbl
-        
+        BuildButton "Insert Above", Top, 20, Tbl
+        BuildButton "Insert Below", Top, 98, Tbl
+        BuildButton "Insert At Top", Top, 176, Tbl
+        BuildButton "Insert At End", Top, 254, Tbl
+
 '       Third row of buttons
         Top = Top + 30
-        
-'       Add Delete button
-        Set Ctl = .Controls.Add("Forms.CommandButton.1")
-        With Ctl
-            .Caption = "Delete This Row"
-            .Top = Top
-            .Left = 20
-            .Height = 24
-            .Width = 72
-        End With
-        Ctls.Add Ctl
-        Ctls.Item(Ctl.Name).ButtonObj Ctl, Ctl.Name
-        Set Ctls.Item(Ctl.Name).FormObj = pFormObj
-        Set Ctls.Item(Ctl.Name).TableObj = Tbl
-        
-'       Add Go To Top button
-        Set Ctl = .Controls.Add("Forms.CommandButton.1")
-        With Ctl
-            .Caption = "Go To Top"
-            .Top = Top
-            .Left = 98
-            .Height = 24
-            .Width = 72
-        End With
-        Ctls.Add Ctl
-        Ctls.Item(Ctl.Name).ButtonObj Ctl, Ctl.Name
-        Set Ctls.Item(Ctl.Name).FormObj = pFormObj
-        Set Ctls.Item(Ctl.Name).TableObj = Tbl
-        
-'       Add Go To Bottom button
-        Set Ctl = .Controls.Add("Forms.CommandButton.1")
-        With Ctl
-            .Caption = "Go To Bottom"
-            .Top = Top
-            .Left = 176
-            .Height = 24
-            .Width = 72
-        End With
-        Ctls.Add Ctl
-        Ctls.Item(Ctl.Name).ButtonObj Ctl, Ctl.Name
-        Set Ctls.Item(Ctl.Name).FormObj = pFormObj
-        Set Ctls.Item(Ctl.Name).TableObj = Tbl
-        
-'       Add Delete button
-        Set Ctl = .Controls.Add("Forms.CommandButton.1")
-        With Ctl
-            .Caption = "Delete This Row"
-            .Top = Top
-            .Left = 20
-            .Height = 24
-            .Width = 72
-        End With
-        Ctls.Add Ctl
-        Ctls.Item(Ctl.Name).ButtonObj Ctl, Ctl.Name
-        Set Ctls.Item(Ctl.Name).FormObj = pFormObj
-        Set Ctls.Item(Ctl.Name).TableObj = Tbl
-        
+        BuildButton "Delete This Row", Top, 20, Tbl
+        BuildButton "Go To Top", Top, 98, Tbl
+        BuildButton "Go To Bottom", Top, 176, Tbl
+
 '       Set Properties for TempForm
         .Caption = Tbl.Name
-        .Width = Application.Max(MaxLabelWidth + MaxFieldWidth + 30, 0)
+        .Width = MaxLabelWidth + MaxFieldWidth + 30
         .Height = Top + 60
+        If Dir(Application.ActiveWorkbook.Path & "\logo.jpg") <> "" Then
+            Logo.Left = .Width - LogoWidth
+            Logo.Left = 0
+            Logo.Left = .InsideWidth - Logo.Width - 6
+            Logo.Top = 6
+        End If
         Set BuildForm = pFormObj
         
-    End With
+    End With ' pFormObj
     
 ErrHandler:
     Select Case Err.Number
@@ -391,6 +274,31 @@ ErrHandler:
     End Select
 
 End Function ' BuildForm
+
+Private Sub BuildButton( _
+    ByVal Cption As String, _
+    ByVal Top As Single, _
+    ByVal Lft As Single, _
+    ByVal Tbl As TableClass)
+    
+    Dim Ctl As Control
+    
+    Set Ctl = pFormObj.Controls.Add("Forms.CommandButton.1")
+    With Ctl
+        .Caption = Cption
+        .Top = Top
+        .Left = Lft
+        .Height = 24
+        .Width = 72
+        .BackColor = ButtonNothingBackGround
+        .ForeColor = ButtonNothingFont
+    End With
+    Ctls.Add Ctl
+    Ctls.Item(Ctl.Name).ButtonObj Ctl, Ctl.Name
+    Set Ctls.Item(Ctl.Name).FormObj = pFormObj
+    Set Ctls.Item(Ctl.Name).TableObj = Tbl
+End Sub
+
 
 Public Function PopulateForm( _
     ByVal Tbl As TableClass, _

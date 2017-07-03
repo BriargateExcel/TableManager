@@ -7,6 +7,14 @@ Private Frm As FormClass
 Private ShtClass As WorksheetClass
 Private Tbl As Variant
 
+Public Const DarkestColor = &H763232 ' AF Dark Blue
+Public Const LightestColor = &HE7E2E2 ' AF Light Gray
+Public Const LabelBackGround = DarkestColor
+Public Const LabelFont = LightestColor
+Public Const ButtonNothingBackGround = DarkestColor
+Public Const ButtonNothingFont = LightestColor
+Public Const ButtonHighLightBackGround = LightestColor
+Public Const ButtonHighLightFont = DarkestColor
 
 Private Sub Auto_Open()
 
