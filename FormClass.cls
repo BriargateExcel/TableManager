@@ -21,7 +21,7 @@ Private pName As String
 Private pFormObj As Object
 Private pTable As TableClass
 
-Private Frm As EventHandler
+Private frm As EventHandler
 
 Private Ctls As ControlsClass
 
@@ -70,9 +70,9 @@ Public Function BuildForm( _
 '   Create the UserForm
     Set TempForm = ThisWorkbook.VBProject.VBComponents.Add(vbext_ct_MSForm)
     Set pFormObj = VBA.UserForms.Add(TempForm.Name)
-    Set Frm = New EventHandler
-    Set Frm.FormObj = pFormObj
-    Set Frm.FormEvent = pFormObj
+    Set frm = New EventHandler
+    Set frm.FormObj = pFormObj
+    Set frm.FormEvent = pFormObj
     
     With pFormObj
         
@@ -143,6 +143,7 @@ Public Function BuildForm( _
                     .WordWrap = False
                     .BackColor = LabelBackGround
                     .ForeColor = LabelFont
+                    .ControlTipText = Field.InputTitle & vbCr & Field.InputMessage
                     If .Width > MaxFieldWidth Then MaxFieldWidth = .Width
                 End With
                 Set Field.FormControl = Ctl
@@ -170,14 +171,16 @@ Public Function BuildForm( _
                                 .WordWrap = True
                                 .MultiLine = True
                                 .ScrollBars = fmScrollBarsVertical
+                                .ControlTipText = Field.InputTitle & ": " & Field.InputMessage
                             Else
                                 .WordWrap = False
+                                .ControlTipText = Field.InputTitle & ": " & Field.InputMessage
                             End If
                         End With
                         
                         Ctls.Add Ctl
                         Ctls.Item(Ctl.Name).TextObj Ctl
-                        Frm.TextObj Ctl
+                        frm.TextObj Ctl
                         
                     Case xlValidateList
 '                       Set this up as a combobox
@@ -185,6 +188,7 @@ Public Function BuildForm( _
                         With Ctl
                             .Top = Top
                             .Left = DataLeft
+                            .ControlTipText = Field.InputTitle & ": " & Field.InputMessage
                             .Width = Field.ColumnWidth * 4
                             If .Width > MaxFieldWidth Then MaxFieldWidth = .Width
                             For Each ValListItem In Field.ValidationList
@@ -193,7 +197,7 @@ Public Function BuildForm( _
                         End With
                         Ctls.Add Ctl
                         Ctls.Item(Ctl.Name).ComboObj Ctl
-                        Frm.ComboObj Ctl
+                        frm.ComboObj Ctl
                     
                     Case xlValidateTextLength: Stop
                     
@@ -230,23 +234,23 @@ Public Function BuildForm( _
         Top = Top + 6
             
 '       Add First Row of Buttons
-        BuildButton "Copy To Table", Top, 20, Tbl
-        BuildButton "Cancel", Top, 98, Tbl
-        BuildButton "Next Row", Top, 176, Tbl
-        BuildButton "Previous Row", Top, 254, Tbl
+        BuildButton "Copy To Table", Top, 20, "Copy the contents of the form to the table row", Tbl
+        BuildButton "Cancel", Top, 98, "Exit the form without changing the table", Tbl
+        BuildButton "Next Row", Top, 176, "Move to next row of the table", Tbl
+        BuildButton "Previous Row", Top, 254, "Move to previous row of the table", Tbl
         
 '       Second row of buttons
         Top = Top + 30
-        BuildButton "Insert Above", Top, 20, Tbl
-        BuildButton "Insert Below", Top, 98, Tbl
-        BuildButton "Insert At Top", Top, 176, Tbl
-        BuildButton "Insert At End", Top, 254, Tbl
+        BuildButton "Insert Above", Top, 20, "Insert a blank line above this table row and move to it", Tbl
+        BuildButton "Insert Below", Top, 98, "Insert a blank line below this table row and move to it", Tbl
+        BuildButton "Insert At Top", Top, 176, "Insert a blank line above the first row of the table and move to it", Tbl
+        BuildButton "Insert At End", Top, 254, "Insert a blank line below the last row of the table and move to it", Tbl
 
 '       Third row of buttons
         Top = Top + 30
-        BuildButton "Delete This Row", Top, 20, Tbl
-        BuildButton "Go To Top", Top, 98, Tbl
-        BuildButton "Go To Bottom", Top, 176, Tbl
+        BuildButton "Delete This Row", Top, 20, "Delete this row of the table", Tbl
+        BuildButton "Go To Top", Top, 98, "Move to the first row of the table", Tbl
+        BuildButton "Go To Bottom", Top, 176, "Move to the last row of the table", Tbl
 
 '       Set Properties for TempForm
         .Caption = Tbl.Name
@@ -279,6 +283,7 @@ Private Sub BuildButton( _
     ByVal Cption As String, _
     ByVal Top As Single, _
     ByVal Lft As Single, _
+    ByVal Tip As String, _
     ByVal Tbl As TableClass)
     
     Dim Ctl As Control
@@ -292,6 +297,7 @@ Private Sub BuildButton( _
         .Width = 72
         .BackColor = ButtonNothingBackGround
         .ForeColor = ButtonNothingFont
+        .ControlTipText = Tip
     End With
     Ctls.Add Ctl
     Ctls.Item(Ctl.Name).ButtonObj Ctl, Ctl.Name

@@ -3,7 +3,7 @@ Option Explicit
 
 Const Module_Name = "Module1."
 
-Private Frm As FormClass
+Private frm As FormClass
 Private ShtClass As WorksheetClass
 Private Tbl As Variant
 
@@ -105,10 +105,10 @@ Public Function BuildTable( _
     Tbl.CollectData WS, TableName
     
 '   Build the form from the table data
-    Set Frm = New FormClass
-    Frm.BuildForm Tbl, Target
+    Set frm = New FormClass
+    frm.BuildForm Tbl, Target
     
-    Frm.Show
+    frm.Show
 
 ErrHandler:
     Select Case Err.Number
@@ -124,7 +124,7 @@ ErrHandler:
 End Function ' BuildTable
 
 Public Function ActiveForm() As FormClass
-    Set ActiveForm = Frm
+    Set ActiveForm = frm
 End Function
 
 Public Function ActiveTable() As TableClass

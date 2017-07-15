@@ -122,24 +122,14 @@ End Sub
 Private Sub FormEvent_MouseMove( _
     ByVal Button As Integer, _
     ByVal Shift As Integer, _
-    ByVal X As Single, _
-    ByVal Y As Single)
+    ByVal x As Single, _
+    ByVal y As Single)
     
 Dim Ctl As Object
 
     For Each Ctl In pFormObj.Controls
         If Left(Ctl.Name, 5) <> "Image" Then
-            If Left(Ctl.Name, 3) = "fld" And Ctl.ForeColor = vbWhite Then
-'                With Ctl
-'                    .ForeColor = vbBlack
-'                    .BackColor = vbWhite
-'                End With
-            ElseIf Left(Ctl.Name, 3) = "cmb" And Ctl.ForeColor = vbWhite Then
-'                With Ctl
-'                    .ForeColor = vbBlack
-'                    .BackColor = vbWhite
-'                End With
-            ElseIf Left(Ctl.Name, 3) = "Com" And Ctl.ForeColor = ButtonHighLightFont Then
+            If Left(Ctl.Name, 3) = "Com" And Ctl.ForeColor = ButtonHighLightFont Then
                 With Ctl
                     .ForeColor = ButtonNothingFont
                     .BackColor = ButtonNothingBackGround
@@ -167,8 +157,8 @@ End Property
 Private Sub ButtonEvent_MouseMove( _
     ByVal Button As Integer, _
     ByVal Shift As Integer, _
-    ByVal X As Single, _
-    ByVal Y As Single)
+    ByVal x As Single, _
+    ByVal y As Single)
     
     With pButtonObj
         .ForeColor = ButtonHighLightFont
@@ -186,42 +176,26 @@ Public Sub ButtonObj( _
     pName = BtnName
 End Sub
 
-Private Sub TextEvent_MouseMove( _
-    ByVal Button As Integer, _
-    ByVal Shift As Integer, _
-    ByVal X As Single, _
-    ByVal Y As Single)
-    
-Dim Ctl As Object
-
-    For Each Ctl In pFormObj.Controls
-        If Left(Ctl.Name, 5) <> "Image" Then
-            If Left(Ctl.Name, 3) = "fld" And Ctl.ForeColor = vbWhite Then
-'                With Ctl
-'                    .ForeColor = vbBlack
-'                    .BackColor = vbWhite
-'                End With
-            ElseIf Left(Ctl.Name, 3) = "cmb" And Ctl.ForeColor = vbWhite Then
-'                With Ctl
-'                    .ForeColor = vbBlack
-'                    .BackColor = vbWhite
-'                End With
-            ElseIf Left(Ctl.Name, 3) = "Com" And Ctl.ForeColor = vbWhite Then
-                With Ctl
-                    .ForeColor = ButtonNothingFont
-                    .BackColor = ButtonNothingBackGround
-                End With
-            End If
-            If Ctl.Name = Me.Name Then
-'                With pTextObj
-'                    .ForeColor = vbWhite
-'                    .BackColor = vbBlack
-'                End With
-            End If
-        End If
-    Next Ctl
-
-End Sub
+'Private Sub TextEvent_MouseMove( _
+'    ByVal Button As Integer, _
+'    ByVal Shift As Integer, _
+'    ByVal X As Single, _
+'    ByVal Y As Single)
+'
+'Dim Ctl As Object
+'
+''    For Each Ctl In pFormObj.Controls
+''        If Left(Ctl.Name, 5) <> "Image" Then
+''            If Left(Ctl.Name, 3) = "Com" And Ctl.ForeColor = ButtonHighLightFont Then
+''                With Ctl
+''                    .ForeColor = ButtonNothingFont
+''                    .BackColor = ButtonNothingBackGround
+''                End With
+''            End If
+''        End If
+''    Next Ctl
+'
+'End Sub
 
 
 Public Sub TextObj(ByVal Txt As MSForms.TextBox)
@@ -233,34 +207,18 @@ End Sub
 Private Sub ComboEvent_MouseMove( _
     ByVal Combo As Integer, _
     ByVal Shift As Integer, _
-    ByVal X As Single, _
-    ByVal Y As Single)
+    ByVal x As Single, _
+    ByVal y As Single)
     
 Dim Ctl As Object
 
     For Each Ctl In pFormObj.Controls
         If Left(Ctl.Name, 5) <> "Image" Then
-            If Left(Ctl.Name, 3) = "fld" And Ctl.ForeColor = vbWhite Then
-'                With Ctl
-'                    .ForeColor = vbBlack
-'                    .BackColor = vbWhite
-'                End With
-            ElseIf Left(Ctl.Name, 3) = "cmb" And Ctl.ForeColor = vbWhite Then
-'                With Ctl
-'                    .ForeColor = vbBlack
-'                    .BackColor = vbWhite
-'                End With
-            ElseIf Left(Ctl.Name, 3) = "Com" And Ctl.ForeColor = vbWhite Then
+            If Left(Ctl.Name, 3) = "Com" And Ctl.ForeColor = vbWhite Then
                 With Ctl
                     .ForeColor = ButtonNothingFont
                     .BackColor = ButtonNothingBackGround
                 End With
-            End If
-            If Ctl.Name = Me.Name Then
-'                With pComboObj
-'                    .ForeColor = vbWhite
-'                    .BackColor = vbBlack
-'                End With
             End If
         End If
     Next Ctl

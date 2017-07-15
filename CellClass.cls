@@ -84,8 +84,8 @@ Public Sub CollectData(ByVal CellID As Range)
         pIgnoreBlank = DataCell.Validation.IgnoreBlank
         pValidAlertStyle = DataCell.Validation.AlertStyle
         pShowError = DataCell.Validation.ShowError
-        pErrorMessage = DataCell.Validation.ErrorMessage
-        pErrorTitle = DataCell.Validation.ErrorTitle
+        pErrorMessage = DataCell.Validation.InputMessage
+        pErrorTitle = DataCell.Validation.InputTitle
         pShowInput = DataCell.Validation.ShowInput
         pInputMessage = DataCell.Validation.InputMessage
         pInputTitle = DataCell.Validation.InputTitle
