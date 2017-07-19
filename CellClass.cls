@@ -30,13 +30,14 @@ Private pCell As Range
 Private pDBColNum As Long
 Private pDBRange As Range
 
-Private pShowError As Boolean
-Private pErrorMessage As String
-Private pErrorTitle As String
-
 Private pShowInput As Boolean
-Private pInputMessage As String
 Private pInputTitle As String
+Private pInputMessage As String
+
+Private pShowError As Boolean
+Private pErrorTitle As String
+Private pErrorMessage As String
+
 
 Public Sub CollectData(ByVal CellID As Range)
 
@@ -83,9 +84,15 @@ Public Sub CollectData(ByVal CellID As Range)
         pCellType = DataCell.Validation.Type
         pIgnoreBlank = DataCell.Validation.IgnoreBlank
         pValidAlertStyle = DataCell.Validation.AlertStyle
+        
+        pShowInput = DataCell.Validation.ShowInput
+        pInputTitle = DataCell.Validation.InputTitle
+        pInputMessage = DataCell.Validation.InputMessage
+        
         pShowError = DataCell.Validation.ShowError
-        pErrorMessage = DataCell.Validation.InputMessage
-        pErrorTitle = DataCell.Validation.InputTitle
+        pErrorTitle = DataCell.Validation.ErrorTitle
+        pErrorMessage = DataCell.Validation.ErrorMessage
+        
         pShowInput = DataCell.Validation.ShowInput
         pInputMessage = DataCell.Validation.InputMessage
         pInputTitle = DataCell.Validation.InputTitle

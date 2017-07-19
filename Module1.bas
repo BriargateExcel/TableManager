@@ -38,6 +38,7 @@ Private Sub Auto_Open()
     On Error GoTo ErrHandler
     
 '   Procedure
+'   To Do: turn this into a loop that goes through all sheets and all tables on each sheet prepping them
     Set ShtClass = New WorksheetClass
     Set ShtClass.Worksheet = ActiveSheet
 

@@ -25,6 +25,15 @@ Private frm As EventHandler
 
 Private Ctls As ControlsClass
 
+Private Const StandardGap = 12
+Private Const ThinGap = 3
+Private Const TextHeight = 15
+Private Const ComboHeight = 15
+Private Const ComboGap = 6
+Private Const ButtonHeight = 24
+Private Const ButtonWidth = 72
+    
+
 
 ' Public methods
 
@@ -51,6 +60,7 @@ Public Function BuildForm( _
     Dim Field As CellClass
     Dim Top As Single
     Dim Ctl As Control
+    Dim Lbl As Control
     Dim MaxLabelWidth As Single
     Dim MaxFieldWidth As Single
     Dim DataLeft As Single
@@ -91,176 +101,196 @@ Public Function BuildForm( _
             .BorderStyle = fmBorderStyleNone
             .BackStyle = fmBackStyleTransparent
             .AutoSize = True
-            LogoHeight = .Height + 12
+            LogoHeight = .Height
             LogoWidth = .Width
         End With
         Ctls.Add Logo
-        Top = LogoHeight
     Else
-        Top = 6
+        LogoHeight = 0
     End If
+    Top = LogoHeight + 2 * StandardGap
     
+    For Each Field In Tbl.TableCells
 '       Build the field labels
-        For Each Field In Tbl.TableCells
-            Set Ctl = .Controls.Add("Forms.Label.1", "lbl" & Field.Name, True)
+        Set Lbl = .Controls.Add("Forms.Label.1", "lbl" & Field.Name, True)
+        Lbl.Top = Top
+        Lbl.Left = StandardGap
+        Lbl.Caption = Field.HeaderText
+        Lbl.TextAlign = fmTextAlignRight
+        Lbl.WordWrap = False
+        Lbl.BackColor = LabelBackGround
+        Lbl.ForeColor = LabelFont
+        If Lbl.Width > MaxLabelWidth Then MaxLabelWidth = Lbl.Width
+        Ctls.Add Lbl
+        
+'       Build the data fields
+        If Field.Locked Then
+'           Set this up as a constant (label)
+            Set Ctl = .Controls.Add("Forms.Label.1", "fld" & Field.Name, True)
             With Ctl
                 .Top = Top
-                .Left = 6
-                .Height = 18
-                If Field.Wrap Then
-                    .Height = 54 ' data field is three lines high
-                    Top = Top + 54 ' 48 for data field height + 6 for gap between labels
-                Else
-                    .Height = 18 ' data field is one line high
-                    Top = Top + 18 ' 12 for data field height + 6 for gap between labels
-                End If
-                .Caption = Field.HeaderText
-                .TextAlign = fmTextAlignRight
+                .Height = TextHeight + ThinGap
+                Lbl.Height = TextHeight + ThinGap
+                Top = Top + TextHeight + ThinGap
                 .WordWrap = False
                 .BackColor = LabelBackGround
                 .ForeColor = LabelFont
-                If .Width > MaxLabelWidth Then MaxLabelWidth = .Width
+                .ControlTipText = Field.InputTitle & ":" & Field.InputMessage
+                If .Width > MaxFieldWidth Then MaxFieldWidth = .Width
             End With
+            Set Field.FormControl = Ctl
             Ctls.Add Ctl
-        Next Field
-        
-        DataLeft = MaxLabelWidth + 12
-        If Dir(Application.ActiveWorkbook.Path & "\logo.jpg") <> "" Then
-            Top = LogoHeight
         Else
-            Top = 6
-        End If
-        
-'       Build the data fields
-        For Each Field In Tbl.TableCells
-            If Field.Locked Then
-'               Set this up as a constant (label)
-                Set Ctl = .Controls.Add("Forms.Label.1", "fld" & Field.Name, True)
-                With Ctl
-                    .Top = Top
-                    .Left = DataLeft
-                    .Height = 18 ' data field is one line high
-                    .WordWrap = False
-                    .BackColor = LabelBackGround
-                    .ForeColor = LabelFont
-                    .ControlTipText = Field.InputTitle & vbCr & Field.InputMessage
-                    If .Width > MaxFieldWidth Then MaxFieldWidth = .Width
-                End With
-                Set Field.FormControl = Ctl
-                Ctls.Add Ctl
-            Else
-                ' Field is unlocked
-                Select Case Field.CellType
-                    Case xlValidateCustom: Stop
+            ' Field is unlocked
+            Select Case Field.CellType
+                Case xlValidateCustom: Stop
+                
+                Case xlValidateDate: Stop
+                
+                Case xlValidateDecimal: Stop
+                
+                Case xlValidateInputOnly
+'                   Set this up as a text field
+                    Set Ctl = .Controls.Add("Forms.TextBox.1", "fld" & Field.Name, True)
                     
-                    Case xlValidateDate: Stop
-                    
-                    Case xlValidateDecimal: Stop
-                    
-                    Case xlValidateInputOnly
-'                       Set this up as a text field
-                        Set Ctl = .Controls.Add("Forms.TextBox.1", "fld" & Field.Name, True)
-                        
-                        With Ctl
-                            .Top = Top
-                            .Left = DataLeft
-                            .Width = Field.ColumnWidth * 4 + 20
-                            If Field.Wrap Then
-                            If .Width > MaxFieldWidth Then MaxFieldWidth = .Width
-                                .Height = 54
-                                .WordWrap = True
-                                .MultiLine = True
-                                .ScrollBars = fmScrollBarsVertical
-                                .ControlTipText = Field.InputTitle & ": " & Field.InputMessage
-                            Else
-                                .WordWrap = False
-                                .ControlTipText = Field.InputTitle & ": " & Field.InputMessage
-                            End If
-                        End With
-                        
-                        Ctls.Add Ctl
-                        Ctls.Item(Ctl.Name).TextObj Ctl
-                        frm.TextObj Ctl
-                        
-                    Case xlValidateList
-'                       Set this up as a combobox
-                        Set Ctl = .Controls.Add("Forms.ComboBox.1", "cmb" & Field.Name, True)
-                        With Ctl
-                            .Top = Top
-                            .Left = DataLeft
+                    With Ctl
+                        .Top = Top
+                        .Width = Field.ColumnWidth * 4
+                        If Field.Wrap Then
+                        If .Width > MaxFieldWidth Then MaxFieldWidth = .Width
+                            .Height = 3 * TextHeight
+                            Lbl.Height = 3 * TextHeight
+                            Top = Top + 3 * TextHeight
+                            .WordWrap = True
+                            .MultiLine = True
+                            .ScrollBars = fmScrollBarsVertical
                             .ControlTipText = Field.InputTitle & ": " & Field.InputMessage
-                            .Width = Field.ColumnWidth * 4
-                            If .Width > MaxFieldWidth Then MaxFieldWidth = .Width
-                            For Each ValListItem In Field.ValidationList
-                                .AddItem CStr(ValListItem)
-                            Next ValListItem
-                        End With
-                        Ctls.Add Ctl
-                        Ctls.Item(Ctl.Name).ComboObj Ctl
-                        frm.ComboObj Ctl
+                        Else
+                            .Height = TextHeight
+                            Lbl.Height = TextHeight
+                            Top = Top + TextHeight
+                            .WordWrap = False
+                            .ControlTipText = Field.InputTitle & ": " & Field.InputMessage
+                        End If
+                    End With
                     
-                    Case xlValidateTextLength: Stop
+                    Ctls.Add Ctl
+                    Ctls.Item(Ctl.Name).TextObj Ctl
+                    frm.TextObj Ctl
                     
-                    Case xlValidateTime: Stop
-                    
-                    Case xlValidateWholeNumber: Stop
-                    
-                    Case Else
-                        Stop
-                End Select
-                Ctl.BackColor = vbWhite
-                Ctl.ForeColor = vbBlack
-                Set Field.FormControl = Ctl
-                Set Ctls.Item(Ctl.Name).FormObj = pFormObj
-            End If ' Field is locked
-            
-            If Field.Wrap Then
-                Top = Top + 54 ' 48 for data field height + 6 for gap between labels
-            Else
-                Top = Top + 18 ' 12 for data field height + 6 for gap between labels
-            End If
-        Next Field
+                Case xlValidateList
+'                   Set this up as a combobox
+                    Set Ctl = .Controls.Add("Forms.ComboBox.1", "cmb" & Field.Name, True)
+                    With Ctl
+                        .Top = Top
+                        .ControlTipText = Field.InputTitle & ": " & Field.InputMessage
+                        .Height = ComboHeight
+                        Lbl.Height = ComboHeight
+                        Top = Top + ComboHeight
+                        .Width = Field.ColumnWidth * 4
+                        If .Width > MaxFieldWidth Then MaxFieldWidth = .Width
+                        For Each ValListItem In Field.ValidationList
+                            .AddItem CStr(ValListItem)
+                        Next ValListItem
+                        Top = Top
+                    End With
+                    Ctls.Add Ctl
+                    Ctls.Item(Ctl.Name).ComboObj Ctl
+                    frm.ComboObj Ctl
+                
+                Case xlValidateTextLength: Stop
+                
+                Case xlValidateTime: Stop
+                
+                Case xlValidateWholeNumber: Stop
+                
+                Case Else
+                    Stop
+            End Select
+            Ctl.BackColor = vbWhite
+            Ctl.ForeColor = vbBlack
+            Set Field.FormControl = Ctl
+            Set Ctls.Item(Ctl.Name).FormObj = pFormObj
+        End If ' Field is locked
+        
+    Next Field
         
         PopulateForm Tbl, Target
- 
+        
+        Set Ctl = .Controls.Add("Forms.Label.1", "Filler", True)
+        With Ctl
+            .Left = MaxLabelWidth + StandardGap
+            .Top = LogoHeight + 2 * StandardGap
+            .Width = StandardGap
+            .Height = Top - .Top
+            .BackColor = LabelBackGround
+            .ForeColor = LabelFont
+        End With ' Ctl
+
+        DataLeft = MaxLabelWidth + 2 * StandardGap
         For Each Ctl In pFormObj.Controls
             If Left(Ctl.Name, 3) = "lbl" Then
                 Ctl.Width = MaxLabelWidth
+                Ctl.Left = StandardGap
             Else
-                Ctl.Width = MaxFieldWidth
+                If Ctl.Name <> "Filler" Then
+                    Ctl.Width = MaxFieldWidth
+                    Ctl.Left = DataLeft
+                End If
             End If
         Next Ctl
         
-        Top = Top + 6
+        Top = Top + StandardGap
             
 '       Add First Row of Buttons
-        BuildButton "Copy To Table", Top, 20, "Copy the contents of the form to the table row", Tbl
-        BuildButton "Cancel", Top, 98, "Exit the form without changing the table", Tbl
-        BuildButton "Next Row", Top, 176, "Move to next row of the table", Tbl
-        BuildButton "Previous Row", Top, 254, "Move to previous row of the table", Tbl
+        DataLeft = StandardGap
+        BuildButton "Copy To Table", Top, DataLeft, "Copy the contents of the form to the table row", Tbl
+        
+        DataLeft = DataLeft + ButtonWidth + StandardGap
+        BuildButton "Cancel", Top, DataLeft, "Exit the form without changing the table", Tbl
+        
+        DataLeft = DataLeft + ButtonWidth + StandardGap
+        BuildButton "Next Row", Top, DataLeft, "Move to next row of the table", Tbl
+        
+        DataLeft = DataLeft + ButtonWidth + StandardGap
+        BuildButton "Previous Row", Top, DataLeft, "Move to previous row of the table", Tbl
         
 '       Second row of buttons
-        Top = Top + 30
-        BuildButton "Insert Above", Top, 20, "Insert a blank line above this table row and move to it", Tbl
-        BuildButton "Insert Below", Top, 98, "Insert a blank line below this table row and move to it", Tbl
-        BuildButton "Insert At Top", Top, 176, "Insert a blank line above the first row of the table and move to it", Tbl
-        BuildButton "Insert At End", Top, 254, "Insert a blank line below the last row of the table and move to it", Tbl
+        Top = Top + ButtonHeight + StandardGap
+        DataLeft = StandardGap
+        BuildButton "Insert Above", Top, DataLeft, "Insert a blank line above this table row and move to it", Tbl
+        
+        DataLeft = DataLeft + ButtonWidth + StandardGap
+        BuildButton "Insert Below", Top, DataLeft, "Insert a blank line below this table row and move to it", Tbl
+        
+        DataLeft = DataLeft + ButtonWidth + StandardGap
+        BuildButton "Insert At Top", Top, DataLeft, "Insert a blank line above the first row of the table and move to it", Tbl
+        
+        DataLeft = DataLeft + ButtonWidth + StandardGap
+        BuildButton "Insert At End", Top, DataLeft, "Insert a blank line below the last row of the table and move to it", Tbl
 
 '       Third row of buttons
-        Top = Top + 30
-        BuildButton "Delete This Row", Top, 20, "Delete this row of the table", Tbl
-        BuildButton "Go To Top", Top, 98, "Move to the first row of the table", Tbl
-        BuildButton "Go To Bottom", Top, 176, "Move to the last row of the table", Tbl
+        Top = Top + ButtonHeight + StandardGap
+        DataLeft = StandardGap
+        BuildButton "Delete This Row", Top, DataLeft, "Delete this row of the table", Tbl
+        
+        DataLeft = DataLeft + ButtonWidth + StandardGap
+        BuildButton "Go To Top", Top, DataLeft, "Move to the first row of the table", Tbl
+        
+        DataLeft = DataLeft + ButtonWidth + StandardGap
+        BuildButton "Go To Bottom", Top, DataLeft, "Move to the last row of the table", Tbl
 
+        Top = Top + ButtonHeight + StandardGap
+        
 '       Set Properties for TempForm
         .Caption = Tbl.Name
-        .Width = MaxLabelWidth + MaxFieldWidth + 30
-        .Height = Top + 60
+        .Width = MaxLabelWidth + MaxFieldWidth + 4 * StandardGap
+        .Height = Top + 3 * StandardGap
         If Dir(Application.ActiveWorkbook.Path & "\logo.jpg") <> "" Then
             Logo.Left = .Width - LogoWidth
             Logo.Left = 0
-            Logo.Left = .InsideWidth - Logo.Width - 6
-            Logo.Top = 6
+            Logo.Left = .InsideWidth - Logo.Width - StandardGap
+            Logo.Top = StandardGap
         End If
         Set BuildForm = pFormObj
         
@@ -293,8 +323,8 @@ Private Sub BuildButton( _
         .Caption = Cption
         .Top = Top
         .Left = Lft
-        .Height = 24
-        .Width = 72
+        .Height = ButtonHeight
+        .Width = ButtonWidth
         .BackColor = ButtonNothingBackGround
         .ForeColor = ButtonNothingFont
         .ControlTipText = Tip

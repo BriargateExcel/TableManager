@@ -22,14 +22,6 @@ Private pWrap As Boolean
 Private pValidationFormula As String
 Private pValidationList As Variant
 
-Private pShowError As Boolean
-Private pErrorMessage As String
-Private pErrorTitle As String
-
-Private pShowInput As Boolean
-Private pInputMessage As String
-Private pInputTitle As String
-
 
 Public Function SetHeader(ByVal CellID As Range) As Boolean
 
@@ -83,18 +75,6 @@ Public Property Get NumberFormat() As Variant: NumberFormat = pNumberFormat: End
 Public Property Get CellType() As XlDVType: CellType = pCellType: End Property
 
 Public Property Get ValidAlertStyle() As XlDVAlertStyle: ValidAlertStyle = pValidAlertStyle: End Property
-
-Public Property Get ShowError() As Boolean: ShowError = pShowError: End Property
-
-Public Property Get ErrorMessage() As String: ErrorMessage = pErrorMessage: End Property
-
-Public Property Get ErrorTitle() As String: ErrorTitle = pErrorTitle: End Property
-
-Public Property Get ShowInput() As Boolean: ShowInput = pShowInput: End Property
-
-Public Property Get InputMessage() As String: InputMessage = pInputMessage: End Property
-
-Public Property Get InputTitle() As String: InputTitle = pInputTitle: End Property
 
 Public Property Get IgnoreBlank() As Boolean: IgnoreBlank = pIgnoreBlank: End Property
 
