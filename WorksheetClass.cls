@@ -20,11 +20,13 @@ Private Sub Class_Terminate()
 End Sub
 
 
-Private Sub Worksheet_BeforeDoubleClick(ByVal Target As Range, _
+Private Sub Worksheet_BeforeDoubleClick( _
+    ByVal Target As Range, _
     Cancel As Boolean)
-Dim Rng As Range
-Dim TableName As String
-Dim WS As Worksheet
+    
+    Dim Rng As Range
+    Dim TableName As String
+    Dim WS As Worksheet
     
     Cancel = True
 

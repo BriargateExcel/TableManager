@@ -29,7 +29,6 @@ Private Const StandardGap = 12
 Private Const ThinGap = 3
 Private Const TextHeight = 15
 Private Const ComboHeight = 15
-Private Const ComboGap = 6
 Private Const ButtonHeight = 24
 Private Const ButtonWidth = 72
     
@@ -86,69 +85,60 @@ Public Function BuildForm( _
     
     With pFormObj
         
-'   Add a background texture
-    If Dir(Application.ActiveWorkbook.Path & "\texture.jpg") <> "" Then
-        Set .Picture = LoadPicture(Application.ActiveWorkbook.Path & "\texture.jpg")
-    End If
-    
-'   Add a Logo
-    If Dir(Application.ActiveWorkbook.Path & "\logo.jpg") <> "" Then
-        Set Logo = .Controls.Add("Forms.Image.1")
-        With Logo
-            Set .Picture = LoadPicture(Application.ActiveWorkbook.Path & "\logo.jpg")
-            .PictureAlignment = fmPictureAlignmentTopRight
-            .PictureSizeMode = fmPictureSizeModeZoom
-            .BorderStyle = fmBorderStyleNone
-            .BackStyle = fmBackStyleTransparent
-            .AutoSize = True
-            LogoHeight = .Height
-            LogoWidth = .Width
-        End With
-        Ctls.Add Logo
-    Else
-        LogoHeight = 0
-    End If
-    Top = LogoHeight + 2 * StandardGap
-    
-    For Each Field In Tbl.TableCells
-'       Build the field labels
-        Set Lbl = .Controls.Add("Forms.Label.1", "lbl" & Field.Name, True)
-        Lbl.Top = Top
-        Lbl.Left = StandardGap
-        Lbl.Caption = Field.HeaderText
-        Lbl.TextAlign = fmTextAlignRight
-        Lbl.WordWrap = False
-        Lbl.BackColor = LabelBackGround
-        Lbl.ForeColor = LabelFont
-        If Lbl.Width > MaxLabelWidth Then MaxLabelWidth = Lbl.Width
-        Ctls.Add Lbl
+    '   Add a background texture
+        If Dir(Application.ActiveWorkbook.Path & "\texture.jpg") <> "" Then
+            Set .Picture = LoadPicture(Application.ActiveWorkbook.Path & "\texture.jpg")
+        End If
         
-'       Build the data fields
-        If Field.Locked Then
-'           Set this up as a constant (label)
-            Set Ctl = .Controls.Add("Forms.Label.1", "fld" & Field.Name, True)
-            With Ctl
-                .Top = Top
-                .Height = TextHeight + ThinGap
-                Lbl.Height = TextHeight + ThinGap
-                Top = Top + TextHeight + ThinGap
-                .WordWrap = False
-                .BackColor = LabelBackGround
-                .ForeColor = LabelFont
-                .ControlTipText = Field.InputTitle & ":" & Field.InputMessage
-                If .Width > MaxFieldWidth Then MaxFieldWidth = .Width
+    '   Add a Logo
+        If Dir(Application.ActiveWorkbook.Path & "\logo.jpg") <> "" Then
+            Set Logo = .Controls.Add("Forms.Image.1")
+            With Logo
+                Set .Picture = LoadPicture(Application.ActiveWorkbook.Path & "\logo.jpg")
+                .PictureAlignment = fmPictureAlignmentTopRight
+                .PictureSizeMode = fmPictureSizeModeZoom
+                .BorderStyle = fmBorderStyleNone
+                .BackStyle = fmBackStyleTransparent
+                .AutoSize = True
+                LogoHeight = .Height
+                LogoWidth = .Width
             End With
-            Set Field.FormControl = Ctl
-            Ctls.Add Ctl
         Else
-            ' Field is unlocked
-            Select Case Field.CellType
-                Case xlValidateCustom: Stop
-                
-                Case xlValidateDate: Stop
-                
-                Case xlValidateDecimal: Stop
-                
+            LogoHeight = 0
+        End If
+        Top = LogoHeight + 2 * StandardGap
+        
+        For Each Field In Tbl.TableCells
+'           Build the field labels
+            Set Lbl = .Controls.Add("Forms.Label.1", "lbl" & Field.Name, True)
+            Lbl.Top = Top
+            Lbl.Left = StandardGap
+            Lbl.Caption = Field.HeaderText
+            Lbl.TextAlign = fmTextAlignRight
+            Lbl.WordWrap = False
+            Lbl.BackColor = LabelBackGround
+            Lbl.ForeColor = LabelFont
+            If Lbl.Width > MaxLabelWidth Then MaxLabelWidth = Lbl.Width
+            
+'           Build the data fields
+            If Field.Locked Then
+'           Set this up as a constant (label)
+                Set Ctl = .Controls.Add("Forms.Label.1", "fld" & Field.Name, True)
+                With Ctl
+                    .Top = Top
+                    .Height = TextHeight + ThinGap
+                    Lbl.Height = TextHeight + ThinGap
+                    Top = Top + TextHeight + ThinGap
+                    .WordWrap = False
+                    .BackColor = LabelBackGround
+                    .ForeColor = LabelFont
+                    .ControlTipText = Field.InputTitle & ": " & Field.InputMessage
+                    If .Width > MaxFieldWidth Then MaxFieldWidth = .Width
+                End With
+                Set Field.FormControl = Ctl
+            Else
+'               Field is unlocked
+                Select Case Field.CellType
                 Case xlValidateInputOnly
 '                   Set this up as a text field
                     Set Ctl = .Controls.Add("Forms.TextBox.1", "fld" & Field.Name, True)
@@ -174,8 +164,6 @@ Public Function BuildForm( _
                         End If
                     End With
                     
-                    Ctls.Add Ctl
-                    Ctls.Item(Ctl.Name).TextObj Ctl
                     frm.TextObj Ctl
                     
                 Case xlValidateList
@@ -194,9 +182,13 @@ Public Function BuildForm( _
                         Next ValListItem
                         Top = Top
                     End With
-                    Ctls.Add Ctl
-                    Ctls.Item(Ctl.Name).ComboObj Ctl
                     frm.ComboObj Ctl
+                
+                Case xlValidateCustom: Stop
+                
+                Case xlValidateDate: Stop
+                
+                Case xlValidateDecimal: Stop
                 
                 Case xlValidateTextLength: Stop
                 
@@ -204,17 +196,14 @@ Public Function BuildForm( _
                 
                 Case xlValidateWholeNumber: Stop
                 
-                Case Else
-                    Stop
-            End Select
-            Ctl.BackColor = vbWhite
-            Ctl.ForeColor = vbBlack
-            Set Field.FormControl = Ctl
-            Set Ctls.Item(Ctl.Name).FormObj = pFormObj
-        End If ' Field is locked
-        
-    Next Field
-        
+                Case Else: Stop
+                End Select
+                
+                Set Field.FormControl = Ctl
+            End If ' Field is locked
+            
+        Next Field
+            
         PopulateForm Tbl, Target
         
         Set Ctl = .Controls.Add("Forms.Label.1", "Filler", True)
@@ -416,8 +405,6 @@ Public Property Get Enabled() As Boolean:  Enabled = pEnabled: End Property
 Public Property Let Enabled(ByVal En As Boolean):  pEnabled = En: End Property
 
 Public Property Get Name() As String: Name = pName: End Property
-
-Public Property Get ControlsList() As Variant: ControlsList = Ctls.ListCtls: End Property
 
 Private Sub Class_Initialize()
     Set Ctls = New ControlsClass

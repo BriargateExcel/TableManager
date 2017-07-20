@@ -174,7 +174,7 @@ End Sub
 '   Internal Routines
 
 Private Sub Class_Initialize()
-     Set AllCells = New Collection
+    Set AllCells = New Collection
 End Sub
 
 '   Custom Properties

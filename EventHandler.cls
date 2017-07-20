@@ -125,7 +125,7 @@ Private Sub FormEvent_MouseMove( _
     ByVal x As Single, _
     ByVal y As Single)
     
-Dim Ctl As Object
+    Dim Ctl As Object
 
     For Each Ctl In pFormObj.Controls
         If Left(Ctl.Name, 5) <> "Image" Then
@@ -176,28 +176,6 @@ Public Sub ButtonObj( _
     pName = BtnName
 End Sub
 
-'Private Sub TextEvent_MouseMove( _
-'    ByVal Button As Integer, _
-'    ByVal Shift As Integer, _
-'    ByVal X As Single, _
-'    ByVal Y As Single)
-'
-'Dim Ctl As Object
-'
-''    For Each Ctl In pFormObj.Controls
-''        If Left(Ctl.Name, 5) <> "Image" Then
-''            If Left(Ctl.Name, 3) = "Com" And Ctl.ForeColor = ButtonHighLightFont Then
-''                With Ctl
-''                    .ForeColor = ButtonNothingFont
-''                    .BackColor = ButtonNothingBackGround
-''                End With
-''            End If
-''        End If
-''    Next Ctl
-'
-'End Sub
-
-
 Public Sub TextObj(ByVal Txt As MSForms.TextBox)
     Set TextEvent = Txt
     Set pTextObj = Txt
@@ -210,7 +188,7 @@ Private Sub ComboEvent_MouseMove( _
     ByVal x As Single, _
     ByVal y As Single)
     
-Dim Ctl As Object
+    Dim Ctl As Object
 
     For Each Ctl In pFormObj.Controls
         If Left(Ctl.Name, 5) <> "Image" Then

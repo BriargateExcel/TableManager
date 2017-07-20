@@ -9,7 +9,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
 
-Private Const Module_Name = "CtlsClass."
+Private Const Module_Name = "ControlsClass."
 
 Private AllCtls As Scripting.Dictionary
 
@@ -28,7 +28,6 @@ Attribute Item.VB_UserMemId = 0
 '   05/14/2017 RRD Initial Programming
 
 '   Declarations
-    Dim OneCtl As New ControlClass   ' Control Properties
     Const Routine_Name = Module_Name & "Get Item"
 
 '   Error Handling Initialization
@@ -39,7 +38,6 @@ Attribute Item.VB_UserMemId = 0
         Set Item = AllCtls(vIndex)
     Else
         AllCtls.Name = ""
-        Set Item = OneCtl
     End If
 
 ErrHandler:
@@ -175,50 +173,13 @@ End Sub
 '   Internal Routines
 
 Private Sub Class_Initialize()
-     Set AllCtls = New Scripting.Dictionary
+    Set AllCtls = New Scripting.Dictionary
 End Sub
 
 '   Custom Properties
 
-Public Property Get Count() As Integer
-    Count = AllCtls.Count
+Public Property Get Count1() As Integer
+    Count1 = AllCtls.Count
 End Property
 
-Public Function ListCtls() As Variant
-
-'   Description: Description of what function does
-'   Inputs:
-'   Outputs:
-'   Me       Success/Failure
-'   Requisites:
-'   None
-'   Notes:
-'   Any notes
-'   Example:
-'   How to call this routine
-'   History
-'   2017-06-13 RRD Initial Programming
-
-'   Declarations
-    Const Routine_Name = Module_Name & "." & "ListCtls"
-
-'   Error Handling Initialization
-    On Error GoTo ErrHandler
-    
-'   Procedure
-    ListCtls = AllCtls.Keys
-
-    ListCtls = Success
-ErrHandler:
-    Select Case Err.Number
-        Case Is = NoError:                          'Do nothing
-        Case Else:
-            Select Case DspErrMsg(Routine_Name)
-                Case Is = vbAbort:  Stop: Resume    'Debug mode - Trace
-                Case Is = vbRetry:  Resume          'Try again
-                Case Is = vbIgnore:                 'End routine
-            End Select
-    End Select
-
-End Function ' ListCtls
 
