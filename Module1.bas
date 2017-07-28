@@ -1,13 +1,10 @@
 Attribute VB_Name = "Module1"
 Option Explicit
 
-' git testing
-
 Const Module_Name = "Module1."
 
-Private frm As FormClass
-Private ShtClass As WorksheetClass
-Private Tbl As Variant
+Public AllTbls As TablesClass ' ToDo: does this need to be public? Is there some other way to do this?
+Public AllShts As WorksheetsClass ' ToDo: does this need to be public? Is there some other way to do this?
 
 Public Const DarkestColor = &H763232 ' AF Dark Blue
 Public Const LightestColor = &HE7E2E2 ' AF Light Gray
@@ -20,6 +17,7 @@ Public Const ButtonNothingFont = LightestColor
 
 Public Const ButtonHighLightBackGround = LightestColor
 Public Const ButtonHighLightFont = DarkestColor
+
 
 Private Sub Auto_Open()
 
@@ -38,14 +36,39 @@ Private Sub Auto_Open()
 
 '   Declarations
     Const Routine_Name = Module_Name & "." & "Auto_Open"
+    
+    Dim Sht As Worksheet
+    Dim ThisSheet As Object
+    Dim Tbl As ListObject
+    Dim UserFrm As Object
+    Dim SheetClass As WorksheetClass
 
 '   Error Handling Initialization
     On Error GoTo ErrHandler
+    CheckForVBAProjectAccessEnabled
+    
+'   Delete existing forms (used for cleanup while debugging)
+    For Each UserFrm In ThisWorkbook.VBProject.VBComponents
+        If UserFrm.Type = vbext_ct_MSForm Then
+            ThisWorkbook.VBProject.VBComponents.Remove UserFrm
+        End If
+    Next UserFrm
     
 '   Procedure
-'   To Do: turn this into a loop that goes through all sheets and all tables on each sheet prepping them
-    Set ShtClass = New WorksheetClass
-    Set ShtClass.Worksheet = ActiveSheet
+    Set AllTbls = New TablesClass
+    Set AllShts = New WorksheetsClass
+    
+    For Each Sht In ThisWorkbook.Worksheets
+        For Each Tbl In Sht.ListObjects
+            BuildTable Sht, Tbl.Name
+            Set SheetClass = New WorksheetClass
+            Set SheetClass.WS = Sht
+            SheetClass.Name = Sht.Name
+            AllShts.Add SheetClass
+        Next Tbl
+    Next Sht
+    
+    DoEvents
 
 ErrHandler:
     Select Case Err.Number
@@ -59,20 +82,11 @@ ErrHandler:
     End Select
 
 End Sub      ' Auto_Open
-
-Public Sub DeleteForm()
-    Dim UserFrm As Object
-    For Each UserFrm In ThisWorkbook.VBProject.VBComponents
-        If UserFrm.Type = vbext_ct_MSForm Then
-            ThisWorkbook.VBProject.VBComponents.Remove UserFrm
-        End If
-    Next UserFrm
-End Sub
     
 Public Function BuildTable( _
     ByVal WS As Worksheet, _
-    ByVal TableName As String, _
-    Target As Range) As Boolean
+    ByVal TableName As String _
+    ) As Boolean
 
 '   Description: Build a data form for the table
 '   Inputs:
@@ -91,7 +105,7 @@ Public Function BuildTable( _
 
 '   Declarations
     Const Routine_Name = Module_Name & "BuildTable"
-'    Dim UserFrm As Object
+    Dim Tbl As Variant
     
 '   Error Handling Initialization
     On Error GoTo ErrHandler
@@ -99,23 +113,16 @@ Public Function BuildTable( _
     
 '   Procedure
 
-'   Delete existing forms (used for cleanup while debugging)
-'    For Each UserFrm In ThisWorkbook.VBProject.VBComponents
-'        If UserFrm.Type = vbext_ct_MSForm Then
-'            ThisWorkbook.VBProject.VBComponents.Remove UserFrm
-'        End If
-'    Next UserFrm
-    
 '   Gather the table data
     Set Tbl = New TableClass
     Tbl.CollectData WS, TableName
+    Set Tbl.Form = New FormClass
+    Tbl.Form.Name = TableName
     
-'   Build the form from the table data
-    Set frm = New FormClass
-    frm.BuildForm Tbl, Target
+    Tbl.Form.BuildForm (Tbl)
+'    Tbl.Add Tbls(TableName)
+    AllTbls.Add Tbl
     
-    frm.Show
-
 ErrHandler:
     Select Case Err.Number
         Case Is = NoError:                          'Do nothing
@@ -129,46 +136,5 @@ ErrHandler:
 
 End Function ' BuildTable
 
-Public Function ActiveForm() As FormClass
-    Set ActiveForm = frm
-End Function
 
-Public Function ActiveTable() As TableClass
-    Set ActiveTable = Tbl
-End Function
-
-
-Sub colors56()
-'   57 colors, 0 to 56
-    Application.ScreenUpdating = False
-    Application.Calculation = xlCalculationManual   'pre XL97 xlManual
-    Dim i As Long
-    Dim str0 As String, str As String
-    
-    For i = 0 To 56
-        Cells(i + 1, 1).Interior.ColorIndex = i
-        Cells(i + 1, 1).Value = "[Color " & i & "]"
-        
-        Cells(i + 1, 2).Font.ColorIndex = i
-        Cells(i + 1, 2).Value = "[Color " & i & "]"
-        
-        str0 = Right("000000" & Hex(Cells(i + 1, 1).Interior.Color), 6)
-'       Excel shows nibbles in reverse order so make it as RGB
-        str = Right(str0, 2) & Mid(str0, 3, 2) & Left(str0, 2)
-'       generating 2 columns in the HTML table
-        Cells(i + 1, 3) = "#" & str & "#" & str & ""
-        
-        Cells(i + 1, 4).Formula = "=Hex2dec(""" & Right(str0, 2) & """)"
-        
-        Cells(i + 1, 5).Formula = "=Hex2dec(""" & Mid(str0, 3, 2) & """)"
-        
-        Cells(i + 1, 6).Formula = "=Hex2dec(""" & Left(str0, 2) & """)"
-        
-        Cells(i + 1, 7) = "[Color " & i & ")"
-    Next i
-    
-done:
-    Application.Calculation = xlCalculationAutomatic  'pre XL97 xlAutomatic
-    Application.ScreenUpdating = True
-End Sub
 

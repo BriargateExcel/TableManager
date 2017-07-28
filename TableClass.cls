@@ -20,7 +20,8 @@ Private pLocked As Boolean
 Private pName As String
 Private pTable As ListObject
 Private pTarget As Range
-
+Private pForm As FormClass
+Private pWkSht As Worksheet
 
 
 Public Sub CollectData(ByVal WS As Worksheet, ByVal TblName As String)
@@ -50,6 +51,7 @@ Public Sub CollectData(ByVal WS As Worksheet, ByVal TblName As String)
     
 '   Procedure
     pName = TblName
+    Set pWkSht = WS
     Set pTable = WS.ListObjects(TblName)
     Set pCells = New CellsClass
     pLocked = True
@@ -84,9 +86,9 @@ ErrHandler:
 
 End Sub      ' CollectData
 
-Public Function ActiveTable() As ListObject
-    Set ActiveTable = pTable
-End Function
+'Public Function ActiveTable() As ListObject
+'    Set ActiveTable = pTable
+'End Function
 
 Public Sub PopulateTable(ByVal Target As Range)
     Dim Cll As CellClass
@@ -103,9 +105,9 @@ End Sub
 Public Sub NextRow()
     Dim THRow As Long: THRow = pTarget.ListObject.HeaderRowRange.Row
     Dim TRow As Long: TRow = pTarget.Row
-    Dim DBrow As Long: DBrow = TRow - THRow
+    Dim DBRow As Long: DBRow = TRow - THRow
     
-    If DBrow < pTarget.ListObject.ListRows.Count Then
+    If DBRow < pTarget.ListObject.ListRows.Count Then
         Set pTarget = pTarget.Offset(1)
     Else
         MsgBox "Cannot advance to the next row; already at last row", vbOKOnly Or vbExclamation, "Already at End of Table"
@@ -115,9 +117,9 @@ End Sub
 Public Sub PreviousRow()
     Dim THRow As Long: THRow = pTarget.ListObject.HeaderRowRange.Row
     Dim TRow As Long: TRow = pTarget.Row
-    Dim DBrow As Long: DBrow = TRow - THRow
+    Dim DBRow As Long: DBRow = TRow - THRow
     
-    If DBrow > 1 Then
+    If DBRow > 1 Then
         Set pTarget = pTarget.Offset(-1)
     Else
         MsgBox "Cannot move to the prevous row; already at first row", vbOKOnly Or vbExclamation, "Already at Beginning of Table"
@@ -125,17 +127,14 @@ Public Sub PreviousRow()
 End Sub
 
 Public Property Get ActiveTarget() As Range: Set ActiveTarget = pTarget: End Property
-Public Property Set ActiveTarget(ByVal Vbl As Range)
-    Vbl.Select
-    Set pTarget = Vbl
-End Property
+Public Property Set ActiveTarget(ByVal Vbl As Range): Vbl.Select: Set pTarget = Vbl: End Property
 
 Public Property Get ActiveRow() As Long
     Dim THRow As Long: THRow = pTarget.ListObject.HeaderRowRange.Row
     Dim TRow As Long: TRow = pTarget.Row
-    Dim DBrow As Long: DBrow = TRow - THRow
+    Dim DBRow As Long: DBRow = TRow - THRow
 
-    ActiveRow = DBrow
+    ActiveRow = DBRow
 
 End Property
 
@@ -160,6 +159,11 @@ Public Property Get TableCells() As CellsClass: Set TableCells = pCells: End Pro
 
 Public Property Get Target() As Range: Set Target = pTarget: End Property
 Public Property Set Target(ByVal Vbl As Range): Set pTarget = Vbl: End Property
+
+Public Property Get Form() As FormClass: Set Form = pForm: End Property
+Public Property Set Form(ByVal Vbl As FormClass): Set pForm = Vbl: End Property
+
+Public Property Get DBRange() As Range: Set DBRange = pWkSht.ListObjects(pName).DataBodyRange: End Property
 
 Public Function FirstCell() As Range
     Set FirstCell = pTable.DataBodyRange(1, 1)

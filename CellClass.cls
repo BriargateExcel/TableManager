@@ -155,6 +155,7 @@ Public Sub CollectData(ByVal CellID As Range)
         If pValidationFormula <> "" Then
             pValidationList = DataCell.Parent.Evaluate(pValidationFormula)
             If IsError(pValidationList) Then pValidationList = Evaluate(pValidationFormula)
+            If IsError(pValidationList) Then pValidationList = Split(pValidationFormula, ",")
         End If
     End If
     

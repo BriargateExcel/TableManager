@@ -21,7 +21,7 @@ Private pName As String
 Private pFormObj As Object
 Private pTable As TableClass
 
-Private frm As EventHandler
+Private Frm As EventHandler
 
 Private Ctls As ControlsClass
 
@@ -37,8 +37,8 @@ Private Const ButtonWidth = 72
 ' Public methods
 
 Public Function BuildForm( _
-    ByVal Tbl As TableClass, _
-    Target As Range) As MSForms.UserForm
+    ByVal Tbl As TableClass _
+    ) As MSForms.UserForm
 
 '   Description: Creates a new form
 
@@ -73,15 +73,15 @@ Public Function BuildForm( _
     
 '   Procedure
     pName = Tbl.Name
-    Set Tbl.Target = Target
+'    Set Tbl.Target = Target
     Set pTable = Tbl
     
 '   Create the UserForm
     Set TempForm = ThisWorkbook.VBProject.VBComponents.Add(vbext_ct_MSForm)
     Set pFormObj = VBA.UserForms.Add(TempForm.Name)
-    Set frm = New EventHandler
-    Set frm.FormObj = pFormObj
-    Set frm.FormEvent = pFormObj
+    Set Frm = New EventHandler
+    Set Frm.FormObj = pFormObj
+    Set Frm.FormEvent = pFormObj
     
     With pFormObj
         
@@ -164,7 +164,7 @@ Public Function BuildForm( _
                         End If
                     End With
                     
-                    frm.TextObj Ctl
+                    Frm.TextObj Ctl
                     
                 Case xlValidateList
 '                   Set this up as a combobox
@@ -182,21 +182,21 @@ Public Function BuildForm( _
                         Next ValListItem
                         Top = Top
                     End With
-                    frm.ComboObj Ctl
+                    Frm.ComboObj Ctl
                 
-                Case xlValidateCustom: Stop
-                
-                Case xlValidateDate: Stop
-                
-                Case xlValidateDecimal: Stop
-                
-                Case xlValidateTextLength: Stop
-                
-                Case xlValidateTime: Stop
-                
-                Case xlValidateWholeNumber: Stop
-                
-                Case Else: Stop
+'                Case xlValidateCustom: Stop
+'
+'                Case xlValidateDate: Stop
+'
+'                Case xlValidateDecimal: Stop
+'
+'                Case xlValidateTextLength: Stop
+'
+'                Case xlValidateTime: Stop
+'
+'                Case xlValidateWholeNumber: Stop
+'
+'                Case Else: Stop
                 End Select
                 
                 Set Field.FormControl = Ctl
@@ -204,7 +204,7 @@ Public Function BuildForm( _
             
         Next Field
             
-        PopulateForm Tbl, Target
+'        PopulateForm Tbl
         
         Set Ctl = .Controls.Add("Forms.Label.1", "Filler", True)
         With Ctl
@@ -285,9 +285,14 @@ Public Function BuildForm( _
         
     End With ' pFormObj
     
+    Set Tbl.Form = Me
+    
 ErrHandler:
     Select Case Err.Number
         Case Is = NoError:                          'Do nothing
+        Case Is = 2015
+            On Error GoTo ErrHandler
+            Resume Next
         Case Else:
             Select Case DspErrMsg(Routine_Name)
                 Case Is = vbAbort:  Stop: Resume    'Debug mode - Trace
@@ -319,15 +324,15 @@ Private Sub BuildButton( _
         .ControlTipText = Tip
     End With
     Ctls.Add Ctl
-    Ctls.Item(Ctl.Name).ButtonObj Ctl, Ctl.Name
+    Ctls.Item(Ctl.Name).ButtonObj Ctl
     Set Ctls.Item(Ctl.Name).FormObj = pFormObj
     Set Ctls.Item(Ctl.Name).TableObj = Tbl
 End Sub
 
 
 Public Function PopulateForm( _
-    ByVal Tbl As TableClass, _
-    Target As Range) As MSForms.UserForm
+    ByVal Tbl As TableClass _
+    ) As MSForms.UserForm
 
 '   Description: Populates the controls on a form with the data in the row
 '   Inputs:
@@ -344,10 +349,10 @@ Public Function PopulateForm( _
     Const Routine_Name = Module_Name & "PopulateForm"
     
     Dim Field As CellClass
-    Dim DBRange As Range: Set DBRange = Target.ListObject.DataBodyRange
-    Dim THRow As Long: THRow = Target.ListObject.HeaderRowRange.Row
-    Dim TRow As Long: TRow = Target.Row
-    Dim DBrow As Long: DBrow = TRow - THRow
+    Dim DBRange As Range: Set DBRange = Tbl.DBRange
+    Dim THRow As Long: THRow = Tbl.ActiveTarget.ListObject.HeaderRowRange.Row
+    Dim TRow As Long: TRow = Tbl.ActiveTarget.Row
+    Dim DBRow As Long: DBRow = TRow - THRow
     Dim DBCol As Long
     
 '   Error Handling Initialization
@@ -357,13 +362,13 @@ Public Function PopulateForm( _
     
 '   Populate the data fields
     For Each Field In Tbl.TableCells
-        DBCol = Application.Match(Field.HeaderText, Target.ListObject.HeaderRowRange, 0)
+        DBCol = Application.Match(Field.HeaderText, Tbl.ActiveTarget.ListObject.HeaderRowRange, 0)
         If Field.Locked Then
-            Field.ControlValue = DBRange(DBrow, DBCol)
+            Field.ControlValue = DBRange(DBRow, DBCol)
         Else
-            Field.ControlValue = DBRange(DBrow, DBCol)
+            Field.ControlValue = DBRange(DBRow, DBCol)
         End If
-        Field.FormControl = DBRange(DBrow, DBCol)
+        Field.FormControl = DBRange(DBRow, DBCol)
     Next Field
  
 ErrHandler:
@@ -405,6 +410,7 @@ Public Property Get Enabled() As Boolean:  Enabled = pEnabled: End Property
 Public Property Let Enabled(ByVal En As Boolean):  pEnabled = En: End Property
 
 Public Property Get Name() As String: Name = pName: End Property
+Public Property Let Name(ByVal Vbl As String): pName = Vbl: End Property
 
 Private Sub Class_Initialize()
     Set Ctls = New ControlsClass

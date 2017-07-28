@@ -13,10 +13,27 @@ Public Function DspErrMsg(ByVal sRoutine As String)
     Const bDebugMode    As Boolean = True   'Set to false when put into production
 
     DspErrMsg = MsgBox(Err.Number & ":" & Err.Description, _
-        IIf(bDebugMode, vbAbortRetryIgnore, vbCritical) + _
-        IIf(Err.Number = 999, 0, vbMsgBoxHelpButton), _
-        sRoutine, Err.HelpFile, Err.HelpContext)
+                       IIf(bDebugMode, vbAbortRetryIgnore, vbCritical) + _
+                         IIf(Err.Number = 999, 0, vbMsgBoxHelpButton), _
+                       sRoutine, _
+                       Err.HelpFile, _
+                       Err.HelpContext)
 End Function
+
+Function ActiveCellTableName() As String
+'   Function returns table name if active cell is in a table and
+'   "" if it isn't.
+'    Dim rngActiveCell As Range
+    
+'    Set rngActiveCell = ActiveCell
+'   Statement produces error when active cell is not in a table.
+    On Error Resume Next
+    ActiveCellTableName = ""
+    ActiveCellTableName = ActiveCell.ListObject.Name
+    On Error GoTo 0
+End Function
+
+
 
 
 
@@ -71,4 +88,6 @@ ErrHandler:
     End Select
 
 End Function ' CheckForVBAProjectAccessEnabled
+
+
 

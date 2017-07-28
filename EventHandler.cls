@@ -13,6 +13,10 @@ Public WithEvents FormEvent As MSForms.UserForm
 Attribute FormEvent.VB_VarHelpID = -1
 Private pFormObj As Object
 
+Public WithEvents SheetEvent As Worksheet
+Attribute SheetEvent.VB_VarHelpID = -1
+Private pSheet As Object
+
 Public WithEvents ButtonEvent As MSForms.CommandButton
 Attribute ButtonEvent.VB_VarHelpID = -1
 Private pButtonObj As MSForms.CommandButton
@@ -43,21 +47,20 @@ Private Sub ButtonEvent_Click()
 
     If Me.ButtonEvent.Caption = "Cancel" Then
         Unload pFormObj
-        DeleteForm
         Exit Sub
     End If
 
     If Me.ButtonEvent.Caption = "Next Row" Then
         pTableObj.NextRow
         Set pTableObj.ActiveTarget = pTableObj.ActiveTarget.Offset(0, 0)
-        ActiveForm.PopulateForm pTableObj, pTableObj.ActiveTarget
+        AllTbls(ActiveCellTableName).Form.PopulateForm pTableObj ', pTableObj.ActiveTarget
         Exit Sub
     End If
 
     If Me.ButtonEvent.Caption = "Previous Row" Then
         pTableObj.PreviousRow
         Set pTableObj.ActiveTarget = pTableObj.ActiveTarget.Offset(0, 0)
-        ActiveForm.PopulateForm pTableObj, pTableObj.ActiveTarget
+        AllTbls(ActiveCellTableName).Form.PopulateForm pTableObj ', pTableObj.ActiveTarget
         Exit Sub
     End If
 
@@ -70,28 +73,28 @@ Private Sub ButtonEvent_Click()
     If Me.ButtonEvent.Caption = "Insert Above" Then
         pTableObj.ActiveTarget.ListObject.ListRows.Add pTableObj.ActiveRow
         Set pTableObj.ActiveTarget = pTableObj.ActiveTarget.Offset(-1, 0)
-        ActiveForm.PopulateForm pTableObj, pTableObj.ActiveTarget
+        AllTbls(ActiveCellTableName).Form.PopulateForm pTableObj ', pTableObj.ActiveTarget
         Exit Sub
     End If
 
     If Me.ButtonEvent.Caption = "Insert Below" Then
         pTableObj.ActiveTarget.ListObject.ListRows.Add pTableObj.ActiveRow + 1
         Set pTableObj.ActiveTarget = pTableObj.ActiveTarget.Offset(1, 0)
-        ActiveForm.PopulateForm pTableObj, pTableObj.ActiveTarget
+        AllTbls(ActiveCellTableName).Form.PopulateForm pTableObj ', pTableObj.ActiveTarget
         Exit Sub
     End If
 
     If Me.ButtonEvent.Caption = "Insert At Top" Then
         pTableObj.ActiveTarget.ListObject.ListRows.Add 1
         Set pTableObj.ActiveTarget = pTableObj.FirstCell
-        ActiveForm.PopulateForm pTableObj, pTableObj.ActiveTarget
+        AllTbls(ActiveCellTableName).Form.PopulateForm pTableObj ', pTableObj.ActiveTarget
         Exit Sub
     End If
 
     If Me.ButtonEvent.Caption = "Insert At End" Then
         pTableObj.ActiveTarget.ListObject.ListRows.Add
         Set pTableObj.ActiveTarget = pTableObj.LastCell
-        ActiveForm.PopulateForm pTableObj, pTableObj.ActiveTarget
+        AllTbls(ActiveCellTableName).Form.PopulateForm pTableObj ', pTableObj.ActiveTarget
         Exit Sub
     End If
 
@@ -103,18 +106,18 @@ Private Sub ButtonEvent_Click()
         End If
         pTableObj.ActiveTarget.ListObject.ListRows(pTableObj.ActiveRow).Delete
         Set pTableObj.ActiveTarget = Target
-        ActiveForm.PopulateForm pTableObj, pTableObj.ActiveTarget
+        AllTbls(ActiveCellTableName).Form.PopulateForm pTableObj ', pTableObj.ActiveTarget
         Exit Sub
     End If
     
     If Me.ButtonEvent.Caption = "Go To Top" Then
         Set pTableObj.ActiveTarget = pTableObj.FirstCell
-        ActiveForm.PopulateForm pTableObj, pTableObj.ActiveTarget
+        AllTbls(ActiveCellTableName).Form.PopulateForm pTableObj ', pTableObj.ActiveTarget
     End If
 
     If Me.ButtonEvent.Caption = "Go To Bottom" Then
         Set pTableObj.ActiveTarget = pTableObj.LastCell
-        ActiveForm.PopulateForm pTableObj, pTableObj.ActiveTarget
+        AllTbls(ActiveCellTableName).Form.PopulateForm pTableObj ', pTableObj.ActiveTarget
     End If
 
 End Sub
@@ -145,6 +148,11 @@ Public Property Set FormObj(ByVal Vbl As Object)
     Set Me.FormEvent = Vbl
 End Property
 
+Public Property Set SheetObj(ByVal Vbl As Object)
+    Set pSheet = Vbl
+    Set Me.SheetEvent = Vbl
+End Property
+
 Public Property Set TableObj(ByVal Vbl As Object)
     Set pTableObj = Vbl
 End Property
@@ -167,13 +175,11 @@ Private Sub ButtonEvent_MouseMove( _
     
 End Sub
 
-Public Sub ButtonObj( _
-    ByVal Btn As MSForms.CommandButton, _
-    ByVal BtnName As String)
+Public Sub ButtonObj(ByVal Btn As MSForms.CommandButton)
     
     Set ButtonEvent = Btn
     Set pButtonObj = Btn
-    pName = BtnName
+    pName = Btn.Name
 End Sub
 
 Public Sub TextObj(ByVal Txt As MSForms.TextBox)
@@ -210,3 +216,23 @@ Public Sub ComboObj(ByVal Cmb As MSForms.ComboBox)
 End Sub
 
 Public Property Get Name() As String: Name = pName: End Property
+
+Private Sub SheetEvent_BeforeDoubleClick(ByVal Target As Range, Cancel As Boolean)
+Dim Rng As Range
+Dim TableName As String
+Dim WS As Worksheet
+    
+    Cancel = True
+
+    TableName = ActiveCellTableName
+    
+    If TableName <> "" Then
+        AllTbls(TableName).Form.PopulateForm AllTbls(TableName)
+        AllTbls(TableName).Form(TableName).Show
+    End If
+    
+End Sub
+
+
+Public Property Get Sheet() As Worksheet: Set Sheet = pSheet: End Property
+
