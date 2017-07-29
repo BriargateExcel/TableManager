@@ -12,45 +12,10 @@ Option Explicit
 Const Module_Name           As String = "WorksheetClass"
 
 '   Public Properties
-Public WithEvents WS As Worksheet        'Worksheet containing ComboBox
+Public WithEvents WS As Worksheet
 Attribute WS.VB_VarHelpID = -1
 
 Private pName As String
-Private pSheet As Worksheet
-
-Private Sub Class_Terminate()
-    Set WS = Nothing
-End Sub
-
-Private Sub WS_BeforeDoubleClick(ByVal Target As Range, Cancel As Boolean)
-Dim Rng As Range
-Dim TableName As String
-Dim WS As Worksheet
-Dim Tbl As TableClass
-    
-    Cancel = True
-
-    TableName = ActiveCellTableName
-    
-    If TableName <> "" Then
-        Set Tbl = AllTbls(TableName)
-        Set Tbl.Target = Target
-        Tbl.Form.PopulateForm Tbl
-        Tbl.Form.Show
-    End If
-    
-End Sub
-
-Public Sub CollectData(ByVal WS As Worksheet)
-    pName = WS.Name
-End Sub
-
-
-Public Property Get Name() As String: Name = pName: End Property
-Public Property Let Name(ByVal Vbl As String): pName = Vbl: End Property
-
-Public Property Get Sheet() As Worksheet: Set Sheet = pSheet: End Property
-
 
 Public Sub Add(ByVal Sht As Worksheet)
 
@@ -93,3 +58,33 @@ ErrHandler:
     
 End Sub
 
+Private Sub WS_BeforeDoubleClick(ByVal Target As Range, Cancel As Boolean)
+Dim Rng As Range
+Dim TableName As String
+Dim WS As Worksheet
+Dim Tbl As TableClass
+    
+    Cancel = True
+
+    TableName = ActiveCellTableName
+    
+    If TableName <> "" Then
+        Set Tbl = AllTbls(TableName)
+        Set Tbl.Target = Target
+        Tbl.Form.PopulateForm Tbl, Target
+        Tbl.Form.Show
+    End If
+    
+End Sub
+
+Public Sub CollectData(ByVal WS As Worksheet)
+    pName = WS.Name
+End Sub
+
+Public Property Get Name() As String: Name = pName: End Property
+
+Public Property Let Name(ByVal Vbl As String): pName = Vbl: End Property
+
+Private Sub Class_Terminate()
+    Set WS = Nothing
+End Sub

@@ -27,10 +27,11 @@ Private Ctls As ControlsClass
 
 Private Const StandardGap = 12
 Private Const ThinGap = 3
-Private Const TextHeight = 15
-Private Const ComboHeight = 15
+Private Const TextHeight = 18
+Private Const ComboHeight = 18
 Private Const ButtonHeight = 24
 Private Const ButtonWidth = 72
+
     
 
 
@@ -62,6 +63,7 @@ Public Function BuildForm( _
     Dim Lbl As Control
     Dim MaxLabelWidth As Single
     Dim MaxFieldWidth As Single
+    Dim MaxButtonWidth As Single
     Dim DataLeft As Single
     Dim ValListItem As Variant
     Dim LogoHeight As Single
@@ -73,7 +75,6 @@ Public Function BuildForm( _
     
 '   Procedure
     pName = Tbl.Name
-'    Set Tbl.Target = Target
     Set pTable = Tbl
     
 '   Create the UserForm
@@ -129,6 +130,7 @@ Public Function BuildForm( _
                     .Height = TextHeight + ThinGap
                     Lbl.Height = TextHeight + ThinGap
                     Top = Top + TextHeight + ThinGap
+                    .Font.Size = 8.25
                     .WordWrap = False
                     .BackColor = LabelBackGround
                     .ForeColor = LabelFont
@@ -151,6 +153,7 @@ Public Function BuildForm( _
                             .Height = 3 * TextHeight
                             Lbl.Height = 3 * TextHeight
                             Top = Top + 3 * TextHeight
+                            .Font.Size = 8.25
                             .WordWrap = True
                             .MultiLine = True
                             .ScrollBars = fmScrollBarsVertical
@@ -158,7 +161,10 @@ Public Function BuildForm( _
                         Else
                             .Height = TextHeight
                             Lbl.Height = TextHeight
+                            .Width = Field.ColumnWidth * 4
+                            If .Width > MaxFieldWidth Then MaxFieldWidth = .Width
                             Top = Top + TextHeight
+                            .Font.Size = 8.25
                             .WordWrap = False
                             .ControlTipText = Field.InputTitle & ": " & Field.InputMessage
                         End If
@@ -175,6 +181,7 @@ Public Function BuildForm( _
                         .Height = ComboHeight
                         Lbl.Height = ComboHeight
                         Top = Top + ComboHeight
+                        .Font.Size = 8.25
                         .Width = Field.ColumnWidth * 4
                         If .Width > MaxFieldWidth Then MaxFieldWidth = .Width
                         For Each ValListItem In Field.ValidationList
@@ -256,6 +263,7 @@ Public Function BuildForm( _
         BuildButton "Insert At Top", Top, DataLeft, "Insert a blank line above the first row of the table and move to it", Tbl
         
         DataLeft = DataLeft + ButtonWidth + StandardGap
+        MaxButtonWidth = DataLeft + ButtonWidth + 2 * StandardGap
         BuildButton "Insert At End", Top, DataLeft, "Insert a blank line below the last row of the table and move to it", Tbl
 
 '       Third row of buttons
@@ -273,7 +281,7 @@ Public Function BuildForm( _
         
 '       Set Properties for TempForm
         .Caption = Tbl.Name
-        .Width = MaxLabelWidth + MaxFieldWidth + 4 * StandardGap
+        .Width = Application.Max(MaxLabelWidth + MaxFieldWidth + 4 * StandardGap, MaxButtonWidth)
         .Height = Top + 3 * StandardGap
         If Dir(Application.ActiveWorkbook.Path & "\logo.jpg") <> "" Then
             Logo.Left = .Width - LogoWidth
@@ -303,6 +311,47 @@ ErrHandler:
 
 End Function ' BuildForm
 
+Public Function PopulateForm( _
+    ByVal Tbl As TableClass, _
+    ByVal Target As Range _
+    ) As MSForms.UserForm
+
+'   Description: Populates the controls on a form with the data in the row
+'   Inputs:
+'   Tbl         The table corresponding to this form
+'   Outputs:
+'   Me          A form
+'   Requisites: modGeneral
+'   Notes:      ' Any notes
+'   Example:    ' How to call this routine
+'   History
+'   05/08/2017 RRD Initial Programming
+
+'   Declarations
+    Const Routine_Name = Module_Name & "PopulateForm"
+    
+    Dim Field As CellClass
+    Dim DBRange As Range: Set DBRange = Tbl.DBRange
+    Dim THRow As Long: THRow = Tbl.ActiveTarget.ListObject.HeaderRowRange.Row
+    Dim TRow As Long: TRow = Tbl.ActiveTarget.Row
+    Dim DBRow As Long: DBRow = TRow - THRow
+    Dim DBCol As Long
+    
+'   Procedure
+    
+'   Populate the data fields
+    For Each Field In Tbl.TableCells
+        DBCol = Application.Match(Field.HeaderText, Tbl.ActiveTarget.ListObject.HeaderRowRange, 0)
+        Field.ControlValue = DBRange(DBRow, DBCol)
+        On Error Resume Next
+        Field.FormControl.Text = DBRange(DBRow, DBCol)
+        If Err.Number <> 0 Then
+            Field.FormControl.Caption = DBRange(DBRow, DBCol)
+        End If
+    Next Field
+ 
+End Function ' PopulateForm
+
 Private Sub BuildButton( _
     ByVal Cption As String, _
     ByVal Top As Single, _
@@ -329,93 +378,35 @@ Private Sub BuildButton( _
     Set Ctls.Item(Ctl.Name).TableObj = Tbl
 End Sub
 
+Public Property Get Caption() As String: Caption = pCaption: End Property
 
-Public Function PopulateForm( _
-    ByVal Tbl As TableClass _
-    ) As MSForms.UserForm
+Public Property Get Enabled() As Boolean:  Enabled = pEnabled: End Property
 
-'   Description: Populates the controls on a form with the data in the row
-'   Inputs:
-'   Tbl         The table corresponding to this form
-'   Outputs:
-'   Me          A form
-'   Requisites: modGeneral
-'   Notes:      ' Any notes
-'   Example:    ' How to call this routine
-'   History
-'   05/08/2017 RRD Initial Programming
+Public Property Let Enabled(ByVal En As Boolean):  pEnabled = En: End Property
 
-'   Declarations
-    Const Routine_Name = Module_Name & "PopulateForm"
-    
-    Dim Field As CellClass
-    Dim DBRange As Range: Set DBRange = Tbl.DBRange
-    Dim THRow As Long: THRow = Tbl.ActiveTarget.ListObject.HeaderRowRange.Row
-    Dim TRow As Long: TRow = Tbl.ActiveTarget.Row
-    Dim DBRow As Long: DBRow = TRow - THRow
-    Dim DBCol As Long
-    
-'   Error Handling Initialization
-    On Error GoTo ErrHandler
-    
-'   Procedure
-    
-'   Populate the data fields
-    For Each Field In Tbl.TableCells
-        DBCol = Application.Match(Field.HeaderText, Tbl.ActiveTarget.ListObject.HeaderRowRange, 0)
-        If Field.Locked Then
-            Field.ControlValue = DBRange(DBRow, DBCol)
-        Else
-            Field.ControlValue = DBRange(DBRow, DBCol)
-        End If
-        Field.FormControl = DBRange(DBRow, DBCol)
-    Next Field
- 
-ErrHandler:
-    Select Case Err.Number
-        Case Is = NoError:                          'Do nothing
-        Case Else:
-            Select Case DspErrMsg(Routine_Name)
-                Case Is = vbAbort:  Stop: Resume    'Debug mode - Trace
-                Case Is = vbRetry:  Resume          'Try again
-                Case Is = vbIgnore:                 'End routine
-            End Select
-    End Select
+Public Property Get FormObj() As MSForms.UserForm: Set FormObj = pFormObj: End Property
 
-End Function ' PopulateForm
+Public Property Get Height() As Single: Height = pHeight: End Property
+
+Public Property Get Left() As Single: Left = pLeft: End Property
+
+Public Property Get Name() As String: Name = pName: End Property
+
+Public Property Let Name(ByVal Vbl As String): pName = Vbl: End Property
+
+Public Property Get Table() As TableClass: Set Table = pTable: End Property
+
+Public Property Set Table(ByVal Vbl As TableClass): Set pTable = Vbl: End Property
+
+Public Property Get Top() As Single: Top = pTop: End Property
+
+Public Property Get Width() As Single: Width = pWidth: End Property
 
 Public Sub Show()
     pFormObj.Show
 End Sub
 
-Public Sub CloseForm()
-    Unload pFormObj
-End Sub
-
-' Properties
-
-Public Property Get Height() As Single: Height = pHeight: End Property
-
-Public Property Get Width() As Single: Width = pWidth: End Property
-
-Public Property Get Top() As Single: Top = pTop: End Property
-
-Public Property Get Left() As Single: Left = pLeft: End Property
-
-Public Property Get Caption() As String: Caption = pCaption: End Property
-
-Public Property Get FormObj() As MSForms.UserForm: Set FormObj = pFormObj: End Property
-
-Public Property Get Enabled() As Boolean:  Enabled = pEnabled: End Property
-Public Property Let Enabled(ByVal En As Boolean):  pEnabled = En: End Property
-
-Public Property Get Name() As String: Name = pName: End Property
-Public Property Let Name(ByVal Vbl As String): pName = Vbl: End Property
-
 Private Sub Class_Initialize()
     Set Ctls = New ControlsClass
 End Sub
-
-Public Property Get Table() As TableClass: Set Table = pTable: End Property
-Public Property Set Table(ByVal Vbl As TableClass): Set pTable = Vbl: End Property
 

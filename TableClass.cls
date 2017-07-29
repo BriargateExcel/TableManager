@@ -23,7 +23,6 @@ Private pTarget As Range
 Private pForm As FormClass
 Private pWkSht As Worksheet
 
-
 Public Sub CollectData(ByVal WS As Worksheet, ByVal TblName As String)
 
 '   Description: Description of what function does
@@ -86,10 +85,6 @@ ErrHandler:
 
 End Sub      ' CollectData
 
-'Public Function ActiveTable() As ListObject
-'    Set ActiveTable = pTable
-'End Function
-
 Public Sub PopulateTable(ByVal Target As Range)
     Dim Cll As CellClass
     Dim TRow As Long: TRow = Target.Row
@@ -101,6 +96,27 @@ Public Sub PopulateTable(ByVal Target As Range)
     Next Cll
     
 End Sub
+
+Public Property Get ActiveRow() As Long
+    Dim THRow As Long: THRow = pTarget.ListObject.HeaderRowRange.Row
+    Dim TRow As Long: TRow = pTarget.Row
+    Dim DBRow As Long: DBRow = TRow - THRow
+
+    ActiveRow = DBRow
+
+End Property
+
+Public Function FirstCell() As Range
+    Set FirstCell = pTable.DataBodyRange(1, 1)
+End Function
+
+Public Function LastCell() As Range
+    Set LastCell = pTable.DataBodyRange(pTable.ListRows.Count, pTable.ListColumns.Count)
+End Function
+
+Public Function LastRow() As Long
+    LastRow = pTarget.ListObject.ListRows.Count
+End Function
 
 Public Sub NextRow()
     Dim THRow As Long: THRow = pTarget.ListObject.HeaderRowRange.Row
@@ -127,49 +143,30 @@ Public Sub PreviousRow()
 End Sub
 
 Public Property Get ActiveTarget() As Range: Set ActiveTarget = pTarget: End Property
+
 Public Property Set ActiveTarget(ByVal Vbl As Range): Vbl.Select: Set pTarget = Vbl: End Property
 
-Public Property Get ActiveRow() As Long
-    Dim THRow As Long: THRow = pTarget.ListObject.HeaderRowRange.Row
-    Dim TRow As Long: TRow = pTarget.Row
-    Dim DBRow As Long: DBRow = TRow - THRow
+Public Property Get DBRange() As Range: Set DBRange = pWkSht.ListObjects(pName).DataBodyRange: End Property
 
-    ActiveRow = DBRow
+Public Property Get Form() As FormClass: Set Form = pForm: End Property
 
-End Property
+Public Property Set Form(ByVal Vbl As FormClass): Set pForm = Vbl: End Property
 
-Public Function LastRow() As Long
-    LastRow = pTarget.ListObject.ListRows.Count
-End Function
-
-
-Public Property Get Name() As String: Name = pName: End Property
-
-Public Property Get MaxHeaderLength() As Single: MaxHeaderLength = pMaxHeader: End Property
+Public Property Get Locked() As Boolean: Locked = pLocked: End Property
 
 Public Property Get MaxFieldLength() As Single: MaxFieldLength = pMaxField: End Property
 
+Public Property Get MaxHeaderLength() As Single: MaxHeaderLength = pMaxHeader: End Property
+
+Public Property Get Name() As String: Name = pName: End Property
+
 Public Property Get NumFields() As Integer: NumFields = pCells.Count: End Property
-
-Public Property Get WrapCount() As Integer: WrapCount = pWrapCount: End Property
-
-Public Property Get Locked() As Boolean: Locked = pLocked: End Property
 
 Public Property Get TableCells() As CellsClass: Set TableCells = pCells: End Property
 
 Public Property Get Target() As Range: Set Target = pTarget: End Property
+
 Public Property Set Target(ByVal Vbl As Range): Set pTarget = Vbl: End Property
 
-Public Property Get Form() As FormClass: Set Form = pForm: End Property
-Public Property Set Form(ByVal Vbl As FormClass): Set pForm = Vbl: End Property
-
-Public Property Get DBRange() As Range: Set DBRange = pWkSht.ListObjects(pName).DataBodyRange: End Property
-
-Public Function FirstCell() As Range
-    Set FirstCell = pTable.DataBodyRange(1, 1)
-End Function
-
-Public Function LastCell() As Range
-    Set LastCell = pTable.DataBodyRange(pTable.ListRows.Count, pTable.ListColumns.Count)
-End Function
+Public Property Get WrapCount() As Integer: WrapCount = pWrapCount: End Property
 

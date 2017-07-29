@@ -39,28 +39,28 @@ Private pName As String
 
 Private Sub ButtonEvent_Click()
     Dim Target As Range
-
+    
     If Me.ButtonEvent.Caption = "Copy To Table" Then
         pTableObj.PopulateTable pTableObj.ActiveTarget
         Exit Sub
     End If
 
     If Me.ButtonEvent.Caption = "Cancel" Then
-        Unload pFormObj
+        pFormObj.Hide
         Exit Sub
     End If
 
     If Me.ButtonEvent.Caption = "Next Row" Then
         pTableObj.NextRow
         Set pTableObj.ActiveTarget = pTableObj.ActiveTarget.Offset(0, 0)
-        AllTbls(ActiveCellTableName).Form.PopulateForm pTableObj ', pTableObj.ActiveTarget
+        AllTbls(ActiveCellTableName).Form.PopulateForm pTableObj, pTableObj.ActiveTarget
         Exit Sub
     End If
 
     If Me.ButtonEvent.Caption = "Previous Row" Then
         pTableObj.PreviousRow
         Set pTableObj.ActiveTarget = pTableObj.ActiveTarget.Offset(0, 0)
-        AllTbls(ActiveCellTableName).Form.PopulateForm pTableObj ', pTableObj.ActiveTarget
+        AllTbls(ActiveCellTableName).Form.PopulateForm pTableObj, pTableObj.ActiveTarget
         Exit Sub
     End If
 
@@ -73,28 +73,28 @@ Private Sub ButtonEvent_Click()
     If Me.ButtonEvent.Caption = "Insert Above" Then
         pTableObj.ActiveTarget.ListObject.ListRows.Add pTableObj.ActiveRow
         Set pTableObj.ActiveTarget = pTableObj.ActiveTarget.Offset(-1, 0)
-        AllTbls(ActiveCellTableName).Form.PopulateForm pTableObj ', pTableObj.ActiveTarget
+        AllTbls(ActiveCellTableName).Form.PopulateForm pTableObj, pTableObj.ActiveTarget
         Exit Sub
     End If
 
     If Me.ButtonEvent.Caption = "Insert Below" Then
         pTableObj.ActiveTarget.ListObject.ListRows.Add pTableObj.ActiveRow + 1
         Set pTableObj.ActiveTarget = pTableObj.ActiveTarget.Offset(1, 0)
-        AllTbls(ActiveCellTableName).Form.PopulateForm pTableObj ', pTableObj.ActiveTarget
+        AllTbls(ActiveCellTableName).Form.PopulateForm pTableObj, pTableObj.ActiveTarget
         Exit Sub
     End If
 
     If Me.ButtonEvent.Caption = "Insert At Top" Then
         pTableObj.ActiveTarget.ListObject.ListRows.Add 1
         Set pTableObj.ActiveTarget = pTableObj.FirstCell
-        AllTbls(ActiveCellTableName).Form.PopulateForm pTableObj ', pTableObj.ActiveTarget
+        AllTbls(ActiveCellTableName).Form.PopulateForm pTableObj, pTableObj.ActiveTarget
         Exit Sub
     End If
 
     If Me.ButtonEvent.Caption = "Insert At End" Then
         pTableObj.ActiveTarget.ListObject.ListRows.Add
         Set pTableObj.ActiveTarget = pTableObj.LastCell
-        AllTbls(ActiveCellTableName).Form.PopulateForm pTableObj ', pTableObj.ActiveTarget
+        AllTbls(ActiveCellTableName).Form.PopulateForm pTableObj, pTableObj.ActiveTarget
         Exit Sub
     End If
 
@@ -106,67 +106,27 @@ Private Sub ButtonEvent_Click()
         End If
         pTableObj.ActiveTarget.ListObject.ListRows(pTableObj.ActiveRow).Delete
         Set pTableObj.ActiveTarget = Target
-        AllTbls(ActiveCellTableName).Form.PopulateForm pTableObj ', pTableObj.ActiveTarget
+        AllTbls(ActiveCellTableName).Form.PopulateForm pTableObj, pTableObj.ActiveTarget
         Exit Sub
     End If
     
     If Me.ButtonEvent.Caption = "Go To Top" Then
         Set pTableObj.ActiveTarget = pTableObj.FirstCell
-        AllTbls(ActiveCellTableName).Form.PopulateForm pTableObj ', pTableObj.ActiveTarget
+        AllTbls(ActiveCellTableName).Form.PopulateForm pTableObj, pTableObj.ActiveTarget
     End If
 
     If Me.ButtonEvent.Caption = "Go To Bottom" Then
         Set pTableObj.ActiveTarget = pTableObj.LastCell
-        AllTbls(ActiveCellTableName).Form.PopulateForm pTableObj ', pTableObj.ActiveTarget
+        AllTbls(ActiveCellTableName).Form.PopulateForm pTableObj, pTableObj.ActiveTarget
     End If
 
 End Sub
 
-Private Sub FormEvent_MouseMove( _
-    ByVal Button As Integer, _
-    ByVal Shift As Integer, _
-    ByVal x As Single, _
-    ByVal y As Single)
-    
-    Dim Ctl As Object
-
-    For Each Ctl In pFormObj.Controls
-        If Left(Ctl.Name, 5) <> "Image" Then
-            If Left(Ctl.Name, 3) = "Com" And Ctl.ForeColor = ButtonHighLightFont Then
-                With Ctl
-                    .ForeColor = ButtonNothingFont
-                    .BackColor = ButtonNothingBackGround
-                End With
-            End If
-        End If
-    Next Ctl
-    
-End Sub
-
-Public Property Set FormObj(ByVal Vbl As Object)
-    Set pFormObj = Vbl
-    Set Me.FormEvent = Vbl
-End Property
-
-Public Property Set SheetObj(ByVal Vbl As Object)
-    Set pSheet = Vbl
-    Set Me.SheetEvent = Vbl
-End Property
-
-Public Property Set TableObj(ByVal Vbl As Object)
-    Set pTableObj = Vbl
-End Property
-
-Public Property Set ImageObj(ByVal Vbl As Object)
-    Set pImageObj = Vbl
-    Set Me.ImageEvent = Vbl
-End Property
-
 Private Sub ButtonEvent_MouseMove( _
     ByVal Button As Integer, _
     ByVal Shift As Integer, _
-    ByVal x As Single, _
-    ByVal y As Single)
+    ByVal X As Single, _
+    ByVal Y As Single)
     
     With pButtonObj
         .ForeColor = ButtonHighLightFont
@@ -182,17 +142,11 @@ Public Sub ButtonObj(ByVal Btn As MSForms.CommandButton)
     pName = Btn.Name
 End Sub
 
-Public Sub TextObj(ByVal Txt As MSForms.TextBox)
-    Set TextEvent = Txt
-    Set pTextObj = Txt
-    pName = Txt.Name
-End Sub
-
 Private Sub ComboEvent_MouseMove( _
     ByVal Combo As Integer, _
     ByVal Shift As Integer, _
-    ByVal x As Single, _
-    ByVal y As Single)
+    ByVal X As Single, _
+    ByVal Y As Single)
     
     Dim Ctl As Object
 
@@ -215,7 +169,26 @@ Public Sub ComboObj(ByVal Cmb As MSForms.ComboBox)
     pName = Cmb.Name
 End Sub
 
-Public Property Get Name() As String: Name = pName: End Property
+Private Sub FormEvent_MouseMove( _
+    ByVal Button As Integer, _
+    ByVal Shift As Integer, _
+    ByVal X As Single, _
+    ByVal Y As Single)
+    
+    Dim Ctl As Object
+
+    For Each Ctl In pFormObj.Controls
+        If Left(Ctl.Name, 5) <> "Image" Then
+            If Left(Ctl.Name, 3) = "Com" And Ctl.ForeColor = ButtonHighLightFont Then
+                With Ctl
+                    .ForeColor = ButtonNothingFont
+                    .BackColor = ButtonNothingBackGround
+                End With
+            End If
+        End If
+    Next Ctl
+    
+End Sub
 
 Private Sub SheetEvent_BeforeDoubleClick(ByVal Target As Range, Cancel As Boolean)
 Dim Rng As Range
@@ -233,6 +206,32 @@ Dim WS As Worksheet
     
 End Sub
 
+Public Property Set FormObj(ByVal Vbl As Object)
+    Set pFormObj = Vbl
+    Set Me.FormEvent = Vbl
+End Property
+
+Public Property Set ImageObj(ByVal Vbl As Object)
+    Set pImageObj = Vbl
+    Set Me.ImageEvent = Vbl
+End Property
+
+Public Property Get Name() As String: Name = pName: End Property
+
+Public Sub TextObj(ByVal Txt As MSForms.TextBox)
+    Set TextEvent = Txt
+    Set pTextObj = Txt
+    pName = Txt.Name
+End Sub
 
 Public Property Get Sheet() As Worksheet: Set Sheet = pSheet: End Property
+
+Public Property Set SheetObj(ByVal Vbl As Object)
+    Set pSheet = Vbl
+    Set Me.SheetEvent = Vbl
+End Property
+
+Public Property Set TableObj(ByVal Vbl As Object)
+    Set pTableObj = Vbl
+End Property
 

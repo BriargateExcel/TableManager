@@ -44,50 +44,6 @@ Private pShowError As Boolean
 Private pErrorTitle As String
 Private pErrorMessage As String
 
-Public Property Get CellType() As XlDVType: CellType = pCellType: End Property
-
-Public Property Get ColumnWidth() As Single: ColumnWidth = pColumnWidth: End Property
-
-Public Property Get ControlValue() As String: ControlValue = pControlValue: End Property
-
-Public Property Let ControlValue(ByVal Vbl As String): pControlValue = Vbl: End Property
-
-Public Property Get ErrorMessage() As String: ErrorMessage = pErrorMessage: End Property
-
-Public Property Get ErrorTitle() As String: ErrorTitle = pErrorTitle: End Property
-
-Public Property Get FormControl() As Control: Set FormControl = pFormControl: End Property
-
-Public Property Set FormControl(ByVal Vbl As Control): Set pFormControl = Vbl: End Property
-
-Public Property Get HeaderText() As String: HeaderText = pHeaderText: End Property
-
-Public Property Get IgnoreBlank() As Boolean: IgnoreBlank = pIgnoreBlank: End Property
-
-Public Property Get InputMessage() As String: InputMessage = pInputMessage: End Property
-
-Public Property Get InputTitle() As String: InputTitle = pInputTitle: End Property
-
-Public Property Get Length() As Integer: Length = Len(pHeaderText): End Property
-
-Public Property Get Locked() As Variant: Locked = pLocked: End Property
-
-Public Property Get Name() As String: Name = pName: End Property
-
-Public Property Get NumberFormat() As Variant: NumberFormat = pNumberFormat: End Property
-
-Public Property Get ShowError() As Boolean: ShowError = pShowError: End Property
-
-Public Property Get ShowInput() As Boolean: ShowInput = pShowInput: End Property
-
-Public Property Get ValidAlertStyle() As XlDVAlertStyle: ValidAlertStyle = pValidAlertStyle: End Property
-
-Public Property Get ValidationFormula() As String: ValidationFormula = pValidationFormula: End Property
-
-Public Property Get ValidationList() As Variant: ValidationList = pValidationList: End Property
-
-Public Property Get Wrap() As Boolean: Wrap = pWrap: End Property
-
 '---------------------------------------------------------------------------------------
 ' Method : CollectData
 ' Author : Owner
@@ -172,12 +128,6 @@ ErrHandler:
 
 End Sub      ' CollectData
 
-Public Function GetCellValue(ByVal RowNum As Long) As Variant
-    
-    GetCellValue = pDBRange(RowNum, pDBColNum)
-    
-End Function
-
 Private Function HasVal(ByVal oTarget As Range) As Boolean
 
 '   Description:Determine if a cell has validation
@@ -219,6 +169,56 @@ ErrHandler:
 
 End Function
 
+Public Function GetCellValue(ByVal RowNum As Long) As Variant
+    
+    GetCellValue = pDBRange(RowNum, pDBColNum)
+    
+End Function
+
 Public Sub LetCellValue(ByVal RowNum As Long, ByVal Vbl As Variant)
     pDBRange(RowNum, pDBColNum) = Vbl
 End Sub
+
+Public Property Get CellType() As XlDVType: CellType = pCellType: End Property
+
+Public Property Get ColumnWidth() As Single: ColumnWidth = pColumnWidth: End Property
+
+Public Property Get ControlValue() As String: ControlValue = pControlValue: End Property
+
+Public Property Let ControlValue(ByVal Vbl As String): pControlValue = Vbl: End Property
+
+Public Property Get ErrorMessage() As String: ErrorMessage = pErrorMessage: End Property
+
+Public Property Get ErrorTitle() As String: ErrorTitle = pErrorTitle: End Property
+
+Public Property Get FormControl() As Control: Set FormControl = pFormControl: End Property
+
+Public Property Set FormControl(ByVal Vbl As Control): Set pFormControl = Vbl: End Property
+
+Public Property Get HeaderText() As String: HeaderText = pHeaderText: End Property
+
+Public Property Get IgnoreBlank() As Boolean: IgnoreBlank = pIgnoreBlank: End Property
+
+Public Property Get InputMessage() As String: InputMessage = pInputMessage: End Property
+
+Public Property Get InputTitle() As String: InputTitle = pInputTitle: End Property
+
+Public Property Get Length() As Integer: Length = Len(pHeaderText): End Property
+
+Public Property Get Locked() As Variant: Locked = pLocked: End Property
+
+Public Property Get Name() As String: Name = pName: End Property
+
+Public Property Get NumberFormat() As Variant: NumberFormat = pNumberFormat: End Property
+
+Public Property Get ShowError() As Boolean: ShowError = pShowError: End Property
+
+Public Property Get ShowInput() As Boolean: ShowInput = pShowInput: End Property
+
+Public Property Get ValidAlertStyle() As XlDVAlertStyle: ValidAlertStyle = pValidAlertStyle: End Property
+
+Public Property Get ValidationFormula() As String: ValidationFormula = pValidationFormula: End Property
+
+Public Property Get ValidationList() As Variant: ValidationList = pValidationList: End Property
+
+Public Property Get Wrap() As Boolean: Wrap = pWrap: End Property

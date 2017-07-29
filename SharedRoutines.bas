@@ -7,19 +7,6 @@ Global Const Success = True
 Global Const Failure = False
 Global Const NoError = 0
 
-
-Public Function DspErrMsg(ByVal sRoutine As String)
-
-    Const bDebugMode    As Boolean = True   'Set to false when put into production
-
-    DspErrMsg = MsgBox(Err.Number & ":" & Err.Description, _
-                       IIf(bDebugMode, vbAbortRetryIgnore, vbCritical) + _
-                         IIf(Err.Number = 999, 0, vbMsgBoxHelpButton), _
-                       sRoutine, _
-                       Err.HelpFile, _
-                       Err.HelpContext)
-End Function
-
 Function ActiveCellTableName() As String
 '   Function returns table name if active cell is in a table and
 '   "" if it isn't.
@@ -32,10 +19,6 @@ Function ActiveCellTableName() As String
     ActiveCellTableName = ActiveCell.ListObject.Name
     On Error GoTo 0
 End Function
-
-
-
-
 
 Public Function CheckForVBAProjectAccessEnabled() As Boolean
 
@@ -89,5 +72,15 @@ ErrHandler:
 
 End Function ' CheckForVBAProjectAccessEnabled
 
+Public Function DspErrMsg(ByVal sRoutine As String)
 
+    Const bDebugMode    As Boolean = True   'Set to false when put into production
+
+    DspErrMsg = MsgBox(Err.Number & ":" & Err.Description, _
+                       IIf(bDebugMode, vbAbortRetryIgnore, vbCritical) + _
+                         IIf(Err.Number = 999, 0, vbMsgBoxHelpButton), _
+                       sRoutine, _
+                       Err.HelpFile, _
+                       Err.HelpContext)
+End Function
 

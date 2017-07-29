@@ -61,11 +61,11 @@ Private Sub Auto_Open()
     For Each Sht In ThisWorkbook.Worksheets
         For Each Tbl In Sht.ListObjects
             BuildTable Sht, Tbl.Name
-            Set SheetClass = New WorksheetClass
-            Set SheetClass.WS = Sht
-            SheetClass.Name = Sht.Name
-            AllShts.Add SheetClass
         Next Tbl
+        Set SheetClass = New WorksheetClass
+        Set SheetClass.WS = Sht
+        SheetClass.Name = Sht.Name
+        AllShts.Add SheetClass
     Next Sht
     
     DoEvents

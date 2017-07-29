@@ -13,6 +13,47 @@ Private Const Module_Name = "TablesClass."
 
 Private LocalTbls As Scripting.Dictionary
 
+Public Sub Add(ByVal Tbl As TableClass)
+
+'   Description:Add a control
+'   Inputs:     Ctl The control to be added
+'   Outputs:    *None
+'   Requisites:
+'   SharedRoutines
+'   Example:
+
+'     Date
+'   05/14/2017 RRD Ini Modification
+
+'   Declarations
+    Const Routine_Name = Module_Name & "Add"
+    
+'    Dim Obj As WorksheetClass
+
+'   Error Handling Initialization
+    On Error GoTo ErrHandler
+           
+'   Procedure
+    If Exists(Tbl.Name) Then Remove Tbl.Name
+        
+    If Tbl.Name <> "" Then
+'        Set Obj = New WorksheetClass
+        LocalTbls.Add Tbl.Name, Tbl
+    End If
+        
+ErrHandler:
+    Select Case Err.Number
+        Case Is = NoError:   'Do nothing
+        Case Else:          'Display Error Message Box
+            Select Case DspErrMsg(Routine_Name)
+                Case Is = vbAbort:  Stop: Resume    'Debug mode
+                Case Is = vbRetry:  Resume          'Try again
+                Case Is = vbIgnore:                 'End routine
+            End Select
+    End Select
+    
+End Sub
+
 Public Property Get Item(ByVal vIndex As Variant)
 Attribute Item.VB_UserMemId = 0
 'Attribute Item.VB_UserMemId = 0
@@ -90,48 +131,6 @@ ErrHandler:
 
 End Function
 
-Public Sub Add(ByVal Tbl As TableClass)
-
-'   Description:Add a control
-'   Inputs:     Ctl The control to be added
-'   Outputs:    *None
-'   Requisites:
-'   SharedRoutines
-'   Example:
-
-'     Date
-'   05/14/2017 RRD Ini Modification
-
-'   Declarations
-    Const Routine_Name = Module_Name & "Add"
-    
-'    Dim Obj As WorksheetClass
-
-'   Error Handling Initialization
-    On Error GoTo ErrHandler
-           
-'   Procedure
-    If Exists(Tbl.Name) Then Remove Tbl.Name
-        
-    If Tbl.Name <> "" Then
-'        Set Obj = New WorksheetClass
-        LocalTbls.Add Tbl.Name, Tbl
-    End If
-        
-ErrHandler:
-    Select Case Err.Number
-        Case Is = NoError:   'Do nothing
-        Case Else:          'Display Error Message Box
-            Select Case DspErrMsg(Routine_Name)
-                Case Is = vbAbort:  Stop: Resume    'Debug mode
-                Case Is = vbRetry:  Resume          'Try again
-                Case Is = vbIgnore:                 'End routine
-            End Select
-    End Select
-    
-End Sub
-
-
 Public Sub Remove(ByVal vIndex As Variant)
 
 '   Description:Close and Remove a connection
@@ -170,7 +169,6 @@ ErrHandler:
     End Select
     
 End Sub
-
 
 '   Internal Routines
 
@@ -221,11 +219,4 @@ ErrHandler:
     End Select
 
 End Function ' ListTbls
-
-'Public Function NewEnum() As IUnknown
-''Attribute NewEnum.VB_UserMemID = -4
-''   Description:Enables FOR EACH
-'    Set NewEnum = Tbls.[_NewEnum]
-'End Function
-
 
