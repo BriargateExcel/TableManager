@@ -6,18 +6,8 @@ Const Module_Name = "Module1."
 Public AllTbls As TablesClass ' ToDo: does this need to be public? Is there some other way to do this?
 Public AllShts As WorksheetsClass ' ToDo: does this need to be public? Is there some other way to do this?
 
-Public Const DarkestColor = &H763232 ' AF Dark Blue
-Public Const LightestColor = &HE7E2E2 ' AF Light Gray
-
-Public Const LabelBackGround = DarkestColor
-Public Const LabelFont = LightestColor
-
-Public Const ButtonNothingBackGround = DarkestColor
-Public Const ButtonNothingFont = LightestColor
-
-Public Const ButtonHighLightBackGround = LightestColor
-Public Const ButtonHighLightFont = DarkestColor
-
+Private Const DarkestColor = &H763232 ' AF Dark Blue
+Private Const LightestColor = &HE7E2E2 ' AF Light Gray
 
 Private Sub Auto_Open()
 
@@ -38,7 +28,6 @@ Private Sub Auto_Open()
     Const Routine_Name = Module_Name & "." & "Auto_Open"
     
     Dim Sht As Worksheet
-    Dim ThisSheet As Object
     Dim Tbl As ListObject
     Dim UserFrm As Object
     Dim SheetClass As WorksheetClass
@@ -82,6 +71,7 @@ ErrHandler:
     End Select
 
 End Sub      ' Auto_Open
+
     
 Public Function BuildTable( _
     ByVal WS As Worksheet, _
@@ -136,5 +126,33 @@ ErrHandler:
 
 End Function ' BuildTable
 
+Public Sub DisableButton(ByVal Btn As MSForms.CommandButton)
+    Btn.Enabled = False
+End Sub
 
+Public Sub EnableButton(ByVal Btn As MSForms.CommandButton)
+    Btn.Enabled = True
+End Sub
+
+Public Sub HighLightButton(ByVal Btn As MSForms.CommandButton)
+    Btn.ForeColor = DarkestColor
+    Btn.BackColor = LightestColor
+    Btn.Enabled = True
+End Sub
+
+Public Sub HighLightControl(ByVal Ctl As Control)
+    Ctl.ForeColor = DarkestColor
+    Ctl.BackColor = LightestColor
+End Sub
+
+Public Sub LowLightButton(ByVal Btn As MSForms.CommandButton)
+    Btn.ForeColor = LightestColor
+    Btn.BackColor = DarkestColor
+    Btn.Enabled = True
+End Sub
+
+Public Sub LowLightControl(ByVal Ctl As Control)
+    Ctl.ForeColor = LightestColor
+    Ctl.BackColor = DarkestColor
+End Sub
 

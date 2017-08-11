@@ -28,8 +28,6 @@ Public Sub Add(ByVal Sht As WorksheetClass)
 '   Declarations
     Const Routine_Name = Module_Name & "Add"
     
-    Dim Obj As Object
-
 '   Error Handling Initialization
     On Error GoTo ErrHandler
            
@@ -37,7 +35,6 @@ Public Sub Add(ByVal Sht As WorksheetClass)
     If LocalShts.Exists(Sht.Name) Then Remove Sht.Name
         
     If Sht.Name <> "" Then ' The sheet must have a name
-        Set Obj = New EventHandler
         LocalShts.Add Sht.Name, Sht
     End If
         
@@ -52,7 +49,7 @@ ErrHandler:
             End Select
     End Select
     
-End Sub
+End Sub ' Add
 
 Public Property Get Item(ByVal vIndex As Variant)
 'Attribute Item.VB_UserMemId = 0

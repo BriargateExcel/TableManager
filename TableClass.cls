@@ -97,6 +97,10 @@ Public Sub PopulateTable(ByVal Target As Range)
     
 End Sub
 
+Public Property Set ActiveTarget(ByVal Vbl As Range): Vbl.Select: Set pTarget = Vbl: End Property
+
+Public Property Get ActiveTarget() As Range: Set ActiveTarget = pTarget: End Property
+
 Public Property Get ActiveRow() As Long
     Dim THRow As Long: THRow = pTarget.ListObject.HeaderRowRange.Row
     Dim TRow As Long: TRow = pTarget.Row
@@ -105,6 +109,10 @@ Public Property Get ActiveRow() As Long
     ActiveRow = DBRow
 
 End Property
+
+Public Property Get Target() As Range: Set Target = pTarget: End Property
+
+Public Property Set Target(ByVal Vbl As Range): Set pTarget = Vbl: End Property
 
 Public Function FirstCell() As Range
     Set FirstCell = pTable.DataBodyRange(1, 1)
@@ -142,10 +150,6 @@ Public Sub PreviousRow()
     End If
 End Sub
 
-Public Property Get ActiveTarget() As Range: Set ActiveTarget = pTarget: End Property
-
-Public Property Set ActiveTarget(ByVal Vbl As Range): Vbl.Select: Set pTarget = Vbl: End Property
-
 Public Property Get DBRange() As Range: Set DBRange = pWkSht.ListObjects(pName).DataBodyRange: End Property
 
 Public Property Get Form() As FormClass: Set Form = pForm: End Property
@@ -163,10 +167,6 @@ Public Property Get Name() As String: Name = pName: End Property
 Public Property Get NumFields() As Integer: NumFields = pCells.Count: End Property
 
 Public Property Get TableCells() As CellsClass: Set TableCells = pCells: End Property
-
-Public Property Get Target() As Range: Set Target = pTarget: End Property
-
-Public Property Set Target(ByVal Vbl As Range): Set pTarget = Vbl: End Property
 
 Public Property Get WrapCount() As Integer: WrapCount = pWrapCount: End Property
 

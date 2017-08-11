@@ -20,10 +20,12 @@ Private pEnabled As Boolean     ' Whether form is enabled
 Private pName As String
 Private pFormObj As Object
 Private pTable As TableClass
+Private pPrevBtn As String
+Private pNextBtn As String
 
 Private Frm As EventHandler
 
-Private Ctls As ControlsClass
+Private pCtls As ControlsClass
 
 Private Const StandardGap = 12
 Private Const ThinGap = 3
@@ -83,6 +85,7 @@ Public Function BuildForm( _
     Set Frm = New EventHandler
     Set Frm.FormObj = pFormObj
     Set Frm.FormEvent = pFormObj
+    Set Frm.TableObj = Tbl
     
     With pFormObj
         
@@ -117,8 +120,7 @@ Public Function BuildForm( _
             Lbl.Caption = Field.HeaderText
             Lbl.TextAlign = fmTextAlignRight
             Lbl.WordWrap = False
-            Lbl.BackColor = LabelBackGround
-            Lbl.ForeColor = LabelFont
+            LowLightControl Lbl
             If Lbl.Width > MaxLabelWidth Then MaxLabelWidth = Lbl.Width
             
 '           Build the data fields
@@ -132,8 +134,7 @@ Public Function BuildForm( _
                     Top = Top + TextHeight + ThinGap
                     .Font.Size = 8.25
                     .WordWrap = False
-                    .BackColor = LabelBackGround
-                    .ForeColor = LabelFont
+                    LowLightControl Ctl
                     .ControlTipText = Field.InputTitle & ": " & Field.InputMessage
                     If .Width > MaxFieldWidth Then MaxFieldWidth = .Width
                 End With
@@ -219,8 +220,7 @@ Public Function BuildForm( _
             .Top = LogoHeight + 2 * StandardGap
             .Width = StandardGap
             .Height = Top - .Top
-            .BackColor = LabelBackGround
-            .ForeColor = LabelFont
+            LowLightControl Ctl
         End With ' Ctl
 
         DataLeft = MaxLabelWidth + 2 * StandardGap
@@ -312,8 +312,7 @@ ErrHandler:
 End Function ' BuildForm
 
 Public Function PopulateForm( _
-    ByVal Tbl As TableClass, _
-    ByVal Target As Range _
+    ByVal Tbl As TableClass _
     ) As MSForms.UserForm
 
 '   Description: Populates the controls on a form with the data in the row
@@ -328,7 +327,6 @@ Public Function PopulateForm( _
 '   05/08/2017 RRD Initial Programming
 
 '   Declarations
-    Const Routine_Name = Module_Name & "PopulateForm"
     
     Dim Field As CellClass
     Dim DBRange As Range: Set DBRange = Tbl.DBRange
@@ -368,14 +366,21 @@ Private Sub BuildButton( _
         .Left = Lft
         .Height = ButtonHeight
         .Width = ButtonWidth
-        .BackColor = ButtonNothingBackGround
-        .ForeColor = ButtonNothingFont
+        LowLightButton Ctl
         .ControlTipText = Tip
     End With
-    Ctls.Add Ctl
-    Ctls.Item(Ctl.Name).ButtonObj Ctl
-    Set Ctls.Item(Ctl.Name).FormObj = pFormObj
-    Set Ctls.Item(Ctl.Name).TableObj = Tbl
+    pCtls.Add Ctl
+    
+    If Ctl.Caption = "Previous Row" Then
+        pPrevBtn = Ctl.Name
+    End If
+    If Ctl.Caption = "Next Row" Then
+        pNextBtn = Ctl.Name
+    End If
+
+    pCtls.Item(Ctl.Name).ButtonObj Ctl
+    Set pCtls.Item(Ctl.Name).FormObj = pFormObj
+    Set pCtls.Item(Ctl.Name).TableObj = Tbl
 End Sub
 
 Public Property Get Caption() As String: Caption = pCaption: End Property
@@ -402,11 +407,16 @@ Public Property Get Top() As Single: Top = pTop: End Property
 
 Public Property Get Width() As Single: Width = pWidth: End Property
 
-Public Sub Show()
-    pFormObj.Show
-End Sub
+Public Property Get Controls() As ControlsClass: Set Controls = pCtls: End Property
+
+Public Sub Show(): pFormObj.Show: End Sub
 
 Private Sub Class_Initialize()
-    Set Ctls = New ControlsClass
+    Set pCtls = New ControlsClass
 End Sub
+
+Public Function PrevButton() As String: PrevButton = pPrevBtn: End Function
+
+Public Function NextButton() As String: NextButton = pNextBtn: End Function
+
 

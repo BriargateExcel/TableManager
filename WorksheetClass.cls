@@ -59,9 +59,7 @@ ErrHandler:
 End Sub
 
 Private Sub WS_BeforeDoubleClick(ByVal Target As Range, Cancel As Boolean)
-Dim Rng As Range
 Dim TableName As String
-Dim WS As Worksheet
 Dim Tbl As TableClass
     
     Cancel = True
@@ -71,8 +69,13 @@ Dim Tbl As TableClass
     If TableName <> "" Then
         Set Tbl = AllTbls(TableName)
         Set Tbl.Target = Target
-        Tbl.Form.PopulateForm Tbl, Target
+        Tbl.Form.PopulateForm Tbl
         Tbl.Form.Show
+    Else
+        MsgBox "The selected cell is not inside a table. " & _
+            "Double-click a cell inside a table.", _
+            vbOKOnly Or vbExclamation, _
+            "Selected Cell Not in a Table"
     End If
     
 End Sub

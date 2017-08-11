@@ -40,65 +40,45 @@ Private pName As String
 Private Sub ButtonEvent_Click()
     Dim Target As Range
     
-    If Me.ButtonEvent.Caption = "Copy To Table" Then
+    Select Case Me.ButtonEvent.Caption
+    Case Is = "Copy To Table"
         pTableObj.PopulateTable pTableObj.ActiveTarget
-        Exit Sub
-    End If
-
-    If Me.ButtonEvent.Caption = "Cancel" Then
+    
+    Case Is = "Cancel"
         pFormObj.Hide
         Exit Sub
-    End If
-
-    If Me.ButtonEvent.Caption = "Next Row" Then
+    
+    Case Is = "Next Row"
         pTableObj.NextRow
         Set pTableObj.ActiveTarget = pTableObj.ActiveTarget.Offset(0, 0)
-        AllTbls(ActiveCellTableName).Form.PopulateForm pTableObj, pTableObj.ActiveTarget
-        Exit Sub
-    End If
-
-    If Me.ButtonEvent.Caption = "Previous Row" Then
+        AllTbls(ActiveCellTableName).Form.PopulateForm pTableObj
+    
+    Case Is = "Previous Row"
         pTableObj.PreviousRow
         Set pTableObj.ActiveTarget = pTableObj.ActiveTarget.Offset(0, 0)
-        AllTbls(ActiveCellTableName).Form.PopulateForm pTableObj, pTableObj.ActiveTarget
-        Exit Sub
-    End If
-
-    ' Position=3 inserts a row above row 3
-    ' Position=2 inserts a row above row 2, etc
-    ' Position=1 inserts a row at the beginning of the table
-    ' .Add without specifying Position adds a row at the bottom of the table
-    ' Position <=0 fails for subscript out of range
-
-    If Me.ButtonEvent.Caption = "Insert Above" Then
+        AllTbls(ActiveCellTableName).Form.PopulateForm pTableObj
+    
+    Case Is = "Insert Above"
         pTableObj.ActiveTarget.ListObject.ListRows.Add pTableObj.ActiveRow
         Set pTableObj.ActiveTarget = pTableObj.ActiveTarget.Offset(-1, 0)
-        AllTbls(ActiveCellTableName).Form.PopulateForm pTableObj, pTableObj.ActiveTarget
-        Exit Sub
-    End If
-
-    If Me.ButtonEvent.Caption = "Insert Below" Then
+        AllTbls(ActiveCellTableName).Form.PopulateForm pTableObj
+    
+    Case Is = "Insert Below"
         pTableObj.ActiveTarget.ListObject.ListRows.Add pTableObj.ActiveRow + 1
         Set pTableObj.ActiveTarget = pTableObj.ActiveTarget.Offset(1, 0)
-        AllTbls(ActiveCellTableName).Form.PopulateForm pTableObj, pTableObj.ActiveTarget
-        Exit Sub
-    End If
-
-    If Me.ButtonEvent.Caption = "Insert At Top" Then
+        AllTbls(ActiveCellTableName).Form.PopulateForm pTableObj
+    
+    Case Is = "Insert At Top"
         pTableObj.ActiveTarget.ListObject.ListRows.Add 1
         Set pTableObj.ActiveTarget = pTableObj.FirstCell
-        AllTbls(ActiveCellTableName).Form.PopulateForm pTableObj, pTableObj.ActiveTarget
-        Exit Sub
-    End If
-
-    If Me.ButtonEvent.Caption = "Insert At End" Then
+        AllTbls(ActiveCellTableName).Form.PopulateForm pTableObj
+    
+    Case Is = "Insert At End"
         pTableObj.ActiveTarget.ListObject.ListRows.Add
         Set pTableObj.ActiveTarget = pTableObj.LastCell
-        AllTbls(ActiveCellTableName).Form.PopulateForm pTableObj, pTableObj.ActiveTarget
-        Exit Sub
-    End If
-
-    If Me.ButtonEvent.Caption = "Delete This Row" Then
+        AllTbls(ActiveCellTableName).Form.PopulateForm pTableObj
+    
+    Case Is = "Delete This Row"
         If pTableObj.LastRow = pTableObj.ActiveRow Then
             Set Target = pTableObj.ActiveTarget.Offset(-1, 0)
         Else
@@ -106,20 +86,41 @@ Private Sub ButtonEvent_Click()
         End If
         pTableObj.ActiveTarget.ListObject.ListRows(pTableObj.ActiveRow).Delete
         Set pTableObj.ActiveTarget = Target
-        AllTbls(ActiveCellTableName).Form.PopulateForm pTableObj, pTableObj.ActiveTarget
-        Exit Sub
-    End If
+        AllTbls(ActiveCellTableName).Form.PopulateForm pTableObj
     
-    If Me.ButtonEvent.Caption = "Go To Top" Then
+    Case Is = "Go To Top"
         Set pTableObj.ActiveTarget = pTableObj.FirstCell
-        AllTbls(ActiveCellTableName).Form.PopulateForm pTableObj, pTableObj.ActiveTarget
-    End If
-
-    If Me.ButtonEvent.Caption = "Go To Bottom" Then
+        AllTbls(ActiveCellTableName).Form.PopulateForm pTableObj
+    
+    Case Is = "Go To Bottom"
         Set pTableObj.ActiveTarget = pTableObj.LastCell
-        AllTbls(ActiveCellTableName).Form.PopulateForm pTableObj, pTableObj.ActiveTarget
-    End If
+        AllTbls(ActiveCellTableName).Form.PopulateForm pTableObj
+    
+    Case Else:
+        Stop
+    End Select
+    
+    PaintButtons
+    
+End Sub ' ButtonEvent_Click
 
+Private Sub PaintButtons()
+    Dim CtlIter As Variant
+    
+    For Each CtlIter In pFormObj.Controls
+        With CtlIter
+            If Left(.Name, 7) = "Command" Then
+                EnableButton CtlIter
+                LowLightControl CtlIter
+                If .Caption = "Previous Row" And pTableObj.ActiveRow = 1 Then
+                    DisableButton CtlIter
+                End If
+                If .Caption = "Next Row" And pTableObj.ActiveRow = pTableObj.LastRow Then
+                    DisableButton CtlIter
+                End If
+            End If
+        End With ' CtlIter
+    Next CtlIter
 End Sub
 
 Private Sub ButtonEvent_MouseMove( _
@@ -128,10 +129,9 @@ Private Sub ButtonEvent_MouseMove( _
     ByVal X As Single, _
     ByVal Y As Single)
     
-    With pButtonObj
-        .ForeColor = ButtonHighLightFont
-        .BackColor = ButtonHighLightBackGround
-    End With
+    PaintButtons
+    
+    HighLightButton pButtonObj
     
 End Sub
 
@@ -153,13 +153,12 @@ Private Sub ComboEvent_MouseMove( _
     For Each Ctl In pFormObj.Controls
         If Left(Ctl.Name, 5) <> "Image" Then
             If Left(Ctl.Name, 3) = "Com" And Ctl.ForeColor = vbWhite Then
-                With Ctl
-                    .ForeColor = ButtonNothingFont
-                    .BackColor = ButtonNothingBackGround
-                End With
+                LowLightButton Ctl
             End If
         End If
     Next Ctl
+    
+    PaintButtons
     
 End Sub
 
@@ -178,22 +177,21 @@ Private Sub FormEvent_MouseMove( _
     Dim Ctl As Object
 
     For Each Ctl In pFormObj.Controls
-        If Left(Ctl.Name, 5) <> "Image" Then
-            If Left(Ctl.Name, 3) = "Com" And Ctl.ForeColor = ButtonHighLightFont Then
-                With Ctl
-                    .ForeColor = ButtonNothingFont
-                    .BackColor = ButtonNothingBackGround
-                End With
+        If Ctl.Enabled Then
+            If Left(Ctl.Name, 5) <> "Image" Then
+                If Left(Ctl.Name, 3) = "Com" Then
+                    LowLightControl Ctl
+                End If
             End If
         End If
     Next Ctl
     
+    PaintButtons
+    
 End Sub
 
 Private Sub SheetEvent_BeforeDoubleClick(ByVal Target As Range, Cancel As Boolean)
-Dim Rng As Range
 Dim TableName As String
-Dim WS As Worksheet
     
     Cancel = True
 
@@ -204,7 +202,13 @@ Dim WS As Worksheet
         AllTbls(TableName).Form(TableName).Show
     End If
     
+    PaintButtons
+    
 End Sub
+
+Public Property Set TableObj(ByVal Tbl As TableClass)
+    Set pTableObj = Tbl
+End Property
 
 Public Property Set FormObj(ByVal Vbl As Object)
     Set pFormObj = Vbl
@@ -229,9 +233,5 @@ Public Property Get Sheet() As Worksheet: Set Sheet = pSheet: End Property
 Public Property Set SheetObj(ByVal Vbl As Object)
     Set pSheet = Vbl
     Set Me.SheetEvent = Vbl
-End Property
-
-Public Property Set TableObj(ByVal Vbl As Object)
-    Set pTableObj = Vbl
 End Property
 

@@ -10,14 +10,14 @@ Global Const NoError = 0
 Function ActiveCellTableName() As String
 '   Function returns table name if active cell is in a table and
 '   "" if it isn't.
-'    Dim rngActiveCell As Range
+
+    ActiveCellTableName = ""
     
-'    Set rngActiveCell = ActiveCell
 '   Statement produces error when active cell is not in a table.
     On Error Resume Next
-    ActiveCellTableName = ""
     ActiveCellTableName = ActiveCell.ListObject.Name
-    On Error GoTo 0
+    
+    On Error GoTo 0 ' Reset the error handling
 End Function
 
 Public Function CheckForVBAProjectAccessEnabled() As Boolean

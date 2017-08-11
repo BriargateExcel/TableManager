@@ -178,8 +178,8 @@ End Sub
 
 '   Custom Properties
 
-Public Property Get Count1() As Integer
-    Count1 = AllCtls.Count
+Public Property Get Count() As Integer
+    Count = AllCtls.Count
 End Property
 
-
+Public Property Get Controls():  Controls = AllCtls.Keys: End Property
