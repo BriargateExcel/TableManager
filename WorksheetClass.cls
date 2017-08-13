@@ -9,11 +9,11 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
 
-Const Module_Name           As String = "WorksheetClass"
+Private Const Module_Name           As String = "WorksheetClass"
 
 '   Public Properties
-Public WithEvents WS As Worksheet
-Attribute WS.VB_VarHelpID = -1
+Public WithEvents ws As Worksheet
+Attribute ws.VB_VarHelpID = -1
 
 Private pName As String
 
@@ -38,11 +38,11 @@ Public Sub Add(ByVal Sht As Worksheet)
     On Error GoTo ErrHandler
            
 '   Procedure
-    If AllShts.Exists(Sht.Name) Then AllShts.Remove Sht.Name
+    If WorksheetExists(Sht.Name) Then WorksheetRemove Sht.Name
         
     If Sht.Name <> "" Then
         Set Obj = New EventHandler
-        AllShts.Add Sht
+        WorksheetAdd Sht
     End If
         
 ErrHandler:
@@ -67,7 +67,7 @@ Dim Tbl As TableClass
     TableName = ActiveCellTableName
     
     If TableName <> "" Then
-        Set Tbl = AllTbls(TableName)
+        Set Tbl = TableItem(TableName)
         Set Tbl.Target = Target
         Tbl.Form.PopulateForm Tbl
         Tbl.Form.Show
@@ -80,8 +80,8 @@ Dim Tbl As TableClass
     
 End Sub
 
-Public Sub CollectData(ByVal WS As Worksheet)
-    pName = WS.Name
+Public Sub CollectData(ByVal ws As Worksheet)
+    pName = ws.Name
 End Sub
 
 Public Property Get Name() As String: Name = pName: End Property
@@ -89,5 +89,5 @@ Public Property Get Name() As String: Name = pName: End Property
 Public Property Let Name(ByVal Vbl As String): pName = Vbl: End Property
 
 Private Sub Class_Terminate()
-    Set WS = Nothing
+    Set ws = Nothing
 End Sub

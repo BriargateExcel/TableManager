@@ -34,10 +34,9 @@ Public Sub Add(ByVal Tbl As TableClass)
     On Error GoTo ErrHandler
            
 '   Procedure
-    If Exists(Tbl.Name) Then Remove Tbl.Name
+    If TableExists(Tbl.Name) Then Remove Tbl.Name
         
     If Tbl.Name <> "" Then
-'        Set Obj = New WorksheetClass
         LocalTbls.Add Tbl.Name, Tbl
     End If
         
@@ -69,18 +68,16 @@ Attribute Item.VB_UserMemId = 0
 '   05/14/2017 RRD Initial Programming
 
 '   Declarations
-    Dim OneTbl As New TableClass   ' Table Properties
     Const Routine_Name = Module_Name & "Get Item"
 
 '   Error Handling Initialization
-'    On Error GoTo ErrHandler
+    On Error GoTo ErrHandler
     
 '   Procedure
-    If Me.Exists(vIndex) Then
+    If TableExists(vIndex) Then
         Set Item = LocalTbls(vIndex)
     Else
         LocalTbls.Name = ""
-'        Set Item = OneTbl
     End If
 
 ErrHandler:
@@ -115,7 +112,7 @@ Public Function Exists(ByVal vIndex) As Boolean
 '   Error Handling Initialization
     On Error GoTo ErrHandler
     Exists = LocalTbls.Exists(vIndex)
-    
+
 ErrHandler:
     Select Case Err.Number
         Case Is = NoError   'Do nothing
@@ -178,45 +175,7 @@ End Sub
 
 '   Custom Properties
 
-Public Property Get Count() As Integer
-    Count = LocalTbls.Count
-End Property
+Public Property Get Count() As Integer: Count = LocalTbls.Count: End Property
 
-Public Function ListTbls() As Variant
-
-'   Description: Description of what function does
-'   Inputs:
-'   Outputs:
-'   Me       Success/Failure
-'   Requisites:
-'   None
-'   Notes:
-'   Any notes
-'   Example:
-'   How to call this routine
-'   History
-'   2017-06-13 RRD Initial Programming
-
-'   Declarations
-    Const Routine_Name = Module_Name & "." & "ListTbls"
-
-'   Error Handling Initialization
-    On Error GoTo ErrHandler
-    
-'   Procedure
-    ListTbls = LocalTbls.Keys
-
-    ListTbls = Success
-ErrHandler:
-    Select Case Err.Number
-        Case Is = NoError:                          'Do nothing
-        Case Else:
-            Select Case DspErrMsg(Routine_Name)
-                Case Is = vbAbort:  Stop: Resume    'Debug mode - Trace
-                Case Is = vbRetry:  Resume          'Try again
-                Case Is = vbIgnore:                 'End routine
-            End Select
-    End Select
-
-End Function ' ListTbls
+Public Function ListTbls() As Variant: ListTbls = LocalTbls.Keys: End Function
 

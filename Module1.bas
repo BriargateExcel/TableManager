@@ -1,15 +1,12 @@
 Attribute VB_Name = "Module1"
 Option Explicit
 
-Const Module_Name = "Module1."
-
-Public AllTbls As TablesClass ' ToDo: does this need to be public? Is there some other way to do this?
-Public AllShts As WorksheetsClass ' ToDo: does this need to be public? Is there some other way to do this?
+Private Const Module_Name = "Module1."
 
 Private Const DarkestColor = &H763232 ' AF Dark Blue
 Private Const LightestColor = &HE7E2E2 ' AF Light Gray
 
-Private Sub Auto_Open()
+Public Sub Auto_Open()
 
 '   Description: Description of what function does
 '   Inputs:
@@ -44,17 +41,17 @@ Private Sub Auto_Open()
     Next UserFrm
     
 '   Procedure
-    Set AllTbls = New TablesClass
-    Set AllShts = New WorksheetsClass
+    TableSetNewClass
+    WorksheetSetNewClass
     
     For Each Sht In ThisWorkbook.Worksheets
         For Each Tbl In Sht.ListObjects
             BuildTable Sht, Tbl.Name
         Next Tbl
         Set SheetClass = New WorksheetClass
-        Set SheetClass.WS = Sht
+        Set SheetClass.ws = Sht
         SheetClass.Name = Sht.Name
-        AllShts.Add SheetClass
+        WorksheetAdd SheetClass
     Next Sht
     
     DoEvents
@@ -74,7 +71,7 @@ End Sub      ' Auto_Open
 
     
 Public Function BuildTable( _
-    ByVal WS As Worksheet, _
+    ByVal ws As Worksheet, _
     ByVal TableName As String _
     ) As Boolean
 
@@ -105,13 +102,13 @@ Public Function BuildTable( _
 
 '   Gather the table data
     Set Tbl = New TableClass
-    Tbl.CollectData WS, TableName
+    Tbl.CollectData ws, TableName
     Set Tbl.Form = New FormClass
     Tbl.Form.Name = TableName
     
     Tbl.Form.BuildForm (Tbl)
 '    Tbl.Add Tbls(TableName)
-    AllTbls.Add Tbl
+    TableAdd Tbl
     
 ErrHandler:
     Select Case Err.Number

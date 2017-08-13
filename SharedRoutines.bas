@@ -1,7 +1,7 @@
 Attribute VB_Name = "SharedRoutines"
 Option Explicit
 
-Const Module_Name = "SharedRoutines."
+Private Const Module_Name = "SharedRoutines."
 
 Global Const Success = True
 Global Const Failure = False
@@ -83,4 +83,22 @@ Public Function DspErrMsg(ByVal sRoutine As String)
                        Err.HelpFile, _
                        Err.HelpContext)
 End Function
+
+Public Function VBAMatch(ByVal Target As Variant, ByVal SearchRange As Range, Optional ByVal TreatAsString As Boolean = False) As Long
+
+    On Error GoTo NotFound
+    
+    If IsDate(Target) And Not TreatAsString Then
+        VBAMatch = Application.Match(CLng(Target), SearchRange, 0)
+        Exit Function
+    Else
+        VBAMatch = Application.WorksheetFunction.Match(Target, SearchRange, 0)
+        Exit Function
+    End If
+
+NotFound:
+    VBAMatch = 0
+    
+End Function ' VBAMatch
+
 

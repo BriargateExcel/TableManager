@@ -73,9 +73,8 @@ Public Property Get Item(ByVal vIndex As Variant)
     
 '   Procedure
     If Me.Exists(vIndex) Then
-        Set Item = AllTbls(vIndex)
+        Set Item = TableItem(vIndex)
     Else
-'        AllTbls.Name = ""
         Set Item = OneTbl
     End If
 
@@ -110,7 +109,7 @@ Public Function Exists(ByVal vIndex) As Boolean
 
 '   Error Handling Initialization
     On Error GoTo ErrHandler
-    Exists = AllTbls.Exists(vIndex)
+    Exists = TableExists(vIndex)
     
 ErrHandler:
     Select Case Err.Number
@@ -146,11 +145,11 @@ Public Sub Remove(ByVal vIndex As Variant)
    
 '   Procedure
     If CStr(vIndex) = "*" Then
-        Set AllTbls = Nothing
-        Set AllTbls = New Scripting.Dictionary
+        TableSetNothing
+        TableSetNewDict
     Else
-        If Not AllTbls.Exists(vIndex) Then Err.Raise 9
-        AllTbls.Remove vIndex
+        If Not TableExists(vIndex) Then Err.Raise 9
+        TableRemove vIndex
     End If
 
 ErrHandler:
@@ -207,7 +206,7 @@ End Function ' ListTbls
 '   Custom Properties
 
 Public Property Get Count() As Integer
-    Count = AllTbls.Count
+    Count = TableCount
 End Property
 
 '   Internal Routines

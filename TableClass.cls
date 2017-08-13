@@ -9,7 +9,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
 
-Const Module_Name = "TableClass."
+Private Const Module_Name = "TableClass."
 
 Private pCells As CellsClass
 
@@ -23,7 +23,7 @@ Private pTarget As Range
 Private pForm As FormClass
 Private pWkSht As Worksheet
 
-Public Sub CollectData(ByVal WS As Worksheet, ByVal TblName As String)
+Public Sub CollectData(ByVal ws As Worksheet, ByVal TblName As String)
 
 '   Description: Description of what function does
 '   Inputs:
@@ -50,8 +50,8 @@ Public Sub CollectData(ByVal WS As Worksheet, ByVal TblName As String)
     
 '   Procedure
     pName = TblName
-    Set pWkSht = WS
-    Set pTable = WS.ListObjects(TblName)
+    Set pWkSht = ws
+    Set pTable = ws.ListObjects(TblName)
     Set pCells = New CellsClass
     pLocked = True
     
@@ -170,3 +170,4 @@ Public Property Get TableCells() As CellsClass: Set TableCells = pCells: End Pro
 
 Public Property Get WrapCount() As Integer: WrapCount = pWrapCount: End Property
 
+Public Property Get Worksheet() As Worksheet: Set Worksheet = pWkSht: End Property
