@@ -9,7 +9,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
 
-Private Const Module_Name           As String = "WorksheetClass"
+Private Const Module_Name           As String = "WorksheetClass."
 
 '   Public Properties
 Public WithEvents ws As Worksheet
@@ -38,11 +38,11 @@ Public Sub Add(ByVal Sht As Worksheet)
     On Error GoTo ErrHandler
            
 '   Procedure
-    If WorksheetExists(Sht.Name) Then WorksheetRemove Sht.Name
+    If WorksheetExists(Sht.Name, Module_Name) Then WorksheetRemove Sht.Name, Module_Name
         
     If Sht.Name <> "" Then
         Set Obj = New EventHandler
-        WorksheetAdd Sht
+        WorksheetAdd Sht, Module_Name
     End If
         
 ErrHandler:
@@ -67,7 +67,7 @@ Dim Tbl As TableClass
     TableName = ActiveCellTableName
     
     If TableName <> "" Then
-        Set Tbl = TableItem(TableName)
+        Set Tbl = TableItem(TableName, Module_Name)
         Set Tbl.Target = Target
         Tbl.Form.PopulateForm Tbl
         Tbl.Form.Show

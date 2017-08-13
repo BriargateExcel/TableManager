@@ -34,7 +34,7 @@ Public Sub Add(ByVal Tbl As TableClass)
     On Error GoTo ErrHandler
            
 '   Procedure
-    If TableExists(Tbl.Name) Then Remove Tbl.Name
+    If TableExists(Tbl.Name, Module_Name) Then Remove Tbl.Name
         
     If Tbl.Name <> "" Then
         LocalTbls.Add Tbl.Name, Tbl
@@ -74,7 +74,7 @@ Attribute Item.VB_UserMemId = 0
     On Error GoTo ErrHandler
     
 '   Procedure
-    If TableExists(vIndex) Then
+    If TableExists(vIndex, Module_Name) Then
         Set Item = LocalTbls(vIndex)
     Else
         LocalTbls.Name = ""

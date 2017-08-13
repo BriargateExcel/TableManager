@@ -9,6 +9,8 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
 
+Private Const Module_Name = "EventHandler."
+
 Public WithEvents FormEvent As MSForms.UserForm
 Attribute FormEvent.VB_VarHelpID = -1
 Private pFormObj As Object
@@ -51,32 +53,32 @@ Private Sub ButtonEvent_Click()
     Case Is = "Next Row"
         pTableObj.NextRow
         Set pTableObj.ActiveTarget = pTableObj.ActiveTarget.Offset(0, 0)
-        TableItem(ActiveCellTableName).Form.PopulateForm pTableObj
+        TableItem(ActiveCellTableName, Module_Name).Form.PopulateForm pTableObj
     
     Case Is = "Previous Row"
         pTableObj.PreviousRow
         Set pTableObj.ActiveTarget = pTableObj.ActiveTarget.Offset(0, 0)
-        TableItem(ActiveCellTableName).Form.PopulateForm pTableObj
+        TableItem(ActiveCellTableName, Module_Name).Form.PopulateForm pTableObj
     
     Case Is = "Insert Above"
         pTableObj.ActiveTarget.ListObject.ListRows.Add pTableObj.ActiveRow
         Set pTableObj.ActiveTarget = pTableObj.ActiveTarget.Offset(-1, 0)
-        TableItem(ActiveCellTableName).Form.PopulateForm pTableObj
+        TableItem(ActiveCellTableName, Module_Name).Form.PopulateForm pTableObj
     
     Case Is = "Insert Below"
         pTableObj.ActiveTarget.ListObject.ListRows.Add pTableObj.ActiveRow + 1
         Set pTableObj.ActiveTarget = pTableObj.ActiveTarget.Offset(1, 0)
-        TableItem(ActiveCellTableName).Form.PopulateForm pTableObj
+        TableItem(ActiveCellTableName, Module_Name).Form.PopulateForm pTableObj
     
     Case Is = "Insert At Top"
         pTableObj.ActiveTarget.ListObject.ListRows.Add 1
         Set pTableObj.ActiveTarget = pTableObj.FirstCell
-        TableItem(ActiveCellTableName).Form.PopulateForm pTableObj
+        TableItem(ActiveCellTableName, Module_Name).Form.PopulateForm pTableObj
     
     Case Is = "Insert At End"
         pTableObj.ActiveTarget.ListObject.ListRows.Add
         Set pTableObj.ActiveTarget = pTableObj.LastCell
-        TableItem(ActiveCellTableName).Form.PopulateForm pTableObj
+        TableItem(ActiveCellTableName, Module_Name).Form.PopulateForm pTableObj
     
     Case Is = "Delete This Row"
         If pTableObj.LastRow = pTableObj.ActiveRow Then
@@ -86,15 +88,15 @@ Private Sub ButtonEvent_Click()
         End If
         pTableObj.ActiveTarget.ListObject.ListRows(pTableObj.ActiveRow).Delete
         Set pTableObj.ActiveTarget = Target
-        TableItem(ActiveCellTableName).Form.PopulateForm pTableObj
+        TableItem(ActiveCellTableName, Module_Name).Form.PopulateForm pTableObj
     
     Case Is = "Go To Top"
         Set pTableObj.ActiveTarget = pTableObj.FirstCell
-        TableItem(ActiveCellTableName).Form.PopulateForm pTableObj
+        TableItem(ActiveCellTableName, Module_Name).Form.PopulateForm pTableObj
     
     Case Is = "Go To Bottom"
         Set pTableObj.ActiveTarget = pTableObj.LastCell
-        TableItem(ActiveCellTableName).Form.PopulateForm pTableObj
+        TableItem(ActiveCellTableName, Module_Name).Form.PopulateForm pTableObj
     
     Case Else:
         Stop
@@ -198,8 +200,8 @@ Dim TableName As String
     TableName = ActiveCellTableName
     
     If TableName <> "" Then
-        TableItem(TableName).Form.PopulateForm TableItem(TableName)
-        TableItem(TableName).Form(TableName).Show
+        TableItem(TableName, Module_Name).Form.PopulateForm TableItem(TableName, Module_Name)
+        TableItem(TableName, Module_Name).Form(TableName).Show
     End If
     
     PaintButtons

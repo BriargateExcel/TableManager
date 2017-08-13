@@ -41,8 +41,8 @@ Public Sub Auto_Open()
     Next UserFrm
     
 '   Procedure
-    TableSetNewClass
-    WorksheetSetNewClass
+    TableSetNewClass Module_Name
+    WorksheetSetNewClass Module_Name
     
     For Each Sht In ThisWorkbook.Worksheets
         For Each Tbl In Sht.ListObjects
@@ -51,7 +51,7 @@ Public Sub Auto_Open()
         Set SheetClass = New WorksheetClass
         Set SheetClass.ws = Sht
         SheetClass.Name = Sht.Name
-        WorksheetAdd SheetClass
+        WorksheetAdd SheetClass, Module_Name
     Next Sht
     
     DoEvents
@@ -108,7 +108,7 @@ Public Function BuildTable( _
     
     Tbl.Form.BuildForm (Tbl)
 '    Tbl.Add Tbls(TableName)
-    TableAdd Tbl
+    TableAdd Tbl, Module_Name
     
 ErrHandler:
     Select Case Err.Number

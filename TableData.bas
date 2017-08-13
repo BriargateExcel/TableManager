@@ -4,6 +4,137 @@ Option Explicit
 Private pAllTbls As TablesClass
 Private pAllShts As WorksheetsClass
 
+Private Function InScope( _
+    ByVal ModuleList As Variant, _
+    ByVal ModuleName As String _
+    ) As Boolean
+' Retrieves the name of the module where InScope is called
+' Filters the name against the list of valid module names
+' Returns true if the Filter result has any entries
+    InScope = _
+        (UBound( _
+            Filter(ModuleList, _
+                ModuleName, _
+                True, _
+                CompareMethod.BinaryCompare) _
+        ) > -1)
+End Function
+
+Private Function TableModuleList() As Variant
+    TableModuleList = Array("TablesClass.", "Module1.", "WorksheetClass.", "EventHandler.")
+End Function
+
+Private Function WorksheetModuleList() As Variant
+    WorksheetModuleList = Array("WorksheetsClass.", "Module1.")
+End Function
+
+Public Function TableExists( _
+    ByVal Val As Variant, _
+    ByVal ModuleName As String _
+    ) As Boolean
+    
+    Debug.Assert InScope(TableModuleList, ModuleName)
+    TableExists = pAllTbls.Exists(Val)
+End Function
+
+Public Function TableItem( _
+    ByVal Val As Variant, _
+    ByVal ModuleName As String _
+    ) As Variant
+    
+    Debug.Assert InScope(TableModuleList, ModuleName)
+    Set TableItem = pAllTbls(Val)
+End Function
+
+Public Sub TableSetNothing(ByVal ModuleName As String)
+    Debug.Assert InScope(TableModuleList, ModuleName)
+    Set pAllTbls = Nothing
+End Sub
+
+Public Sub TableSetNewDict(ByVal ModuleName As String)
+    Debug.Assert InScope(TableModuleList, ModuleName)
+    Set pAllTbls = New Scripting.Dictionary
+End Sub
+
+Public Sub TableSetNewClass(ByVal ModuleName As String)
+    Debug.Assert InScope(TableModuleList, ModuleName)
+    Set pAllTbls = New TablesClass
+End Sub
+
+Public Sub TableRemove( _
+    ByVal Val As Variant, _
+    ByVal ModuleName As String)
+    
+    Debug.Assert InScope(TableModuleList, ModuleName)
+    pAllTbls.Remove Val
+End Sub
+
+Public Function TableCount(ByVal ModuleName As String) As Long
+    Debug.Assert InScope(TableModuleList, ModuleName)
+    TableCount = pAllTbls.Count
+End Function
+
+Public Sub TableAdd( _
+    ByVal Val As Variant, _
+    ByVal ModuleName As String)
+    
+    Debug.Assert InScope(TableModuleList, ModuleName)
+    pAllTbls.Add Val
+End Sub
+
+Public Function WorksheetExists( _
+    ByVal Val As Variant, _
+    ByVal ModuleName As String _
+    ) As Boolean
+    
+    Debug.Assert InScope(WorksheetModuleList, ModuleName)
+    WorksheetExists = pAllShts.Exists(Val)
+End Function
+
+Public Function WorksheetItem( _
+    ByVal Val As Variant, _
+    ByVal ModuleName As String) As Variant
+    
+    Debug.Assert InScope(WorksheetModuleList, ModuleName)
+    Set WorksheetItem = pAllShts(Val)
+End Function
+
+Public Sub WorksheetSetNothing(ByVal ModuleName As String)
+    Debug.Assert InScope(WorksheetModuleList, ModuleName)
+    Set pAllShts = Nothing
+End Sub
+
+Public Sub WorksheetSetNewDict(ByVal ModuleName As String)
+    Debug.Assert InScope(WorksheetModuleList, ModuleName)
+    Set pAllShts = New Scripting.Dictionary
+End Sub
+
+Public Sub WorksheetSetNewClass(ByVal ModuleName As String)
+    Debug.Assert InScope(WorksheetModuleList, ModuleName)
+    Set pAllShts = New WorksheetsClass
+End Sub
+
+Public Sub WorksheetRemove( _
+    ByVal Val As Variant, _
+    ByVal ModuleName As String)
+    
+    Debug.Assert InScope(WorksheetModuleList, ModuleName)
+    pAllShts.Remove Val
+End Sub
+
+Public Function WorksheetCount(ByVal ModuleName As String) As Long
+    Debug.Assert InScope(WorksheetModuleList, ModuleName)
+    WorksheetCount = pAllShts.Count
+End Function
+
+Public Sub WorksheetAdd( _
+    ByVal Val As Variant, _
+    ByVal ModuleName As String)
+    
+    Debug.Assert InScope(WorksheetModuleList, ModuleName)
+    pAllShts.Add Val
+End Sub
+
 Public Function Table( _
     ByVal TableName As String _
     ) As TableClass
@@ -182,107 +313,4 @@ Public Sub LetTableCell( _
     Tbl.Worksheet.ListObjects(Tbl.Name).DataBodyRange(RowNum, ColNum) = NewVal
     
 End Sub
-
-Public Function InScope(ByVal ModuleList As Variant) As Boolean
-' Retrieves the name of the module where InScope is called
-' Filters the name against the list of valid module names
-' Returns true if the results of the Filter has more than -1 entries
-    InScope = _
-        (UBound( _
-            Filter(ModuleList, _
-                Application.VBE.ActiveCodePane.CodeModule.Name, _
-                True, _
-                CompareMethod.BinaryCompare) _
-        ) > -1)
-
-End Function
-
-Private Function TableModuleList() As Variant
-    TableModuleList = Array("TablesClass", "TableData")
-End Function
-
-Public Function TableExists(ByVal Val As Variant) As Boolean
-    Debug.Assert InScope(TableModuleList)
-    TableExists = pAllTbls.Exists(Val)
-End Function
-
-Public Function TableItem(ByVal Val As Variant) As Variant
-    Debug.Assert InScope(TableModuleList)
-    Set TableItem = pAllTbls(Val)
-End Function
-
-Public Sub TableSetNothing()
-    Debug.Assert InScope(TableModuleList)
-    Set pAllTbls = Nothing
-End Sub
-
-Public Sub TableSetNewDict()
-    Debug.Assert InScope(TableModuleList)
-    Set pAllTbls = New Scripting.Dictionary
-End Sub
-
-Public Sub TableSetNewClass()
-    Debug.Assert InScope(TableModuleList)
-    Set pAllTbls = New TablesClass
-End Sub
-
-Public Sub TableRemove(ByVal Val As Variant)
-    Debug.Assert InScope(TableModuleList)
-    pAllTbls.Remove Val
-End Sub
-
-Public Function TableCount() As Long
-    Debug.Assert InScope(TableModuleList)
-    TableCount = pAllTbls.Count
-End Function
-
-Public Sub TableAdd(ByVal Val As Variant)
-    Debug.Assert InScope(TableModuleList)
-    pAllTbls.Add Val
-End Sub
-
-Private Function WorksheetModuleList() As Variant
-    WorksheetModuleList = Array("WorksheetsClass", "TableData")
-End Function
-
-Public Function WorksheetExists(ByVal Val As Variant) As Boolean
-    Debug.Assert InScope(WorksheetModuleList)
-    WorksheetExists = pAllShts.Exists(Val)
-End Function
-
-Public Function WorksheetItem(ByVal Val As Variant) As Variant
-    Debug.Assert InScope(WorksheetModuleList)
-    Set WorksheetItem = pAllShts(Val)
-End Function
-
-Public Sub WorksheetSetNothing()
-    Debug.Assert InScope(WorksheetModuleList)
-    Set pAllShts = Nothing
-End Sub
-
-Public Sub WorksheetSetNewDict()
-    Debug.Assert InScope(WorksheetModuleList)
-    Set pAllShts = New Scripting.Dictionary
-End Sub
-
-Public Sub WorksheetSetNewClass()
-    Debug.Assert InScope(WorksheetModuleList)
-    Set pAllShts = New WorksheetsClass
-End Sub
-
-Public Sub WorksheetRemove(ByVal Val As Variant)
-    Debug.Assert InScope(WorksheetModuleList)
-    pAllShts.Remove Val
-End Sub
-
-Public Function WorksheetCount() As Long
-    Debug.Assert InScope(WorksheetModuleList)
-    WorksheetCount = pAllShts.Count
-End Function
-
-Public Sub WorksheetAdd(ByVal Val As Variant)
-    Debug.Assert InScope(WorksheetModuleList)
-    pAllShts.Add Val
-End Sub
-
 
