@@ -21,7 +21,6 @@ Function ActiveCellTableName() As String
 End Function
 
 Public Function CheckForVBAProjectAccessEnabled() As Boolean
-
 '   Description:
 '   Checks that access to the VBA project is enabled
 '   If not enabled, tells the user how to enable it
@@ -62,11 +61,11 @@ ErrHandler:
     Select Case Err.Number
         Case Is = NoError:                          'Do nothing
         Case Else:
-            MsgBox "Your security settings do not allow this procedure to run." _
-                & vbCrLf & vbCrLf & "To change your security setting:" _
-                & vbCrLf & vbCrLf & " 1. Select Tools - Macro - Security." & vbCrLf _
-                & " 2. Click the 'Trusted Sources' tab" & vbCrLf _
-                & " 3. Place a checkmark next to 'Trust access to Visual Basic Project.'", _
+            MsgBox "Your security settings do not allow this procedure to run." & vbCrLf & vbCrLf & _
+                "To change your security setting:" & vbCrLf & vbCrLf & _
+                " 1. Select Tools - Macro - Security" & vbCrLf & _
+                " 2. Click the 'Trusted Sources' tab" & vbCrLf & _
+                " 3. Check 'Trust access to Visual Basic Project'", _
                 vbCritical
     End Select
 
@@ -76,15 +75,39 @@ Public Function DspErrMsg(ByVal sRoutine As String)
 
     Const bDebugMode    As Boolean = True   'Set to false when put into production
 
-    DspErrMsg = MsgBox(Err.Number & ":" & Err.Description, _
-                       IIf(bDebugMode, vbAbortRetryIgnore, vbCritical) + _
-                         IIf(Err.Number = 999, 0, vbMsgBoxHelpButton), _
-                       sRoutine, _
-                       Err.HelpFile, _
-                       Err.HelpContext)
+    DspErrMsg = MsgBox( _
+        Err.Number & ":" & Err.Description, _
+        IIf(bDebugMode, vbAbortRetryIgnore, vbCritical) + _
+            IIf(Err.Number = 999, 0, vbMsgBoxHelpButton), _
+        sRoutine, _
+        Err.HelpFile, _
+        Err.HelpContext)
 End Function
 
-Public Function VBAMatch(ByVal Target As Variant, ByVal SearchRange As Range, Optional ByVal TreatAsString As Boolean = False) As Long
+Public Function InScope( _
+    ByVal ModuleList As Variant, _
+    ByVal ModuleName As String _
+    ) As Boolean
+
+'   Uses the name of the module where InScope is called
+'   Filters the name against the list of valid module names
+'   Returns true if the Filter result has any entries
+'   In other words, returns True if ModuleName is found in ModuleList
+
+    InScope = _
+        (UBound( _
+            Filter(ModuleList, _
+                ModuleName, _
+                True, _
+                CompareMethod.BinaryCompare) _
+        ) > -1)
+End Function
+
+Public Function VBAMatch( _
+    ByVal Target As Variant, _
+    ByVal SearchRange As Range, _
+    Optional ByVal TreatAsString As Boolean = False _
+    ) As Long
 
     On Error GoTo NotFound
     
@@ -100,5 +123,4 @@ NotFound:
     VBAMatch = 0
     
 End Function ' VBAMatch
-
 

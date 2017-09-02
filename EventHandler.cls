@@ -39,6 +39,29 @@ Private pTableObj As TableClass
 
 Private pName As String
 
+Public Property Set FormObj(ByVal Vbl As Object)
+    Set pFormObj = Vbl
+    Set Me.FormEvent = Vbl
+End Property
+
+Public Property Set ImageObj(ByVal Vbl As Object)
+    Set pImageObj = Vbl
+    Set Me.ImageEvent = Vbl
+End Property
+
+Public Property Set SheetObj(ByVal Vbl As Object)
+    Set pSheet = Vbl
+    Set Me.SheetEvent = Vbl
+End Property
+
+Public Property Set TableObj(ByVal Tbl As TableClass)
+    Set pTableObj = Tbl
+End Property
+
+Public Property Get Name() As String:     Name = pName:       End Property
+
+Public Property Get Sheet() As Worksheet: Set Sheet = pSheet: End Property
+
 Private Sub ButtonEvent_Click()
     Dim Target As Range
     
@@ -106,25 +129,6 @@ Private Sub ButtonEvent_Click()
     
 End Sub ' ButtonEvent_Click
 
-Private Sub PaintButtons()
-    Dim CtlIter As Variant
-    
-    For Each CtlIter In pFormObj.Controls
-        With CtlIter
-            If Left(.Name, 7) = "Command" Then
-                EnableButton CtlIter
-                LowLightControl CtlIter
-                If .Caption = "Previous Row" And pTableObj.ActiveRow = 1 Then
-                    DisableButton CtlIter
-                End If
-                If .Caption = "Next Row" And pTableObj.ActiveRow = pTableObj.LastRow Then
-                    DisableButton CtlIter
-                End If
-            End If
-        End With ' CtlIter
-    Next CtlIter
-End Sub
-
 Private Sub ButtonEvent_MouseMove( _
     ByVal Button As Integer, _
     ByVal Shift As Integer, _
@@ -135,14 +139,20 @@ Private Sub ButtonEvent_MouseMove( _
     
     HighLightButton pButtonObj
     
-End Sub
+End Sub ' ButtonEvent_MouseMove
 
 Public Sub ButtonObj(ByVal Btn As MSForms.CommandButton)
     
     Set ButtonEvent = Btn
     Set pButtonObj = Btn
     pName = Btn.Name
-End Sub
+End Sub ' ButtonObj
+
+Public Sub TextObj(ByVal Txt As MSForms.TextBox)
+    Set TextEvent = Txt
+    Set pTextObj = Txt
+    pName = Txt.Name
+End Sub ' TextObj
 
 Private Sub ComboEvent_MouseMove( _
     ByVal Combo As Integer, _
@@ -162,13 +172,13 @@ Private Sub ComboEvent_MouseMove( _
     
     PaintButtons
     
-End Sub
+End Sub ' ComboEvent_MouseMove
 
 Public Sub ComboObj(ByVal Cmb As MSForms.ComboBox)
     Set ComboEvent = Cmb
     Set pComboObj = Cmb
     pName = Cmb.Name
-End Sub
+End Sub ' ComboObj
 
 Private Sub FormEvent_MouseMove( _
     ByVal Button As Integer, _
@@ -190,10 +200,34 @@ Private Sub FormEvent_MouseMove( _
     
     PaintButtons
     
-End Sub
+End Sub ' FormEvent_MouseMove
 
-Private Sub SheetEvent_BeforeDoubleClick(ByVal Target As Range, Cancel As Boolean)
-Dim TableName As String
+Private Sub PaintButtons()
+'   Sets all the button colors to reflect the current state of the form
+
+    Dim CtlIter As Variant
+    
+    For Each CtlIter In pFormObj.Controls
+        With CtlIter
+            If Left(.Name, 7) = "Command" Then
+                EnableButton CtlIter
+                LowLightControl CtlIter
+                If .Caption = "Previous Row" And pTableObj.ActiveRow = 1 Then
+                    DisableButton CtlIter
+                End If
+                If .Caption = "Next Row" And pTableObj.ActiveRow = pTableObj.LastRow Then
+                    DisableButton CtlIter
+                End If
+            End If
+        End With ' CtlIter
+    Next CtlIter
+End Sub ' PaintButtons
+
+Private Sub SheetEvent_BeforeDoubleClick( _
+    ByVal Target As Range, _
+    Cancel As Boolean)
+    
+    Dim TableName As String
     
     Cancel = True
 
@@ -206,34 +240,5 @@ Dim TableName As String
     
     PaintButtons
     
-End Sub
-
-Public Property Set TableObj(ByVal Tbl As TableClass)
-    Set pTableObj = Tbl
-End Property
-
-Public Property Set FormObj(ByVal Vbl As Object)
-    Set pFormObj = Vbl
-    Set Me.FormEvent = Vbl
-End Property
-
-Public Property Set ImageObj(ByVal Vbl As Object)
-    Set pImageObj = Vbl
-    Set Me.ImageEvent = Vbl
-End Property
-
-Public Property Get Name() As String: Name = pName: End Property
-
-Public Sub TextObj(ByVal Txt As MSForms.TextBox)
-    Set TextEvent = Txt
-    Set pTextObj = Txt
-    pName = Txt.Name
-End Sub
-
-Public Property Get Sheet() As Worksheet: Set Sheet = pSheet: End Property
-
-Public Property Set SheetObj(ByVal Vbl As Object)
-    Set pSheet = Vbl
-    Set Me.SheetEvent = Vbl
-End Property
+End Sub ' SheetEvent_BeforeDoubleClick
 

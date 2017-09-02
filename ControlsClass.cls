@@ -13,6 +13,12 @@ Private Const Module_Name = "ControlsClass."
 
 Private AllCtls As Scripting.Dictionary
 
+Private Sub Class_Initialize(): Set AllCtls = New Scripting.Dictionary: End Sub
+
+Public Property Get Controls(): Controls = AllCtls.Keys:                End Property
+
+Public Property Get Count() As Integer: Count = AllCtls.Count:                  End Property
+
 Public Property Get Item(ByVal vIndex As Variant)
 Attribute Item.VB_UserMemId = 0
 'Attribute Item.VB_UserMemId = 0
@@ -54,42 +60,7 @@ ErrHandler:
 
 End Property
 
-Public Function Exists(ByVal vIndex) As Boolean
-
-'   Description:Determine if OneCell exists in AllCells
-'   Inputs:     vIndex      Name or Instance #
-'   Outputs:    Me          True/False
-'   Requisites: *None
-'   Example:    ? AllCells.Exists("DET")
-'               ? AllCells.Exists(1)
-
-'     Date
-'   05/14/2017 RRD Ini Modification
-
-'   Declarations
-    Const Routine_Name = Module_Name & "Exists"
-
-'   Error Handling Initialization
-    On Error GoTo ErrHandler
-    Exists = AllCtls.Exists(vIndex)
-    
-ErrHandler:
-    Select Case Err.Number
-        Case Is = NoError   'Do nothing
-        Case Is = 424:        'Does not exist
-        Case Is = 13:       'Does not exist
-        Case Else:          'Display Error Message Box
-            Select Case DspErrMsg(Routine_Name)
-                Case Is = vbAbort:  Stop: Resume    'Debug mode
-                Case Is = vbRetry:  Resume          'Try again
-                Case Is = vbIgnore:                 'End routine
-            End Select
-    End Select
-
-End Function
-
 Public Sub Add(ByVal Ctl As Control)
-
 '   Description:Add a control
 '   Inputs:     Ctl The control to be added
 '   Outputs:    *None
@@ -129,9 +100,40 @@ ErrHandler:
     
 End Sub
 
+Public Function Exists(ByVal vIndex) As Boolean
+'   Description:Determine if OneCell exists in AllCells
+'   Inputs:     vIndex      Name or Instance #
+'   Outputs:    Me          True/False
+'   Requisites: *None
+'   Example:    ? AllCells.Exists("DET")
+'               ? AllCells.Exists(1)
+
+'     Date
+'   05/14/2017 RRD Ini Modification
+
+'   Declarations
+    Const Routine_Name = Module_Name & "Exists"
+
+'   Error Handling Initialization
+    On Error GoTo ErrHandler
+    Exists = AllCtls.Exists(vIndex)
+    
+ErrHandler:
+    Select Case Err.Number
+        Case Is = NoError   'Do nothing
+        Case Is = 424:        'Does not exist
+        Case Is = 13:       'Does not exist
+        Case Else:          'Display Error Message Box
+            Select Case DspErrMsg(Routine_Name)
+                Case Is = vbAbort:  Stop: Resume    'Debug mode
+                Case Is = vbRetry:  Resume          'Try again
+                Case Is = vbIgnore:                 'End routine
+            End Select
+    End Select
+
+End Function
 
 Public Sub Remove(ByVal vIndex As Variant)
-
 '   Description:Close and Remove a connection
 '   Inputs:     Name        Connection name
 '   Outputs:    *None
@@ -169,17 +171,3 @@ ErrHandler:
     
 End Sub
 
-
-'   Internal Routines
-
-Private Sub Class_Initialize()
-    Set AllCtls = New Scripting.Dictionary
-End Sub
-
-'   Custom Properties
-
-Public Property Get Count() As Integer
-    Count = AllCtls.Count
-End Property
-
-Public Property Get Controls():  Controls = AllCtls.Keys: End Property

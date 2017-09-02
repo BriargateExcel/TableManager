@@ -13,43 +13,9 @@ Private Const Module_Name = "TablesClass."
 
 Private LocalShts As Scripting.Dictionary
 
-Public Sub Add(ByVal Sht As WorksheetClass)
+Private Sub Class_Initialize():         Set LocalShts = New Scripting.Dictionary: End Sub
 
-'   Description:Add a control
-'   Inputs:     Ctl The control to be added
-'   Outputs:    *None
-'   Requisites:
-'   SharedRoutines
-'   Example:
-
-'     Date
-'   05/14/2017 RRD Ini Modification
-
-'   Declarations
-    Const Routine_Name = Module_Name & "Add"
-    
-'   Error Handling Initialization
-    On Error GoTo ErrHandler
-           
-'   Procedure
-    If LocalShts.Exists(Sht.Name) Then Remove Sht.Name
-        
-    If Sht.Name <> "" Then ' The sheet must have a name
-        LocalShts.Add Sht.Name, Sht
-    End If
-        
-ErrHandler:
-    Select Case Err.Number
-        Case Is = NoError:   'Do nothing
-        Case Else:          'Display Error Message Box
-            Select Case DspErrMsg(Routine_Name)
-                Case Is = vbAbort:  Stop: Resume    'Debug mode
-                Case Is = vbRetry:  Resume          'Try again
-                Case Is = vbIgnore:                 'End routine
-            End Select
-    End Select
-    
-End Sub ' Add
+Public Property Get Count() As Integer: Count = TableCount(Module_Name):          End Property
 
 Public Property Get Item(ByVal vIndex As Variant)
 'Attribute Item.VB_UserMemId = 0
@@ -92,8 +58,44 @@ ErrHandler:
 
 End Property
 
-Public Function Exists(ByVal vIndex) As Boolean
+Public Sub Add(ByVal Sht As WorksheetClass)
+'   Description:Add a control
+'   Inputs:     Ctl The control to be added
+'   Outputs:    *None
+'   Requisites:
+'   SharedRoutines
+'   Example:
 
+'     Date
+'   05/14/2017 RRD Ini Modification
+
+'   Declarations
+    Const Routine_Name = Module_Name & "Add"
+    
+'   Error Handling Initialization
+    On Error GoTo ErrHandler
+           
+'   Procedure
+    If LocalShts.Exists(Sht.Name) Then Remove Sht.Name
+        
+    If Sht.Name <> "" Then ' The sheet must have a name
+        LocalShts.Add Sht.Name, Sht
+    End If
+        
+ErrHandler:
+    Select Case Err.Number
+        Case Is = NoError:   'Do nothing
+        Case Else:          'Display Error Message Box
+            Select Case DspErrMsg(Routine_Name)
+                Case Is = vbAbort:  Stop: Resume    'Debug mode
+                Case Is = vbRetry:  Resume          'Try again
+                Case Is = vbIgnore:                 'End routine
+            End Select
+    End Select
+    
+End Sub ' Add
+
+Public Function Exists(ByVal vIndex) As Boolean
 '   Description:Determine if OneCell exists in AllCells
 '   Inputs:     vIndex      Name or Instance #
 '   Outputs:    Me          True/False
@@ -126,8 +128,44 @@ ErrHandler:
 
 End Function
 
-Public Sub Remove(ByVal vIndex As Variant)
+Public Function ListTbls() As Variant
+'   Description: Description of what function does
+'   Inputs:
+'   Outputs:
+'   Me       Success/Failure
+'   Requisites:
+'   None
+'   Notes:
+'   Any notes
+'   Example:
+'   How to call this routine
+'   History
+'   2017-06-13 RRD Initial Programming
 
+'   Declarations
+    Const Routine_Name = Module_Name & "." & "ListTbls"
+
+'   Error Handling Initialization
+    On Error GoTo ErrHandler
+    
+'   Procedure
+    ListTbls = LocalShts.Keys
+
+    ListTbls = Success
+ErrHandler:
+    Select Case Err.Number
+        Case Is = NoError:                          'Do nothing
+        Case Else:
+            Select Case DspErrMsg(Routine_Name)
+                Case Is = vbAbort:  Stop: Resume    'Debug mode - Trace
+                Case Is = vbRetry:  Resume          'Try again
+                Case Is = vbIgnore:                 'End routine
+            End Select
+    End Select
+
+End Function ' ListTbls
+
+Public Sub Remove(ByVal vIndex As Variant)
 '   Description:Close and Remove a connection
 '   Inputs:     Name        Connection name
 '   Outputs:    *None
@@ -165,52 +203,3 @@ ErrHandler:
     
 End Sub
 
-Public Function ListTbls() As Variant
-
-'   Description: Description of what function does
-'   Inputs:
-'   Outputs:
-'   Me       Success/Failure
-'   Requisites:
-'   None
-'   Notes:
-'   Any notes
-'   Example:
-'   How to call this routine
-'   History
-'   2017-06-13 RRD Initial Programming
-
-'   Declarations
-    Const Routine_Name = Module_Name & "." & "ListTbls"
-
-'   Error Handling Initialization
-    On Error GoTo ErrHandler
-    
-'   Procedure
-    ListTbls = LocalShts.Keys
-
-    ListTbls = Success
-ErrHandler:
-    Select Case Err.Number
-        Case Is = NoError:                          'Do nothing
-        Case Else:
-            Select Case DspErrMsg(Routine_Name)
-                Case Is = vbAbort:  Stop: Resume    'Debug mode - Trace
-                Case Is = vbRetry:  Resume          'Try again
-                Case Is = vbIgnore:                 'End routine
-            End Select
-    End Select
-
-End Function ' ListTbls
-
-'   Custom Properties
-
-Public Property Get Count() As Integer
-    Count = TableCount(Module_Name)
-End Property
-
-'   Internal Routines
-
-Private Sub Class_Initialize()
-     Set LocalShts = New Scripting.Dictionary
-End Sub

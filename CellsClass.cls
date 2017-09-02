@@ -13,6 +13,10 @@ Private Const Module_Name = "CellsClass."
 
 Private AllCells As Collection
 
+Private Sub Class_Initialize(): Set AllCells = New Collection: End Sub
+
+Public Property Get Count() As Integer: Count = AllCells.Count: End Property
+
 Public Property Get Item(ByVal vIndex As Variant)
 Attribute Item.VB_UserMemId = 0
 'Attribute Item.VB_UserMemId = 0
@@ -56,6 +60,42 @@ ErrHandler:
 
 End Property
 
+Public Sub Add(ByVal Cll As CellClass)
+
+'   Description:Add a Cell
+'   Inputs:     Cll        Cell under analysis
+'   Outputs:    *None
+'   Requisites:
+'   SharedRoutines
+'   Example:    AllCells.Add [Cll].ListObject
+
+'     Date
+'   05/14/2017 RRD Ini Modification
+
+'   Declarations
+    Const Routine_Name = Module_Name & "Add"
+
+'   Error Handling Initialization
+    On Error GoTo ErrHandler
+           
+'   Procedure
+    If Exists(Cll) Then Remove Cll
+        
+    If Cll.HeaderText <> "" Then AllCells.Add Cll
+        
+ErrHandler:
+    Select Case Err.Number
+        Case Is = NoError:   'Do nothing
+        Case Else:          'Display Error Message Box
+            Select Case DspErrMsg(Routine_Name)
+                Case Is = vbAbort:  Stop: Resume    'Debug mode
+                Case Is = vbRetry:  Resume          'Try again
+                Case Is = vbIgnore:                 'End routine
+            End Select
+    End Select
+    
+End Sub
+
 Public Function Exists(ByVal vIndex) As Boolean
 
 '   Description:Determine if OneCell exists in AllCells
@@ -94,45 +134,14 @@ ErrHandler:
 
 End Function
 
-Public Sub Add(ByVal Cll As CellClass)
-
-'   Description:Add a Cell
-'   Inputs:     Cll        Cell under analysis
-'   Outputs:    *None
-'   Requisites:
-'   SharedRoutines
-'   Example:    AllCells.Add [Cll].ListObject
-
-'     Date
-'   05/14/2017 RRD Ini Modification
-
-'   Declarations
-    Const Routine_Name = Module_Name & "Add"
-
-'   Error Handling Initialization
-    On Error GoTo ErrHandler
-           
-'   Procedure
-    If Exists(Cll) Then Remove Cll
-        
-    If Cll.HeaderText <> "" Then AllCells.Add Cll
-        
-ErrHandler:
-    Select Case Err.Number
-        Case Is = NoError:   'Do nothing
-        Case Else:          'Display Error Message Box
-            Select Case DspErrMsg(Routine_Name)
-                Case Is = vbAbort:  Stop: Resume    'Debug mode
-                Case Is = vbRetry:  Resume          'Try again
-                Case Is = vbIgnore:                 'End routine
-            End Select
-    End Select
-    
-End Sub
-
+Public Function NewEnum() As IUnknown
+Attribute NewEnum.VB_UserMemId = -4
+'Attribute NewEnum.VB_UserMemID = -4
+'   Description:Enables FOR EACH
+    Set NewEnum = AllCells.[_NewEnum]
+End Function
 
 Public Sub Remove(ByVal vIndex As Variant)
-
 '   Description:Close and Remove a connection
 '   Inputs:     Name        Connection name
 '   Outputs:    *None
@@ -169,29 +178,6 @@ ErrHandler:
     End Select
     
 End Sub
-
-
-'   Internal Routines
-
-Private Sub Class_Initialize()
-    Set AllCells = New Collection
-End Sub
-
-'   Custom Properties
-
-Public Property Get Count() As Integer
-    Count = AllCells.Count
-End Property
-
-
-'   Methods
-
-Public Function NewEnum() As IUnknown
-Attribute NewEnum.VB_UserMemId = -4
-'Attribute NewEnum.VB_UserMemID = -4
-'   Description:Enables FOR EACH
-    Set NewEnum = AllCells.[_NewEnum]
-End Function
 
 
 

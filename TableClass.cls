@@ -23,7 +23,53 @@ Private pTarget As Range
 Private pForm As FormClass
 Private pWkSht As Worksheet
 
-Public Sub CollectData(ByVal ws As Worksheet, ByVal TblName As String)
+Public Property Get ActiveRow() As Long
+    Dim THRow As Long: THRow = pTarget.ListObject.HeaderRowRange.Row
+    Dim TRow As Long: TRow = pTarget.Row
+    Dim DBrow As Long: DBrow = TRow - THRow
+
+    ActiveRow = DBrow
+
+End Property
+
+Public Property Get ActiveTarget() As Range: Set ActiveTarget = pTarget: End Property
+
+Public Property Set ActiveTarget(ByVal Vbl As Range)
+    Vbl.Select
+    Set pTarget = Vbl
+End Property
+
+Public Property Get DBRange() As Range
+    Set DBRange = pWkSht.ListObjects(pName).DataBodyRange
+End Property
+
+Public Property Get Form() As FormClass:          Set Form = pForm:             End Property
+
+Public Property Set Form(ByVal Vbl As FormClass): Set pForm = Vbl:              End Property
+
+Public Property Get Locked() As Boolean:          Locked = pLocked:             End Property
+
+Public Property Get MaxFieldLength() As Single:   MaxFieldLength = pMaxField:   End Property
+
+Public Property Get MaxHeaderLength() As Single:  MaxHeaderLength = pMaxHeader: End Property
+
+Public Property Get Name() As String:             Name = pName:                 End Property
+
+Public Property Get NumFields() As Integer:       NumFields = pCells.Count:     End Property
+
+Public Property Get TableCells() As CellsClass:   Set TableCells = pCells:      End Property
+
+Public Property Get Target() As Range:            Set Target = pTarget:         End Property
+
+Public Property Set Target(ByVal Vbl As Range):   Set pTarget = Vbl:            End Property
+
+Public Property Get Worksheet() As Worksheet:     Set Worksheet = pWkSht:       End Property
+
+Public Property Get WrapCount() As Integer:       WrapCount = pWrapCount:       End Property
+
+Public Sub CollectData( _
+    ByVal WS As Worksheet, _
+    ByVal TblName As String)
 
 '   Description: Description of what function does
 '   Inputs:
@@ -50,8 +96,8 @@ Public Sub CollectData(ByVal ws As Worksheet, ByVal TblName As String)
     
 '   Procedure
     pName = TblName
-    Set pWkSht = ws
-    Set pTable = ws.ListObjects(TblName)
+    Set pWkSht = WS
+    Set pTable = WS.ListObjects(TblName)
     Set pCells = New CellsClass
     pLocked = True
     
@@ -85,35 +131,6 @@ ErrHandler:
 
 End Sub      ' CollectData
 
-Public Sub PopulateTable(ByVal Target As Range)
-    Dim Cll As CellClass
-    Dim TRow As Long: TRow = Target.Row
-    Dim THRow As Long: THRow = Target.ListObject.HeaderRowRange.Row
-    Dim RowNum As Long: RowNum = TRow - THRow
-    
-    For Each Cll In pCells
-        Cll.LetCellValue RowNum, Cll.FormControl
-    Next Cll
-    
-End Sub
-
-Public Property Set ActiveTarget(ByVal Vbl As Range): Vbl.Select: Set pTarget = Vbl: End Property
-
-Public Property Get ActiveTarget() As Range: Set ActiveTarget = pTarget: End Property
-
-Public Property Get ActiveRow() As Long
-    Dim THRow As Long: THRow = pTarget.ListObject.HeaderRowRange.Row
-    Dim TRow As Long: TRow = pTarget.Row
-    Dim DBRow As Long: DBRow = TRow - THRow
-
-    ActiveRow = DBRow
-
-End Property
-
-Public Property Get Target() As Range: Set Target = pTarget: End Property
-
-Public Property Set Target(ByVal Vbl As Range): Set pTarget = Vbl: End Property
-
 Public Function FirstCell() As Range
     Set FirstCell = pTable.DataBodyRange(1, 1)
 End Function
@@ -129,45 +146,38 @@ End Function
 Public Sub NextRow()
     Dim THRow As Long: THRow = pTarget.ListObject.HeaderRowRange.Row
     Dim TRow As Long: TRow = pTarget.Row
-    Dim DBRow As Long: DBRow = TRow - THRow
+    Dim DBrow As Long: DBrow = TRow - THRow
     
-    If DBRow < pTarget.ListObject.ListRows.Count Then
+    If DBrow < pTarget.ListObject.ListRows.Count Then
         Set pTarget = pTarget.Offset(1)
     Else
         MsgBox "Cannot advance to the next row; already at last row", vbOKOnly Or vbExclamation, "Already at End of Table"
     End If
 End Sub
 
+Public Sub PopulateTable(ByVal Target As Range)
+    Dim Cll As CellClass
+    Dim TRow As Long: TRow = Target.Row
+    Dim THRow As Long: THRow = Target.ListObject.HeaderRowRange.Row
+    Dim RowNum As Long: RowNum = TRow - THRow
+    
+    For Each Cll In pCells
+        Cll.LetCellValue RowNum, Cll.FormControl
+    Next Cll
+    
+End Sub
+
 Public Sub PreviousRow()
     Dim THRow As Long: THRow = pTarget.ListObject.HeaderRowRange.Row
     Dim TRow As Long: TRow = pTarget.Row
-    Dim DBRow As Long: DBRow = TRow - THRow
+    Dim DBrow As Long: DBrow = TRow - THRow
     
-    If DBRow > 1 Then
+    If DBrow > 1 Then
         Set pTarget = pTarget.Offset(-1)
     Else
-        MsgBox "Cannot move to the prevous row; already at first row", vbOKOnly Or vbExclamation, "Already at Beginning of Table"
+        MsgBox "Cannot move to the previous row; already at first row", _
+            vbOKOnly Or vbExclamation, _
+            "Already at Beginning of Table"
     End If
 End Sub
 
-Public Property Get DBRange() As Range: Set DBRange = pWkSht.ListObjects(pName).DataBodyRange: End Property
-
-Public Property Get Form() As FormClass: Set Form = pForm: End Property
-
-Public Property Set Form(ByVal Vbl As FormClass): Set pForm = Vbl: End Property
-
-Public Property Get Locked() As Boolean: Locked = pLocked: End Property
-
-Public Property Get MaxFieldLength() As Single: MaxFieldLength = pMaxField: End Property
-
-Public Property Get MaxHeaderLength() As Single: MaxHeaderLength = pMaxHeader: End Property
-
-Public Property Get Name() As String: Name = pName: End Property
-
-Public Property Get NumFields() As Integer: NumFields = pCells.Count: End Property
-
-Public Property Get TableCells() As CellsClass: Set TableCells = pCells: End Property
-
-Public Property Get WrapCount() As Integer: WrapCount = pWrapCount: End Property
-
-Public Property Get Worksheet() As Worksheet: Set Worksheet = pWkSht: End Property

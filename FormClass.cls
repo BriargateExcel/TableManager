@@ -34,10 +34,66 @@ Private Const ComboHeight = 18
 Private Const ButtonHeight = 24
 Private Const ButtonWidth = 72
 
+Private Sub Class_Initialize():                     Set pCtls = New ControlsClass: End Sub
+
+Public Property Get Caption() As String:            Caption = pCaption:            End Property
+
+Public Property Get Controls() As ControlsClass:    Set Controls = pCtls:          End Property
+
+Public Property Get Enabled() As Boolean:           Enabled = pEnabled:            End Property
+
+Public Property Let Enabled(ByVal En As Boolean):   pEnabled = En:                 End Property
+
+Public Property Get FormObj() As MSForms.UserForm:  Set FormObj = pFormObj:        End Property
+
+Public Property Get Height() As Single:             Height = pHeight:              End Property
+
+Public Property Get Left() As Single:               Left = pLeft:                  End Property
+
+Public Property Get Name() As String:               Name = pName:                  End Property
+
+Public Property Let Name(ByVal Vbl As String):      pName = Vbl:                   End Property
+
+Public Property Get Table() As TableClass:          Set Table = pTable:            End Property
+
+Public Property Set Table(ByVal Vbl As TableClass): Set pTable = Vbl:              End Property
+
+Public Property Get Top() As Single:                Top = pTop:                    End Property
+
+Public Property Get Width() As Single:              Width = pWidth:                End Property
+
+Private Sub BuildButton( _
+    ByVal Cption As String, _
+    ByVal Top As Single, _
+    ByVal Lft As Single, _
+    ByVal Tip As String, _
+    ByVal Tbl As TableClass)
     
+    Dim Ctl As Control
+    
+    Set Ctl = pFormObj.Controls.Add("Forms.CommandButton.1")
+    With Ctl
+        .Caption = Cption
+        .Top = Top
+        .Left = Lft
+        .Height = ButtonHeight
+        .Width = ButtonWidth
+        LowLightButton Ctl
+        .ControlTipText = Tip
+    End With
+    pCtls.Add Ctl
+    
+    If Ctl.Caption = "Previous Row" Then
+        pPrevBtn = Ctl.Name
+    End If
+    If Ctl.Caption = "Next Row" Then
+        pNextBtn = Ctl.Name
+    End If
 
-
-' Public methods
+    pCtls.Item(Ctl.Name).ButtonObj Ctl
+    Set pCtls.Item(Ctl.Name).FormObj = pFormObj
+    Set pCtls.Item(Ctl.Name).TableObj = Tbl
+End Sub
 
 Public Function BuildForm( _
     ByVal Tbl As TableClass _
@@ -311,6 +367,8 @@ ErrHandler:
 
 End Function ' BuildForm
 
+Public Function NextButton() As String: NextButton = pNextBtn: End Function
+
 Public Function PopulateForm( _
     ByVal Tbl As TableClass _
     ) As MSForms.UserForm
@@ -332,7 +390,7 @@ Public Function PopulateForm( _
     Dim DBRange As Range: Set DBRange = Tbl.DBRange
     Dim THRow As Long: THRow = Tbl.ActiveTarget.ListObject.HeaderRowRange.Row
     Dim TRow As Long: TRow = Tbl.ActiveTarget.Row
-    Dim DBRow As Long: DBRow = TRow - THRow
+    Dim DBrow As Long: DBrow = TRow - THRow
     Dim DBCol As Long
     
 '   Procedure
@@ -340,83 +398,17 @@ Public Function PopulateForm( _
 '   Populate the data fields
     For Each Field In Tbl.TableCells
         DBCol = Application.Match(Field.HeaderText, Tbl.ActiveTarget.ListObject.HeaderRowRange, 0)
-        Field.ControlValue = DBRange(DBRow, DBCol)
+        Field.ControlValue = DBRange(DBrow, DBCol)
         On Error Resume Next
-        Field.FormControl.Text = DBRange(DBRow, DBCol)
+        Field.FormControl.Text = DBRange(DBrow, DBCol)
         If Err.Number <> 0 Then
-            Field.FormControl.Caption = DBRange(DBRow, DBCol)
+            Field.FormControl.Caption = DBRange(DBrow, DBCol)
         End If
     Next Field
  
 End Function ' PopulateForm
 
-Private Sub BuildButton( _
-    ByVal Cption As String, _
-    ByVal Top As Single, _
-    ByVal Lft As Single, _
-    ByVal Tip As String, _
-    ByVal Tbl As TableClass)
-    
-    Dim Ctl As Control
-    
-    Set Ctl = pFormObj.Controls.Add("Forms.CommandButton.1")
-    With Ctl
-        .Caption = Cption
-        .Top = Top
-        .Left = Lft
-        .Height = ButtonHeight
-        .Width = ButtonWidth
-        LowLightButton Ctl
-        .ControlTipText = Tip
-    End With
-    pCtls.Add Ctl
-    
-    If Ctl.Caption = "Previous Row" Then
-        pPrevBtn = Ctl.Name
-    End If
-    If Ctl.Caption = "Next Row" Then
-        pNextBtn = Ctl.Name
-    End If
-
-    pCtls.Item(Ctl.Name).ButtonObj Ctl
-    Set pCtls.Item(Ctl.Name).FormObj = pFormObj
-    Set pCtls.Item(Ctl.Name).TableObj = Tbl
-End Sub
-
-Public Property Get Caption() As String: Caption = pCaption: End Property
-
-Public Property Get Enabled() As Boolean:  Enabled = pEnabled: End Property
-
-Public Property Let Enabled(ByVal En As Boolean):  pEnabled = En: End Property
-
-Public Property Get FormObj() As MSForms.UserForm: Set FormObj = pFormObj: End Property
-
-Public Property Get Height() As Single: Height = pHeight: End Property
-
-Public Property Get Left() As Single: Left = pLeft: End Property
-
-Public Property Get Name() As String: Name = pName: End Property
-
-Public Property Let Name(ByVal Vbl As String): pName = Vbl: End Property
-
-Public Property Get Table() As TableClass: Set Table = pTable: End Property
-
-Public Property Set Table(ByVal Vbl As TableClass): Set pTable = Vbl: End Property
-
-Public Property Get Top() As Single: Top = pTop: End Property
-
-Public Property Get Width() As Single: Width = pWidth: End Property
-
-Public Property Get Controls() As ControlsClass: Set Controls = pCtls: End Property
-
-Public Sub Show(): pFormObj.Show: End Sub
-
-Private Sub Class_Initialize()
-    Set pCtls = New ControlsClass
-End Sub
-
 Public Function PrevButton() As String: PrevButton = pPrevBtn: End Function
 
-Public Function NextButton() As String: NextButton = pNextBtn: End Function
-
+Public Sub Show():                      pFormObj.Show:         End Sub
 

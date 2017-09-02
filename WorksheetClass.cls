@@ -9,16 +9,21 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
 
-Private Const Module_Name           As String = "WorksheetClass."
+Private Const Module_Name As String = "WorksheetClass."
 
 '   Public Properties
-Public WithEvents ws As Worksheet
-Attribute ws.VB_VarHelpID = -1
+Public WithEvents WS As Worksheet
+Attribute WS.VB_VarHelpID = -1
 
 Private pName As String
 
-Public Sub Add(ByVal Sht As Worksheet)
+Private Sub Class_Terminate():                 Set WS = Nothing: End Sub
 
+Public Property Get Name() As String:          Name = pName:     End Property
+
+Public Property Let Name(ByVal Vbl As String): pName = Vbl:      End Property
+
+Public Sub Add(ByVal Sht As Worksheet)
 '   Description:Add a control
 '   Inputs:     Ctl The control to be added
 '   Outputs:    *None
@@ -58,9 +63,14 @@ ErrHandler:
     
 End Sub
 
-Private Sub WS_BeforeDoubleClick(ByVal Target As Range, Cancel As Boolean)
-Dim TableName As String
-Dim Tbl As TableClass
+Public Sub CollectData(ByVal WS As Worksheet): pName = WS.Name: End Sub
+
+Private Sub WS_BeforeDoubleClick( _
+    ByVal Target As Range, _
+    Cancel As Boolean)
+    
+    Dim TableName As String
+    Dim Tbl As TableClass
     
     Cancel = True
 
@@ -80,14 +90,3 @@ Dim Tbl As TableClass
     
 End Sub
 
-Public Sub CollectData(ByVal ws As Worksheet)
-    pName = ws.Name
-End Sub
-
-Public Property Get Name() As String: Name = pName: End Property
-
-Public Property Let Name(ByVal Vbl As String): pName = Vbl: End Property
-
-Private Sub Class_Terminate()
-    Set ws = Nothing
-End Sub

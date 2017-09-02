@@ -3,11 +3,7 @@ Option Explicit
 
 Private Const Module_Name = "Module1."
 
-Private Const DarkestColor = &H763232 ' AF Dark Blue
-Private Const LightestColor = &HE7E2E2 ' AF Light Gray
-
 Public Sub Auto_Open()
-
 '   Description: Description of what function does
 '   Inputs:
 '   Outputs:
@@ -49,7 +45,7 @@ Public Sub Auto_Open()
             BuildTable Sht, Tbl.Name
         Next Tbl
         Set SheetClass = New WorksheetClass
-        Set SheetClass.ws = Sht
+        Set SheetClass.WS = Sht
         SheetClass.Name = Sht.Name
         WorksheetAdd SheetClass, Module_Name
     Next Sht
@@ -71,7 +67,7 @@ End Sub      ' Auto_Open
 
     
 Public Function BuildTable( _
-    ByVal ws As Worksheet, _
+    ByVal WS As Worksheet, _
     ByVal TableName As String _
     ) As Boolean
 
@@ -102,7 +98,7 @@ Public Function BuildTable( _
 
 '   Gather the table data
     Set Tbl = New TableClass
-    Tbl.CollectData ws, TableName
+    Tbl.CollectData WS, TableName
     Set Tbl.Form = New FormClass
     Tbl.Form.Name = TableName
     
@@ -122,34 +118,4 @@ ErrHandler:
     End Select
 
 End Function ' BuildTable
-
-Public Sub DisableButton(ByVal Btn As MSForms.CommandButton)
-    Btn.Enabled = False
-End Sub
-
-Public Sub EnableButton(ByVal Btn As MSForms.CommandButton)
-    Btn.Enabled = True
-End Sub
-
-Public Sub HighLightButton(ByVal Btn As MSForms.CommandButton)
-    Btn.ForeColor = DarkestColor
-    Btn.BackColor = LightestColor
-    Btn.Enabled = True
-End Sub
-
-Public Sub HighLightControl(ByVal Ctl As Control)
-    Ctl.ForeColor = DarkestColor
-    Ctl.BackColor = LightestColor
-End Sub
-
-Public Sub LowLightButton(ByVal Btn As MSForms.CommandButton)
-    Btn.ForeColor = LightestColor
-    Btn.BackColor = DarkestColor
-    Btn.Enabled = True
-End Sub
-
-Public Sub LowLightControl(ByVal Ctl As Control)
-    Ctl.ForeColor = LightestColor
-    Ctl.BackColor = DarkestColor
-End Sub
 
