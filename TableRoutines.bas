@@ -158,7 +158,7 @@ Public Function TableItem( _
 End Function
 
 Private Function TableModuleList() As Variant
-    TableModuleList = Array("TablesClass.", "Module1.", "WorksheetClass.", "EventHandler.")
+    TableModuleList = Array("TablesClass.", "XLAM_Module.", "WorksheetClass.", "EventHandler.")
 End Function
 
 Public Sub TableRemove( _

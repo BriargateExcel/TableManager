@@ -35,7 +35,7 @@ Public Function WorksheetItem( _
 End Function
 
 Private Function WorksheetModuleList() As Variant
-    WorksheetModuleList = Array("WorksheetsClass.", "Module1.")
+    WorksheetModuleList = Array("WorksheetsClass.", "XLAM_Module.")
 End Function
 
 Public Sub WorksheetRemove( _
