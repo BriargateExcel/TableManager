@@ -75,13 +75,13 @@ Public Function Table( _
     
     Dim Tbl As TableClass
     
-    On Error Resume Next
+'    On Error Resume Next
     Set Tbl = pAllTbls(TableName)
-    If Err.Number <> 0 Then
-        Auto_Open
-        Set Tbl = pAllTbls(TableName)
-    End If
-    On Error GoTo 0
+'    If Err.Number <> 0 Then
+'        Auto_Open
+'        Set Tbl = pAllTbls(TableName)
+'    End If
+'    On Error GoTo 0
     
     Set Table = Tbl
     

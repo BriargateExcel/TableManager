@@ -20,7 +20,7 @@ Function ActiveCellTableName() As String
     On Error GoTo 0 ' Reset the error handling
 End Function
 
-Public Function CheckForVBAProjectAccessEnabled() As Boolean
+Public Function CheckForVBAProjectAccessEnabled(ByVal WkBkName As String) As Boolean
 '   Description:
 '   Checks that access to the VBA project is enabled
 '   If not enabled, tells the user how to enable it
@@ -39,14 +39,16 @@ Public Function CheckForVBAProjectAccessEnabled() As Boolean
 
 '   Declarations
     Dim VBP As Object ' as VBProject
+    Dim WkBk As Workbook
 
 '   Error Handling Initialization
     On Error GoTo ErrHandler
+    Set WkBk = Workbooks(WkBkName)
     CheckForVBAProjectAccessEnabled = Failure
 
 '   Procedure
     If Val(Application.Version) >= 10 Then
-        Set VBP = ActiveWorkbook.VBProject
+        Set VBP = WkBk.VBProject
     Else
         MsgBox "This application must be run on Excel 2002 or greater", _
             vbCritical, "Excel Version Check"

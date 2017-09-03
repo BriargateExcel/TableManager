@@ -146,15 +146,15 @@ Public Function BuildForm( _
     With pFormObj
         
     '   Add a background texture
-        If Dir(Application.ActiveWorkbook.Path & "\texture.jpg") <> "" Then
-            Set .Picture = LoadPicture(Application.ActiveWorkbook.Path & "\texture.jpg")
+        If Dir(Application.ThisWorkbook.Path & "\texture.jpg") <> "" Then
+            Set .Picture = LoadPicture(Application.ThisWorkbook.Path & "\texture.jpg")
         End If
         
     '   Add a Logo
-        If Dir(Application.ActiveWorkbook.Path & "\logo.jpg") <> "" Then
+        If Dir(Application.ThisWorkbook.Path & "\logo.jpg") <> "" Then
             Set Logo = .Controls.Add("Forms.Image.1")
             With Logo
-                Set .Picture = LoadPicture(Application.ActiveWorkbook.Path & "\logo.jpg")
+                Set .Picture = LoadPicture(Application.ThisWorkbook.Path & "\logo.jpg")
                 .PictureAlignment = fmPictureAlignmentTopRight
                 .PictureSizeMode = fmPictureSizeModeZoom
                 .BorderStyle = fmBorderStyleNone
@@ -339,7 +339,7 @@ Public Function BuildForm( _
         .Caption = Tbl.Name
         .Width = Application.Max(MaxLabelWidth + MaxFieldWidth + 4 * StandardGap, MaxButtonWidth)
         .Height = Top + 3 * StandardGap
-        If Dir(Application.ActiveWorkbook.Path & "\logo.jpg") <> "" Then
+        If Dir(Application.ThisWorkbook.Path & "\logo.jpg") <> "" Then
             Logo.Left = .Width - LogoWidth
             Logo.Left = 0
             Logo.Left = .InsideWidth - Logo.Width - StandardGap
@@ -410,5 +410,5 @@ End Function ' PopulateForm
 
 Public Function PrevButton() As String: PrevButton = pPrevBtn: End Function
 
-Public Sub Show():                      pFormObj.Show:         End Sub
+Public Sub Show(): pFormObj.Show: End Sub
 
