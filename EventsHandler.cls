@@ -2,39 +2,86 @@ VERSION 1.0 CLASS
 BEGIN
   MultiUse = -1  'True
 END
-Attribute VB_Name = "CellsClass"
+Attribute VB_Name = "EventsHandler"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
 
-Private Const Module_Name = "CellsClass."
+Private Const Module_Name = "EventsHandler."
 
-Private AllCells As Collection
+Private LocalEvts As Scripting.Dictionary
 
-Public Sub Add(ByVal Cll As TableManager.CellClass)
+Private Sub Class_Initialize(): Set LocalEvts = New Scripting.Dictionary: End Sub
 
-'   Description:Add a Cell
-'   Inputs: Cll        Cell under analysis
+Public Property Get Count() As Integer: Count = LocalEvts.Count: End Property
+
+Public Property Get Item(ByVal vIndex As Variant)
+'Attribute Item.VB_UserMemId = 0
+'   Description:Get a Field
+'   Inputs: vIndex      Name or Number
+'   Outputs: Me          Header Object
+'   Requisites: Function: me.Add
+'   Example: ? Header.Item(sName).Fields.Count
+'               ? Header.Item(1).Fields.Count
+'               ? Header(1).Fields.Count
+
+'     Date   Ini Modification
+'   05/14/2017 RRD Initial Programming
+
+'   Declarations
+    Const Routine_Name = Module_Name & "Get Item"
+
+'   Error Handling Initialization
+    On Error GoTo ErrHandler
+    
+'   Procedure
+    If TableManager.TableExists(vIndex, Module_Name) Then
+        Set Item = LocalEvts(vIndex)
+    Else
+        LocalEvts.Name = ""
+    End If
+
+ErrHandler:
+    Select Case Err.Number
+        Case Is = TableManager.NoError: 'Do nothing
+        Case Is = 5: Set Item = Nothing
+        Case Else: 'Display Error Message Box
+            Select Case TableManager.DspErrMsg(Routine_Name)
+                Case Is = vbAbort: Stop: Resume    'Debug mode
+                Case Is = vbRetry: Resume          'Try again
+                Case Is = vbIgnore: 'End routine
+            End Select
+    End Select
+
+End Property
+
+Public Sub Add(ByVal Evt As TableManager.TableClass)
+'   Description:Add a control
+'   Inputs: Ctl The control to be added
 '   Outputs: *None
 '   Requisites:
 '   SharedRoutines
-'   Example: AllCells.Add [Cll].ListObject
+'   Example:
 
 '     Date
 '   05/14/2017 RRD Ini Modification
 
 '   Declarations
     Const Routine_Name = Module_Name & "Add"
+    
+'    Dim Obj As WorksheetClass
 
 '   Error Handling Initialization
     On Error GoTo ErrHandler
            
 '   Procedure
-    If Exists(Cll) Then Remove Cll
+    If TableManager.TableExists(Evt.Name, Module_Name) Then Remove Evt.Name
         
-    If Cll.HeaderText <> "" Then AllCells.Add Cll
+    If Evt.Name <> "" Then
+        LocalEvts.Add Evt.Name, Evt
+    End If
         
 ErrHandler:
     Select Case Err.Number
@@ -50,7 +97,6 @@ ErrHandler:
 End Sub
 
 Public Function Exists(ByVal vIndex) As Boolean
-
 '   Description:Determine if OneCell exists in AllCells
 '   Inputs: vIndex      Name or Instance #
 '   Outputs: Me          True/False
@@ -63,19 +109,15 @@ Public Function Exists(ByVal vIndex) As Boolean
 
 '   Declarations
     Const Routine_Name = Module_Name & "Exists"
-    Dim C As TableManager.CellClass
 
 '   Error Handling Initialization
     On Error GoTo ErrHandler
-    Exists = False
-    
-    Set C = AllCells(vIndex)
-    Exists = True
-    
+    Exists = LocalEvts.Exists(vIndex)
+
 ErrHandler:
     Select Case Err.Number
         Case Is = TableManager.NoError   'Do nothing
-        Case Is = 5: 'Does not exist
+        Case Is = 424: 'Does not exist
         Case Is = 13: 'Does not exist
         Case Else: 'Display Error Message Box
             Select Case TableManager.DspErrMsg(Routine_Name)
@@ -87,12 +129,7 @@ ErrHandler:
 
 End Function
 
-Public Function NewEnum() As IUnknown
-Attribute NewEnum.VB_UserMemId = -4
-'Attribute NewEnum.VB_UserMemID = -4
-'   Description:Enables FOR EACH
-    Set NewEnum = AllCells.[_NewEnum]
-End Function
+Public Function ListEvts() As Variant: ListEvts = LocalEvts.Keys: End Function
 
 Public Sub Remove(ByVal vIndex As Variant)
 '   Description:Close and Remove a connection
@@ -112,11 +149,11 @@ Public Sub Remove(ByVal vIndex As Variant)
    
 '   Procedure
     If CStr(vIndex) = "*" Then
-        Set AllCells = Nothing
-        Set AllCells = New Collection
+        Set LocalEvts = Nothing
+        Set LocalEvts = New Scripting.Dictionary
     Else
-        If Not AllCells.Exists(vIndex) Then Err.Raise 9
-        AllCells.Remove vIndex
+        If Not LocalEvts.Exists(vIndex) Then Err.Raise 9
+        LocalEvts.Remove vIndex
     End If
 
 ErrHandler:
@@ -132,49 +169,4 @@ ErrHandler:
     
 End Sub
 
-Public Property Get Count() As Integer: Count = AllCells.Count: End Property
 
-Public Property Get Item(ByVal vIndex As Variant)
-Attribute Item.VB_UserMemId = 0
-'Attribute Item.VB_UserMemId = 0
-'   Description:Get a Field
-'   Inputs: vIndex      Name or Number
-'   Outputs: Me          Header Object
-'   Requisites: Function: me.Add
-'   Example: ? Header.Item(sName).Fields.Count
-'               ? Header.Item(1).Fields.Count
-'               ? Header(1).Fields.Count
-
-'     Date   Ini Modification
-'   05/14/2017 RRD Initial Programming
-
-'   Declarations
-    Dim OneCell As New TableManager.CellClass   ' Cell Properties
-    Const Routine_Name = Module_Name & "Get Item"
-
-'   Error Handling Initialization
-    On Error GoTo ErrHandler
-    
-'   Procedure
-    If Me.Exists(vIndex) Then
-        Set Item = AllCells(vIndex)
-    Else
-        AllCells.Name = ""
-        Set Item = OneCell
-    End If
-
-ErrHandler:
-    Select Case Err.Number
-        Case Is = TableManager.NoError: 'Do nothing
-        Case Is = 5: Set Item = Nothing
-        Case Else: 'Display Error Message Box
-            Select Case TableManager.DspErrMsg(Routine_Name)
-                Case Is = vbAbort: Stop: Resume    'Debug mode
-                Case Is = vbRetry: Resume          'Try again
-                Case Is = vbIgnore: 'End routine
-            End Select
-    End Select
-
-End Property
-
-Private Sub Class_Initialize(): Set AllCells = New Collection: End Sub

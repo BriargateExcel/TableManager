@@ -22,6 +22,7 @@ Public Function BuildTable( _
 '   How to call this routine
 '   History
 '   06/09/2017 RRD Initial Programming
+'   09/09/17 RRD Changed to ignore tables with no editable data
 
 '   Declarations
     Const Routine_Name = Module_Name & "BuildTable"
@@ -29,36 +30,32 @@ Public Function BuildTable( _
     
 '   Error Handling Initialization
     On Error GoTo ErrHandler
-    BuildTable = Failure
+    BuildTable = TableManager.Failure
     
 '   Procedure
 
 '   Gather the table data
-    Set Tbl = New TableClass
-    Tbl.CollectData WS, TableName
-    Set Tbl.Form = New FormClass
-    Tbl.Form.Name = TableName
-    
-    Tbl.Form.BuildForm (Tbl)
-'    Tbl.Add Tbls(TableName)
-    TableAdd Tbl, Module_Name
+    Set Tbl = New TableManager.TableClass
+    If Tbl.CollectData(WS, TableName) Then
+        Set Tbl.Form = New TableManager.FormClass
+        Tbl.Form.Name = TableName
+        
+        Tbl.Form.BuildForm (Tbl)
+        TableManager.TableAdd Tbl, Module_Name
+    End If
     
 ErrHandler:
     Select Case Err.Number
-        Case Is = NoError:                          'Do nothing
+        Case Is = TableManager.NoError: 'Do nothing
         Case Else:
-            Select Case DspErrMsg(Routine_Name)
-                Case Is = vbAbort:  Stop: Resume    'Debug mode - Trace
-                Case Is = vbRetry:  Resume          'Try again
-                Case Is = vbIgnore:                 'End routine
+            Select Case TableManager.DspErrMsg(Routine_Name)
+                Case Is = vbAbort: Stop: Resume    'Debug mode - Trace
+                Case Is = vbRetry: Resume          'Try again
+                Case Is = vbIgnore: 'End routine
             End Select
     End Select
 
 End Function ' BuildTable
-
-Public Function NewWorksheetClass() As WorksheetClass
-    Set NewWorksheetClass = New WorksheetClass
-End Function
 
 Public Sub AutoOpen(ByVal WkBkName As String)
 '   Description: Description of what function does
@@ -87,7 +84,7 @@ Public Sub AutoOpen(ByVal WkBkName As String)
     On Error GoTo ErrHandler
     
     Set WkBk = Workbooks(WkBkName)
-    CheckForVBAProjectAccessEnabled (WkBk.Name)
+    TableManager.CheckForVBAProjectAccessEnabled (WkBk.Name)
     
 '   Delete existing forms (used for cleanup while debugging)
     For Each UserFrm In ThisWorkbook.VBProject.VBComponents
@@ -97,29 +94,30 @@ Public Sub AutoOpen(ByVal WkBkName As String)
     Next UserFrm
     
 '   Procedure
-    TableSetNewClass Module_Name
-    WorksheetSetNewClass Module_Name
+    TableManager.TableSetNewClass Module_Name
+    TableManager.WorksheetSetNewClass Module_Name
     
     For Each Sht In WkBk.Worksheets
-        For Each Tbl In Sht.ListObjects
-            BuildTable Sht, Tbl.Name
-        Next Tbl
-        Set SheetClass = NewWorksheetClass
+        Set SheetClass = TableManager.NewWorksheetClass
         Set SheetClass.WS = Sht
         SheetClass.Name = Sht.Name
-        WorksheetAdd SheetClass, Module_Name
+        TableManager.WorksheetAdd SheetClass, Module_Name
+        
+        For Each Tbl In Sht.ListObjects
+            TableManager.BuildTable Sht, Tbl.Name
+        Next Tbl
     Next Sht
     
     DoEvents
 
 ErrHandler:
     Select Case Err.Number
-        Case Is = NoError:                          'Do nothing
+        Case Is = TableManager.NoError: 'Do nothing
         Case Else:
-            Select Case DspErrMsg(Routine_Name)
-                Case Is = vbAbort:  Stop: Resume    'Debug mode - Trace
-                Case Is = vbRetry:  Resume          'Try again
-                Case Is = vbIgnore:                 'End routine
+            Select Case TableManager.DspErrMsg(Routine_Name)
+                Case Is = vbAbort: Stop: Resume    'Debug mode - Trace
+                Case Is = vbRetry: Resume          'Try again
+                Case Is = vbIgnore: 'End routine
             End Select
     End Select
 

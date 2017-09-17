@@ -44,7 +44,7 @@ Public Function CheckForVBAProjectAccessEnabled(ByVal WkBkName As String) As Boo
 '   Error Handling Initialization
     On Error GoTo ErrHandler
     Set WkBk = Workbooks(WkBkName)
-    CheckForVBAProjectAccessEnabled = Failure
+    CheckForVBAProjectAccessEnabled = TableManager.Failure
 
 '   Procedure
     If Val(Application.Version) >= 10 Then
@@ -55,13 +55,13 @@ Public Function CheckForVBAProjectAccessEnabled(ByVal WkBkName As String) As Boo
         GoTo ErrHandler
     End If
 
-    CheckForVBAProjectAccessEnabled = Success
+    CheckForVBAProjectAccessEnabled = TableManager.Success
 
 ErrHandler:
     Set VBP = Nothing
 
     Select Case Err.Number
-        Case Is = NoError:                          'Do nothing
+        Case Is = TableManager.NoError: 'Do nothing
         Case Else:
             MsgBox "Your security settings do not allow this procedure to run." & vbCrLf & vbCrLf & _
                 "To change your security setting:" & vbCrLf & vbCrLf & _

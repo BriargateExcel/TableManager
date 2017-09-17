@@ -11,22 +11,22 @@ Option Explicit
 
 Private Const Module_Name = "ControlsClass."
 
-Private AllCtls As Scripting.Dictionary
+Private LocalCtls As Scripting.Dictionary
 
-Private Sub Class_Initialize(): Set AllCtls = New Scripting.Dictionary: End Sub
+Private Sub Class_Initialize(): Set LocalCtls = New Scripting.Dictionary: End Sub
 
-Public Property Get Controls(): Controls = AllCtls.Keys:                End Property
+Public Property Get Controls(): Controls = LocalCtls.Keys: End Property
 
-Public Property Get Count() As Integer: Count = AllCtls.Count:                  End Property
+Public Property Get Count() As Integer: Count = LocalCtls.Count: End Property
 
 Public Property Get Item(ByVal vIndex As Variant)
 Attribute Item.VB_UserMemId = 0
 'Attribute Item.VB_UserMemId = 0
 '   Description:Get a Field
-'   Inputs:     vIndex      Name or Number
-'   Outputs:    Me          Header Object
-'   Requisites: Function:   me.Add
-'   Example:    ? Header.Item(sName).Fields.Count
+'   Inputs: vIndex      Name or Number
+'   Outputs: Me          Header Object
+'   Requisites: Function: me.Add
+'   Example: ? Header.Item(sName).Fields.Count
 '               ? Header.Item(1).Fields.Count
 '               ? Header(1).Fields.Count
 
@@ -35,35 +35,74 @@ Attribute Item.VB_UserMemId = 0
 
 '   Declarations
     Const Routine_Name = Module_Name & "Get Item"
+    Dim NewCtl As TableManager.ControlClass
 
 '   Error Handling Initialization
     On Error GoTo ErrHandler
     
 '   Procedure
     If Me.Exists(vIndex) Then
-        Set Item = AllCtls(vIndex)
+        Set Item = LocalCtls(vIndex)
     Else
-        AllCtls.Name = ""
+        Set NewCtl = New TableManager.ControlClass
+        LocalCtls.Add vIndex, NewCtl
     End If
 
 ErrHandler:
     Select Case Err.Number
-        Case Is = NoError:                          'Do nothing
+        Case Is = TableManager.NoError: 'Do nothing
         Case Is = 5: Set Item = Nothing
-        Case Else:          'Display Error Message Box
-            Select Case DspErrMsg(Routine_Name)
-                Case Is = vbAbort:  Stop: Resume    'Debug mode
-                Case Is = vbRetry:  Resume          'Try again
-                Case Is = vbIgnore:                 'End routine
+        Case Else: 'Display Error Message Box
+            Select Case TableManager.DspErrMsg(Routine_Name)
+                Case Is = vbAbort: Stop: Resume    'Debug mode
+                Case Is = vbRetry: Resume          'Try again
+                Case Is = vbIgnore: 'End routine
             End Select
     End Select
 
 End Property
 
-Public Sub Add(ByVal Ctl As Control)
+Public Sub Add(ByVal Ctl As TableManager.ControlClass)
 '   Description:Add a control
-'   Inputs:     Ctl The control to be added
-'   Outputs:    *None
+'   Inputs: Ctl The control to be added
+'   Outputs: *None
+'   Requisites:
+'   SharedRoutines
+'   Example:
+
+'     Date
+'   05/14/2017 RRD Ini Modification
+
+'   Declarations
+    Const Routine_Name = Module_Name & "Add"
+    
+'   Error Handling Initialization
+    On Error GoTo ErrHandler
+           
+'   Procedure
+    If Exists(Ctl.Name) Then Remove Ctl.Name
+        
+    If Ctl.Name <> "" Then
+        LocalCtls.Add Ctl.Name, Ctl
+    End If
+        
+ErrHandler:
+    Select Case Err.Number
+        Case Is = TableManager.NoError: 'Do nothing
+        Case Else: 'Display Error Message Box
+            Select Case TableManager.DspErrMsg(Routine_Name)
+                Case Is = vbAbort: Stop: Resume    'Debug mode
+                Case Is = vbRetry: Resume          'Try again
+                Case Is = vbIgnore: 'End routine
+            End Select
+    End Select
+    
+End Sub
+
+Public Sub AddEventHandler(ByVal Ctl As Control)
+'   Description:Add a control
+'   Inputs: Ctl The control to be added
+'   Outputs: *None
 '   Requisites:
 '   SharedRoutines
 '   Example:
@@ -83,18 +122,18 @@ Public Sub Add(ByVal Ctl As Control)
     If Exists(Ctl.Name) Then Remove Ctl.Name
         
     If Ctl.Name <> "" Then
-        Set Obj = New EventHandler
-        AllCtls.Add Ctl.Name, Obj
+        Set Obj = New TableManager.EventHandler
+        LocalCtls.Add Ctl.Name & "EH", Obj
     End If
         
 ErrHandler:
     Select Case Err.Number
-        Case Is = NoError:   'Do nothing
-        Case Else:          'Display Error Message Box
-            Select Case DspErrMsg(Routine_Name)
-                Case Is = vbAbort:  Stop: Resume    'Debug mode
-                Case Is = vbRetry:  Resume          'Try again
-                Case Is = vbIgnore:                 'End routine
+        Case Is = TableManager.NoError: 'Do nothing
+        Case Else: 'Display Error Message Box
+            Select Case TableManager.DspErrMsg(Routine_Name)
+                Case Is = vbAbort: Stop: Resume    'Debug mode
+                Case Is = vbRetry: Resume          'Try again
+                Case Is = vbIgnore: 'End routine
             End Select
     End Select
     
@@ -102,10 +141,10 @@ End Sub
 
 Public Function Exists(ByVal vIndex) As Boolean
 '   Description:Determine if OneCell exists in AllCells
-'   Inputs:     vIndex      Name or Instance #
-'   Outputs:    Me          True/False
+'   Inputs: vIndex      Name or Instance #
+'   Outputs: Me          True/False
 '   Requisites: *None
-'   Example:    ? AllCells.Exists("DET")
+'   Example: ? AllCells.Exists("DET")
 '               ? AllCells.Exists(1)
 
 '     Date
@@ -116,18 +155,18 @@ Public Function Exists(ByVal vIndex) As Boolean
 
 '   Error Handling Initialization
     On Error GoTo ErrHandler
-    Exists = AllCtls.Exists(vIndex)
+    Exists = LocalCtls.Exists(vIndex)
     
 ErrHandler:
     Select Case Err.Number
-        Case Is = NoError   'Do nothing
-        Case Is = 424:        'Does not exist
-        Case Is = 13:       'Does not exist
-        Case Else:          'Display Error Message Box
-            Select Case DspErrMsg(Routine_Name)
-                Case Is = vbAbort:  Stop: Resume    'Debug mode
-                Case Is = vbRetry:  Resume          'Try again
-                Case Is = vbIgnore:                 'End routine
+        Case Is = TableManager.NoError   'Do nothing
+        Case Is = 424: 'Does not exist
+        Case Is = 13: 'Does not exist
+        Case Else: 'Display Error Message Box
+            Select Case TableManager.DspErrMsg(Routine_Name)
+                Case Is = vbAbort: Stop: Resume    'Debug mode
+                Case Is = vbRetry: Resume          'Try again
+                Case Is = vbIgnore: 'End routine
             End Select
     End Select
 
@@ -135,10 +174,10 @@ End Function
 
 Public Sub Remove(ByVal vIndex As Variant)
 '   Description:Close and Remove a connection
-'   Inputs:     Name        Connection name
-'   Outputs:    *None
+'   Inputs: Name        Connection name
+'   Outputs: *None
 '   Requisites: *None
-'   Example:    AllCells(1).Add "BXL"
+'   Example: AllCells(1).Add "BXL"
 
 '     Date
 '   05/14/2017 RRD Ini Modification
@@ -151,21 +190,21 @@ Public Sub Remove(ByVal vIndex As Variant)
    
 '   Procedure
     If CStr(vIndex) = "*" Then
-        Set AllCtls = Nothing
-        Set AllCtls = New Collection
+        Set LocalCtls = Nothing
+        Set LocalCtls = New Collection
     Else
-        If Not AllCtls.Exists(vIndex) Then Err.Raise 9
-        AllCtls.Remove vIndex
+        If Not LocalCtls.Exists(vIndex) Then Err.Raise 9
+        LocalCtls.Remove vIndex
     End If
 
 ErrHandler:
     Select Case Err.Number
-        Case Is = NoError:   'Do nothing
-        Case Else:          'Display Error Message Box
-            Select Case DspErrMsg(Routine_Name)
-                Case Is = vbAbort:  Stop: Resume    'Debug mode
-                Case Is = vbRetry:  Resume          'Try again
-                Case Is = vbIgnore:                 'End routine
+        Case Is = TableManager.NoError: 'Do nothing
+        Case Else: 'Display Error Message Box
+            Select Case TableManager.DspErrMsg(Routine_Name)
+                Case Is = vbAbort: Stop: Resume    'Debug mode
+                Case Is = vbRetry: Resume          'Try again
+                Case Is = vbIgnore: 'End routine
             End Select
     End Select
     

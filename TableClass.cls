@@ -11,7 +11,7 @@ Option Explicit
 
 Private Const Module_Name = "TableClass."
 
-Private pCells As CellsClass
+Private pCells As TableManager.CellsClass
 
 Private pMaxHeader As Single
 Private pMaxField As Single
@@ -20,56 +20,13 @@ Private pLocked As Boolean
 Private pName As String
 Private pTable As ListObject
 Private pTarget As Range
-Private pForm As FormClass
+Private pForm As TableManager.FormClass
 Private pWkSht As Worksheet
 
-Public Property Get ActiveRow() As Long
-    Dim THRow As Long: THRow = pTarget.ListObject.HeaderRowRange.Row
-    Dim TRow As Long: TRow = pTarget.Row
-    Dim DBrow As Long: DBrow = TRow - THRow
-
-    ActiveRow = DBrow
-
-End Property
-
-Public Property Get ActiveTarget() As Range: Set ActiveTarget = pTarget: End Property
-
-Public Property Set ActiveTarget(ByVal Vbl As Range)
-    Vbl.Select
-    Set pTarget = Vbl
-End Property
-
-Public Property Get DBRange() As Range
-    Set DBRange = pWkSht.ListObjects(pName).DataBodyRange
-End Property
-
-Public Property Get Form() As FormClass:          Set Form = pForm:             End Property
-
-Public Property Set Form(ByVal Vbl As FormClass): Set pForm = Vbl:              End Property
-
-Public Property Get Locked() As Boolean:          Locked = pLocked:             End Property
-
-Public Property Get MaxFieldLength() As Single:   MaxFieldLength = pMaxField:   End Property
-
-Public Property Get MaxHeaderLength() As Single:  MaxHeaderLength = pMaxHeader: End Property
-
-Public Property Get Name() As String:             Name = pName:                 End Property
-
-Public Property Get NumFields() As Integer:       NumFields = pCells.Count:     End Property
-
-Public Property Get TableCells() As CellsClass:   Set TableCells = pCells:      End Property
-
-Public Property Get Target() As Range:            Set Target = pTarget:         End Property
-
-Public Property Set Target(ByVal Vbl As Range):   Set pTarget = Vbl:            End Property
-
-Public Property Get Worksheet() As Worksheet:     Set Worksheet = pWkSht:       End Property
-
-Public Property Get WrapCount() As Integer:       WrapCount = pWrapCount:       End Property
-
-Public Sub CollectData( _
+Public Function CollectData( _
     ByVal WS As Worksheet, _
-    ByVal TblName As String)
+    ByVal TblName As String _
+    ) As Boolean
 
 '   Description: Description of what function does
 '   Inputs:
@@ -85,11 +42,12 @@ Public Sub CollectData( _
 '   How to call this routine
 '   History
 '   05/14/2017 RRD Initial Programming
+'   09/09/17 RRD Converted to boolean function to indicate whether the table has editable data
 
 '   Declarations
     Const Routine_Name = Module_Name & "CollectData"
     Dim Element As Range
-    Dim OneCell As CellClass
+    Dim OneCell As TableManager.CellClass
 
 '   Error Handling Initialization
     On Error GoTo ErrHandler
@@ -98,11 +56,11 @@ Public Sub CollectData( _
     pName = TblName
     Set pWkSht = WS
     Set pTable = WS.ListObjects(TblName)
-    Set pCells = New CellsClass
+    Set pCells = New TableManager.CellsClass
     pLocked = True
     
     For Each Element In pTable.HeaderRowRange
-        Set OneCell = New CellClass
+        Set OneCell = New TableManager.CellClass
         OneCell.CollectData Element
         pCells.Add OneCell
         If OneCell.ColumnWidth > pMaxField Then pMaxField = OneCell.ColumnWidth
@@ -112,24 +70,23 @@ Public Sub CollectData( _
     Next Element
     
     If pLocked Then
-        MsgBox "There are no editable fields in this table", _
-            vbOKOnly Or vbExclamation, "No Editable Fields"
-        Stop
-        ' ToDo: Finalize this so it returns appropriately
+        CollectData = False
+    Else
+        CollectData = True
     End If
 
 ErrHandler:
     Select Case Err.Number
-        Case Is = NoError:                          'Do nothing
+        Case Is = TableManager.NoError: 'Do nothing
         Case Else:
-            Select Case DspErrMsg(Routine_Name)
-                Case Is = vbAbort:  Stop: Resume    'Debug mode - Trace
-                Case Is = vbRetry:  Resume          'Try again
-                Case Is = vbIgnore:                 'End routine
+            Select Case TableManager.DspErrMsg(Routine_Name)
+                Case Is = vbAbort: Stop: Resume    'Debug mode - Trace
+                Case Is = vbRetry: Resume          'Try again
+                Case Is = vbIgnore: 'End routine
             End Select
     End Select
 
-End Sub      ' CollectData
+End Function ' CollectData
 
 Public Function FirstCell() As Range
     Set FirstCell = pTable.DataBodyRange(1, 1)
@@ -156,7 +113,7 @@ Public Sub NextRow()
 End Sub
 
 Public Sub PopulateTable(ByVal Target As Range)
-    Dim Cll As CellClass
+    Dim Cll As TableManager.CellClass
     Dim TRow As Long: TRow = Target.Row
     Dim THRow As Long: THRow = Target.ListObject.HeaderRowRange.Row
     Dim RowNum As Long: RowNum = TRow - THRow
@@ -180,4 +137,48 @@ Public Sub PreviousRow()
             "Already at Beginning of Table"
     End If
 End Sub
+
+Public Property Get ActiveRow() As Long
+    Dim THRow As Long: THRow = pTarget.ListObject.HeaderRowRange.Row
+    Dim TRow As Long: TRow = pTarget.Row
+    Dim DBrow As Long: DBrow = TRow - THRow
+
+    ActiveRow = DBrow
+
+End Property
+
+Public Property Get ActiveTarget() As Range: Set ActiveTarget = pTarget: End Property
+
+Public Property Set ActiveTarget(ByVal Vbl As Range)
+    Vbl.Select
+    Set pTarget = Vbl
+End Property
+
+Public Property Get DBRange() As Range
+    Set DBRange = pWkSht.ListObjects(pName).DataBodyRange
+End Property
+
+Public Property Get Form() As TableManager.FormClass: Set Form = pForm: End Property
+
+Public Property Set Form(ByVal Vbl As TableManager.FormClass): Set pForm = Vbl: End Property
+
+Public Property Get Locked() As Boolean: Locked = pLocked: End Property
+
+Public Property Get MaxFieldLength() As Single: MaxFieldLength = pMaxField: End Property
+
+Public Property Get MaxHeaderLength() As Single: MaxHeaderLength = pMaxHeader: End Property
+
+Public Property Get Name() As String: Name = pName: End Property
+
+Public Property Get NumFields() As Integer: NumFields = pCells.Count: End Property
+
+Public Property Get TableCells() As TableManager.CellsClass: Set TableCells = pCells: End Property
+
+Public Property Get Target() As Range: Set Target = pTarget: End Property
+
+Public Property Set Target(ByVal Vbl As Range): Set pTarget = Vbl: End Property
+
+Public Property Get Worksheet() As Worksheet: Set Worksheet = pWkSht: End Property
+
+Public Property Get WrapCount() As Integer: WrapCount = pWrapCount: End Property
 

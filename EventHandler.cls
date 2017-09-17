@@ -35,32 +35,11 @@ Public WithEvents ImageEvent As MSForms.Image
 Attribute ImageEvent.VB_VarHelpID = -1
 Private pImageObj As Object
 
-Private pTableObj As TableClass
+Private pTableObj As TableManager.TableClass
 
 Private pName As String
 
-Public Property Set FormObj(ByVal Vbl As Object)
-    Set pFormObj = Vbl
-    Set Me.FormEvent = Vbl
-End Property
-
-Public Property Set ImageObj(ByVal Vbl As Object)
-    Set pImageObj = Vbl
-    Set Me.ImageEvent = Vbl
-End Property
-
-Public Property Set SheetObj(ByVal Vbl As Object)
-    Set pSheet = Vbl
-    Set Me.SheetEvent = Vbl
-End Property
-
-Public Property Set TableObj(ByVal Tbl As TableClass)
-    Set pTableObj = Tbl
-End Property
-
-Public Property Get Name() As String:     Name = pName:       End Property
-
-Public Property Get Sheet() As Worksheet: Set Sheet = pSheet: End Property
+Private pEnable As Boolean
 
 Private Sub ButtonEvent_Click()
     Dim Target As Range
@@ -69,39 +48,39 @@ Private Sub ButtonEvent_Click()
     Case Is = "Copy To Table"
         pTableObj.PopulateTable pTableObj.ActiveTarget
     
-    Case Is = "Cancel"
+    Case Is = "Cancel/Close"
         pFormObj.Hide
         Exit Sub
     
     Case Is = "Next Row"
         pTableObj.NextRow
         Set pTableObj.ActiveTarget = pTableObj.ActiveTarget.Offset(0, 0)
-        TableItem(ActiveCellTableName, Module_Name).Form.PopulateForm pTableObj
+        TableManager.TableItem(TableManager.ActiveCellTableName, Module_Name).Form.PopulateForm pTableObj
     
     Case Is = "Previous Row"
         pTableObj.PreviousRow
         Set pTableObj.ActiveTarget = pTableObj.ActiveTarget.Offset(0, 0)
-        TableItem(ActiveCellTableName, Module_Name).Form.PopulateForm pTableObj
+        TableManager.TableItem(TableManager.ActiveCellTableName, Module_Name).Form.PopulateForm pTableObj
     
     Case Is = "Insert Above"
         pTableObj.ActiveTarget.ListObject.ListRows.Add pTableObj.ActiveRow
         Set pTableObj.ActiveTarget = pTableObj.ActiveTarget.Offset(-1, 0)
-        TableItem(ActiveCellTableName, Module_Name).Form.PopulateForm pTableObj
+        TableManager.TableItem(TableManager.ActiveCellTableName, Module_Name).Form.PopulateForm pTableObj
     
     Case Is = "Insert Below"
         pTableObj.ActiveTarget.ListObject.ListRows.Add pTableObj.ActiveRow + 1
         Set pTableObj.ActiveTarget = pTableObj.ActiveTarget.Offset(1, 0)
-        TableItem(ActiveCellTableName, Module_Name).Form.PopulateForm pTableObj
+        TableManager.TableItem(TableManager.ActiveCellTableName, Module_Name).Form.PopulateForm pTableObj
     
     Case Is = "Insert At Top"
         pTableObj.ActiveTarget.ListObject.ListRows.Add 1
         Set pTableObj.ActiveTarget = pTableObj.FirstCell
-        TableItem(ActiveCellTableName, Module_Name).Form.PopulateForm pTableObj
+        TableManager.TableItem(TableManager.ActiveCellTableName, Module_Name).Form.PopulateForm pTableObj
     
     Case Is = "Insert At End"
         pTableObj.ActiveTarget.ListObject.ListRows.Add
         Set pTableObj.ActiveTarget = pTableObj.LastCell
-        TableItem(ActiveCellTableName, Module_Name).Form.PopulateForm pTableObj
+        TableManager.TableItem(TableManager.ActiveCellTableName, Module_Name).Form.PopulateForm pTableObj
     
     Case Is = "Delete This Row"
         If pTableObj.LastRow = pTableObj.ActiveRow Then
@@ -111,15 +90,15 @@ Private Sub ButtonEvent_Click()
         End If
         pTableObj.ActiveTarget.ListObject.ListRows(pTableObj.ActiveRow).Delete
         Set pTableObj.ActiveTarget = Target
-        TableItem(ActiveCellTableName, Module_Name).Form.PopulateForm pTableObj
+        TableManager.TableItem(TableManager.ActiveCellTableName, Module_Name).Form.PopulateForm pTableObj
     
     Case Is = "Go To Top"
         Set pTableObj.ActiveTarget = pTableObj.FirstCell
-        TableItem(ActiveCellTableName, Module_Name).Form.PopulateForm pTableObj
+        TableManager.TableItem(TableManager.ActiveCellTableName, Module_Name).Form.PopulateForm pTableObj
     
     Case Is = "Go To Bottom"
         Set pTableObj.ActiveTarget = pTableObj.LastCell
-        TableItem(ActiveCellTableName, Module_Name).Form.PopulateForm pTableObj
+        TableManager.TableItem(TableManager.ActiveCellTableName, Module_Name).Form.PopulateForm pTableObj
     
     Case Else:
         Stop
@@ -142,17 +121,35 @@ Private Sub ButtonEvent_MouseMove( _
 End Sub ' ButtonEvent_MouseMove
 
 Public Sub ButtonObj(ByVal Btn As MSForms.CommandButton)
-    
     Set ButtonEvent = Btn
     Set pButtonObj = Btn
     pName = Btn.Name
 End Sub ' ButtonObj
 
-Public Sub TextObj(ByVal Txt As MSForms.TextBox)
-    Set TextEvent = Txt
-    Set pTextObj = Txt
-    pName = Txt.Name
-End Sub ' TextObj
+Private Sub ComboEvent_Change()
+    Dim Cll As TableManager.CellClass
+    
+    If Not pEnable Then Exit Sub
+    
+    Set Cll = TableManager.ControlItem(pName, Module_Name).Field
+    
+    If Cll.HasValidation Then
+        Select Case Cll.ValidationType
+        Case xlValidateCustom: Stop
+        Case xlValidateDate: Stop
+        Case xlValidateDecimal: Stop
+        Case xlValidateInputOnly: Stop
+        Case xlValidateList: Stop
+        Case xlValidateTextLength: Stop
+        Case xlValidateTime: Stop
+        Case xlValidateWholeNumber: Stop
+        End Select
+    Else
+    End If
+    
+    PaintButtons
+        
+End Sub
 
 Private Sub ComboEvent_MouseMove( _
     ByVal Combo As Integer, _
@@ -179,6 +176,14 @@ Public Sub ComboObj(ByVal Cmb As MSForms.ComboBox)
     Set pComboObj = Cmb
     pName = Cmb.Name
 End Sub ' ComboObj
+
+Public Sub DisableEvents()
+    pEnable = False
+End Sub
+
+Public Sub EnableEvents()
+    pEnable = True
+End Sub
 
 Private Sub FormEvent_MouseMove( _
     ByVal Button As Integer, _
@@ -231,14 +236,74 @@ Private Sub SheetEvent_BeforeDoubleClick( _
     
     Cancel = True
 
-    TableName = ActiveCellTableName
+    TableName = TableManager.ActiveCellTableName
     
     If TableName <> "" Then
-        TableItem(TableName, Module_Name).Form.PopulateForm TableItem(TableName, Module_Name)
-        TableItem(TableName, Module_Name).Form(TableName).Show
+        TableManager.TableItem(TableName, Module_Name).Form.PopulateForm TableManager.TableItem(TableName, Module_Name)
+        TableManager.TableItem(TableName, Module_Name).Form(TableName).Show
     End If
     
     PaintButtons
     
 End Sub ' SheetEvent_BeforeDoubleClick
+
+Private Sub TextEvent_Change()
+    Dim Cll As TableManager.CellClass
+    
+    If Not pEnable Then Exit Sub
+    
+    Set Cll = TableManager.ControlItem(pName, Module_Name).Field
+    
+    If Cll.HasValidation Then
+        Select Case Cll.ValidationType
+        Case xlValidateCustom: Stop
+        Case xlValidateDate: Stop
+        Case xlValidateDecimal: Stop
+        Case xlValidateInputOnly: Stop
+        Case xlValidateList: Stop
+        Case xlValidateTextLength: Stop
+        Case xlValidateTime: Stop
+        Case xlValidateWholeNumber: Stop
+        End Select
+    Else
+    End If
+    
+    PaintButtons
+        
+End Sub
+
+Private Sub TextEvent_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
+'Stop
+End Sub
+
+Public Sub TextObj(ByVal Txt As MSForms.TextBox)
+    Set TextEvent = Txt
+    Set pTextObj = Txt
+    pName = Txt.Name
+End Sub ' TextObj
+
+Public Property Set FormObj(ByVal Frm As Object)
+    Set pFormObj = Frm
+    Set Me.FormEvent = Frm
+End Property
+
+Public Property Set ImageObj(ByVal Img As Object)
+    Set pImageObj = Img
+    Set Me.ImageEvent = Img
+End Property
+
+Public Property Get Name() As String: Name = pName: End Property
+
+Public Property Let Name(ByVal Vbl As String): pName = Vbl: End Property
+
+Public Property Get Sheet() As Worksheet: Set Sheet = pSheet: End Property
+
+Public Property Set SheetObj(ByVal Sht As Object)
+    Set pSheet = Sht
+    Set Me.SheetEvent = Sht
+End Property
+
+Public Property Set TableObj(ByVal Tbl As TableManager.TableClass)
+    Set pTableObj = Tbl
+End Property
 

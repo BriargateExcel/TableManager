@@ -11,22 +11,15 @@ Option Explicit
 
 Private Const Module_Name As String = "WorksheetClass."
 
-'   Public Properties
 Public WithEvents WS As Worksheet
 Attribute WS.VB_VarHelpID = -1
 
 Private pName As String
 
-Private Sub Class_Terminate():                 Set WS = Nothing: End Sub
-
-Public Property Get Name() As String:          Name = pName:     End Property
-
-Public Property Let Name(ByVal Vbl As String): pName = Vbl:      End Property
-
 Public Sub Add(ByVal Sht As Worksheet)
 '   Description:Add a control
-'   Inputs:     Ctl The control to be added
-'   Outputs:    *None
+'   Inputs: Ctl The control to be added
+'   Outputs: *None
 '   Requisites:
 '   SharedRoutines
 '   Example:
@@ -43,21 +36,21 @@ Public Sub Add(ByVal Sht As Worksheet)
     On Error GoTo ErrHandler
            
 '   Procedure
-    If WorksheetExists(Sht.Name, Module_Name) Then WorksheetRemove Sht.Name, Module_Name
+    If TableManager.WorksheetExists(Sht.Name, Module_Name) Then TableManager.WorksheetRemove Sht.Name, Module_Name
         
     If Sht.Name <> "" Then
-        Set Obj = New EventHandler
-        WorksheetAdd Sht, Module_Name
+        Set Obj = New TableManager.EventHandler
+        TableManager.WorksheetAdd Sht, Module_Name
     End If
         
 ErrHandler:
     Select Case Err.Number
-        Case Is = NoError:   'Do nothing
-        Case Else:          'Display Error Message Box
-            Select Case DspErrMsg(Routine_Name)
-                Case Is = vbAbort:  Stop: Resume    'Debug mode
-                Case Is = vbRetry:  Resume          'Try again
-                Case Is = vbIgnore:                 'End routine
+        Case Is = TableManager.NoError: 'Do nothing
+        Case Else: 'Display Error Message Box
+            Select Case TableManager.DspErrMsg(Routine_Name)
+                Case Is = vbAbort: Stop: Resume    'Debug mode
+                Case Is = vbRetry: Resume          'Try again
+                Case Is = vbIgnore: 'End routine
             End Select
     End Select
     
@@ -70,14 +63,14 @@ Private Sub WS_BeforeDoubleClick( _
     Cancel As Boolean)
     
     Dim TableName As String
-    Dim Tbl As TableClass
+    Dim Tbl As TableManager.TableClass
     
     Cancel = True
 
-    TableName = ActiveCellTableName
+    TableName = TableManager.ActiveCellTableName
     
     If TableName <> "" Then
-        Set Tbl = TableItem(TableName, Module_Name)
+        Set Tbl = TableManager.TableItem(TableName, Module_Name)
         Set Tbl.Target = Target
         Tbl.Form.PopulateForm Tbl
         Tbl.Form.Show
@@ -89,4 +82,10 @@ Private Sub WS_BeforeDoubleClick( _
     End If
     
 End Sub
+
+Public Property Get Name() As String: Name = pName: End Property
+
+Public Property Let Name(ByVal Vbl As String): pName = Vbl: End Property
+
+Private Sub Class_Terminate(): Set WS = Nothing: End Sub
 

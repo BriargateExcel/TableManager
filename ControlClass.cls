@@ -11,81 +11,87 @@ Option Explicit
 
 Private Const Module_Name = "ControlClass."
 
-Private pHeaderText As String
-Private pColumnWidth As Single
-Private pLocked As Variant
-Private pNumberFormat As Variant
-Private pCellType As XlDVType   ' https://msdn.microsoft.com/en-us/library/office/ff840715.aspx
-Private pIgnoreBlank As Boolean
-Private pValidAlertStyle As XlDVAlertStyle ' https://translate.google.com/translate?hl=en&sl=ja&u=https://msdn.microsoft.com/ja-jp/library/office/ff841223.aspx&prev=search
-Private pWrap As Boolean
-Private pValidationFormula As String
-Private pValidationList As Variant
+Public WithEvents TxtCtl As MSForms.TextBox
+Attribute TxtCtl.VB_VarHelpID = -1
+Private pTxtObj As MSForms.TextBox
 
+Public WithEvents BtnCtl As MSForms.CommandButton
+Attribute BtnCtl.VB_VarHelpID = -1
+Private pBtnObj As MSForms.CommandButton
 
-Public Function SetHeader(ByVal CellID As Range) As Boolean
+Public WithEvents CmbCtl As MSForms.ComboBox
+Attribute CmbCtl.VB_VarHelpID = -1
+Private pCmbObj As MSForms.ComboBox
 
-'   Description: Gathers the data about one column header in a table
-'   Inputs:
-'   CellID       The cell we're gathering the data from
-'   Outputs:
-'   Me       Success/Failure
-'   Requisites:
-'   SharedRoutines
-'   Notes:
-'   Any notes
-'   Example:
-'   How to call this routine
-'   History
-'   05/14/2017 RRD Initial Programming
+Private pEventHandler As TableManager.EventHandler
 
-'   Declarations
-    Const Routine_Name = Module_Name & "SetHeader"
+Private pName As String
+Private pField As TableManager.CellClass
 
-'   Error Handling Initialization
-    On Error GoTo ErrHandler
-    SetHeader = Failure
+Public Sub ComboInit( _
+    ByVal Tbl As TableManager.TableClass, _
+    ByVal Frm As MSForms.UserForm, _
+    ByVal Field As TableManager.CellClass, _
+    ByVal Cmb As MSForms.ComboBox)
     
-'   Procedure
-    Debug.Assert CellID.Count = 1
+    Me.Name = Cmb.Name
+    Set Me.CmbCtl = Cmb
+    Set pCmbObj = Cmb
+    Set Field.Ctl = Me
+    Set pField = Field
     
-    pHeaderText = CellID.Value
+    Set pEventHandler = New TableManager.EventHandler
+    pEventHandler.ComboObj Cmb
+    Set pEventHandler.TableObj = Tbl
+    Set pEventHandler.FormObj = Frm
+    Set pEventHandler.ComboEvent = Cmb
+End Sub
+
+Public Sub DisableControl()
+    pEventHandler.DisableEvents
+End Sub
+
+Public Sub EnableControl()
+    pEventHandler.EnableEvents
+End Sub
+
+Public Sub TextInit( _
+    ByVal Tbl As TableManager.TableClass, _
+    ByVal Frm As MSForms.UserForm, _
+    ByVal Field As TableManager.CellClass, _
+    ByVal Txt As MSForms.TextBox)
     
-    SetHeader = Success
-ErrHandler:
-    Select Case Err.Number
-        Case Is = NoError:                          'Do nothing
-        Case Else:
-            Select Case DspErrMsg(Routine_Name)
-                Case Is = vbAbort:  Stop: Resume    'Debug mode - Trace
-                Case Is = vbRetry:  Resume          'Try again
-                Case Is = vbIgnore:                 'End routine
-            End Select
-    End Select
+    Me.Name = Txt.Name
+    Set Me.TxtCtl = Txt
+    Set pTxtObj = Txt
+    Set Field.Ctl = Me
+    Set pField = Field
+    
+    Set pEventHandler = New TableManager.EventHandler
+    pEventHandler.TextObj Txt
+    Set pEventHandler.TableObj = Tbl
+    Set pEventHandler.FormObj = Frm
+    pEventHandler.Name = Txt.Name
+    Set pEventHandler.TextEvent = Txt
+End Sub
 
-End Function ' SetHeader
+Public Property Get CmbObj()
+    Set CmbObj = pCmbObj
+End Property
 
+Public Property Get EvHand()
+    Set EvHand = pEventHandler
+End Property
 
-Public Property Get ColumnWidth() As Single: ColumnWidth = pColumnWidth: End Property
+Public Property Get Field() As TableManager.CellClass: Set Field = pField: End Property
 
-Public Property Get Locked() As Variant: Locked = pLocked: End Property
+Public Property Set Field(ByVal Vbl As TableManager.CellClass): Set pField = Vbl: End Property
 
-Public Property Get NumberFormat() As Variant: NumberFormat = pNumberFormat: End Property
+Public Property Get Name() As String: Name = pName: End Property
 
-Public Property Get CellType() As XlDVType: CellType = pCellType: End Property
+Public Property Let Name(ByVal Vbl As String): pName = Vbl: End Property
 
-Public Property Get ValidAlertStyle() As XlDVAlertStyle: ValidAlertStyle = pValidAlertStyle: End Property
-
-Public Property Get IgnoreBlank() As Boolean: IgnoreBlank = pIgnoreBlank: End Property
-
-Public Property Get HeaderText() As String: HeaderText = pHeaderText: End Property
-
-Public Property Get Wrap() As Boolean: Wrap = pWrap: End Property
-
-Public Property Get Length() As Integer: Length = Len(pHeaderText): End Property
-
-Public Property Get ValidationFormula() As String: ValidationFormula = pValidationFormula: End Property
-
-Public Property Get ValidationList() As Variant: ValidationList = pValidationList: End Property
-
+Private Sub Class_Terminate()
+    Set TxtCtl = Nothing
+End Sub
 
