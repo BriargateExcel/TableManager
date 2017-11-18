@@ -32,7 +32,6 @@ Public Property Get ActiveRow() As Long
 End Property
 
 Public Property Get ActiveTarget() As Range: Set ActiveTarget = pTarget: End Property
-
 Public Property Set ActiveTarget(ByVal Target As Range)
     Target.Select
     Set pTarget = Target
@@ -52,7 +51,6 @@ Public Property Get MaxFieldLength() As Single: MaxFieldLength = pMaxField: End 
 Public Property Get MaxHeaderLength() As Single: MaxHeaderLength = pMaxHeader: End Property
 
 Public Property Get Name() As String: Name = pTableName: End Property
-
 Public Property Let Name(ByVal TN As String): pTableName = TN: End Property
 
 Public Property Get NumColumns() As Integer: NumColumns = pCells.Count: End Property
@@ -117,7 +115,8 @@ Public Function FirstCell() As Range
 End Function ' FirstCell
 
 Public Function LastCell() As Range
-    Set LastCell = pTable.DataBodyRange(pTable.ListRows.Count, pTable.ListColumns.Count)
+'    Set LastCell = pTable.DataBodyRange(pTable.ListRows.Count, pTable.ListColumns.Count)
+    Set LastCell = pTable.DataBodyRange(pTable.ListRows.Count, 1)
 End Function ' LastCell
 
 Public Function LastRow() As Long

@@ -112,31 +112,6 @@ ErrorHandler:
 
 End Sub ' CollectCellData
 
-Private Function HasVal(ByVal Target As Range) As Boolean
-
-    Const RoutineName = Module_Name & "HasVal"
-    On Error GoTo ErrorHandler
-    
-    Dim v As Variant
-    
-    Debug.Assert Initializing
-    
-    On Error Resume Next
-    
-    v = Target.Validation.Type
-    If Err.Number = 0 Then
-        HasVal = True
-    Else
-        HasVal = False
-    End If
-
-Done:
-    Exit Function
-ErrorHandler:
-    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
-
-End Function ' HasVal
-
 ' Attributes common to all table cells
 Public Property Get HeaderText() As String: HeaderText = pHeaderText: End Property
 
@@ -169,34 +144,50 @@ Public Property Get Length() As Integer: Length = Len(pHeaderText): End Property
 Public Property Get Control() As Control: Control = pControl: End Property
 Public Property Let Control(ByVal Ctl As Control): pControl = Ctl: End Property
 
+Public Property Get TableName() As String: TableName = pTableName: End Property
+
 ' Attributes for cells with validation
 Public Property Get CellType() As XlDVType: CellType = pCellValidationType: End Property
+Public Property Let CellType(ByVal CT As XlDVType): pCellValidationType = CT: End Property
 
 Public Property Get Operator() As XlFormatConditionOperator: Operator = pOperator: End Property
+Public Property Let Operator(ByVal Op As XlFormatConditionOperator): pOperator = Op: End Property
 
 Public Property Get ValidAlertStyle() As XlDVAlertStyle: ValidAlertStyle = pValidAlertStyle: End Property
+Public Property Let ValidAlertStyle(ByVal VAS As XlDVAlertStyle): pValidAlertStyle = VAS: End Property
 
 Public Property Get ValidationFormula1() As String: ValidationFormula1 = pValidationFormula1: End Property
+Public Property Let ValidationFormula1(ByVal VF1 As String): pValidationFormula1 = VF1: End Property
 
 Public Property Get ValidationFormula2() As String: ValidationFormula2 = pValidationFormula2: End Property
+Public Property Let ValidationFormula2(ByVal VF2 As String): pValidationFormula2 = VF2: End Property
 
 Public Property Get IgnoreBlank() As Boolean: IgnoreBlank = pIgnoreBlank: End Property
+Public Property Let IgnoreBlank(ByVal IB As Boolean): pIgnoreBlank = IB: End Property
 
 Public Property Get ValidationList() As Variant: ValidationList = pValidationList: End Property
+Public Property Let ValidationList(ByVal VL As Variant): pValidationList = VL: End Property
 
 ' Attributes for cells with validation inputs messages
 Public Property Get ShowInput() As Boolean: ShowInput = pShowInput: End Property
-Public Property Let ShowInput(ByVal Vis As Boolean): pShowInput = Vis: End Property
+Public Property Let ShowInput(ByVal SI As Boolean): pShowInput = SI: End Property
 
 Public Property Get InputTitle() As String: InputTitle = pInputTitle: End Property
+Public Property Let InputTitle(ByVal IT As String): pInputTitle = IT: End Property
 
 Public Property Get InputMessage() As String: InputMessage = pInputMessage: End Property
+Public Property Let InputMessage(ByVal IM As String): pInputMessage = IM: End Property
 
 ' Attributes for cells with error messages
 Public Property Get ShowError() As Boolean: ShowError = pShowError: End Property
+Public Property Let ShowError(ByVal SE As Boolean): pShowError = SE: End Property
 
 Public Property Get ErrorTitle() As String: ErrorTitle = pErrorTitle: End Property
+Public Property Let ErrorTitle(ByVal ET As String): pErrorTitle = ET: End Property
 
 Public Property Get ErrorMessage() As String: ErrorMessage = pErrorMessage: End Property
+Public Property Let ErrorMessage(ByVal EM As String): pErrorMessage = EM: End Property
 
-Public Property Get TableName() As String: TableName = pTableName: End Property
+
+
+

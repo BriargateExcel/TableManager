@@ -40,7 +40,7 @@ Public Function ValidateForm( _
             Check = ValidateDecimal(Tbl, Field)
 
         Case XlDVType.xlValidateList ' Value must be present in a specified list
-            Check = ValidateList(Tbl, Field)
+            Check = ValidateList(Field)
 
         Case XlDVType.xlValidateDate ' Date Values
             Check = ValidateDate(Tbl, Field)
@@ -300,7 +300,6 @@ ErrorHandler:
 End Function ' ValidateDecimal
 
 Private Function ValidateList( _
-    ByVal Tbl As TableManager.TableClass, _
     ByVal Field As Variant _
     ) As Boolean
 

@@ -16,7 +16,8 @@ Private pAllCells As Scripting.Dictionary
 ' TODO:
 ' All the plural classes are built on a Dictionary
 ' The plural classes: Cells, Controls, Events, Tables, Worksheets
-' They all have these routines: Count, Item, Exists, Add, Remove, Init, and List
+' They all have these and only these routines:
+'     Count, Item, Exists, Add, Remove, Init, and List
 ' Is there any advantage in building them as Interface/Implements classes?
 ' CellsClass      is only used in TableClass
 ' ControlsClass   is only used in FormClass

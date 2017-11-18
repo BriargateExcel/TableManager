@@ -321,3 +321,27 @@ ErrorHandler:
 
 End Function ' NumberOfArrayDimensions
 
+Public Function HasVal(ByVal Target As Range) As Boolean
+
+    Const RoutineName = Module_Name & "HasVal"
+    On Error GoTo ErrorHandler
+    
+    Dim v As Variant
+    
+    On Error Resume Next
+    
+    v = Target.Validation.Type
+    If Err.Number = 0 Then
+        HasVal = True
+    Else
+        HasVal = False
+    End If
+
+Done:
+    Exit Function
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
+
+End Function ' HasVal
+
+
