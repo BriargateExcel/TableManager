@@ -42,197 +42,287 @@ Private Const TextMultiplier = 5
 Public Function BuildForm( _
     ByVal Tbl As TableManager.TableClass _
     ) As MSForms.UserForm
-      ' TODO: refactor
-          Dim TempForm As VBComponent
-          
-          Dim Field As Variant
-          Dim Top As Single
-          Dim Ctl As Control
-          Dim Lbl As Control
-          Dim MaxLabelWidth As Single
-          Dim MaxFieldWidth As Single
-          Dim MaxButtonWidth As Single
-          Dim DataLeft As Single
-          Dim LogoHeight As Single
-          Dim LogoWidth As Single
-          Dim LogoImage As Control
-          Dim Evt As TableManager.EventClass
-          Dim I As Long
-          
-10        Debug.Assert Initializing
+    Dim TempForm As VBComponent
+    
+    Dim Field As Variant
+    Dim Top As Single
+    Dim Ctl As Control
+    Dim Lbl As Control
+    Dim MaxLabelWidth As Single
+    Dim MaxFieldWidth As Single
+    Dim MaxButtonWidth As Single
+    Dim DataLeft As Single
+    Dim LogoHeight As Single
+    Dim LogoWidth As Single
+    Dim LogoImage As Control
+    Dim Evt As TableManager.EventClass
+    Dim I As Long
+    Dim NumRows As Long
+    Dim NumCols As Long
+    
+    Debug.Assert Initializing
 
-          Const RoutineName = Module_Name & "BuildForm"
-20        On Error GoTo ErrorHandler
-          
-30        Set pTable = Tbl
-40        pWorksheetName = Tbl.WorksheetName
-          
-          ' Create the UserForm
-50        Set TempForm = ThisWorkbook.VBProject.VBComponents.Add(vbext_ct_MSForm)
-60        pFormName = TempForm.Name
-          
-70        Set Tbl.Form = New TableManager.FormClass
-80        Tbl.Form.Name = pFormName
-90        Set pFormObj = VBA.UserForms.Add(TempForm.Name)
-100       Set Tbl.Form.FormObj = pFormObj
-          
-110       Set Evt = New TableManager.EventClass
-120       Set Evt.TableObj = Tbl
-130       Set Evt.FormObj = pFormObj
-140       Evt.Name = pFormName
-150       pEvents.Add Evt
-          
-160       TableManager.Texture Tbl
-          
-170       Set LogoImage = TableManager.Logo(Tbl, LogoHeight, LogoWidth)
-          
-180       With pFormObj
-              
-190           Top = LogoHeight + 2 * StandardGap
-              
-              ' Build the field labels and fields
-200           For I = 0 To Tbl.CellCount - 1
-210               Set Field = Tbl.TableCells.Item(I)
-                  
-                  ' Build the field label
-220               BuildLabel Top, Field, MaxLabelWidth, Lbl
-                  
-                  ' Build the data field
-230               If Field.Locked Then
-                      ' Set this up as a constant (label)
-240                   BuildDataLabel Top, Field, MaxFieldWidth, Lbl
-                      
-250               Else
-                      ' Field is unlocked
-260                   Select Case Field.CellType
-                      Case xlValidateInputOnly
-                          ' Set this up as a text field
-270                       BuildText Top, Field, MaxFieldWidth, Lbl, Tbl
-                          
-280                   Case xlValidateList
-                          ' Set this up as a combobox
-290                       BuildCombo Top, Field, MaxFieldWidth, Lbl, Tbl
-                          
-300                   Case xlValidateCustom: Stop
+    Const RoutineName = Module_Name & "BuildForm"
+    On Error GoTo ErrorHandler
+    
+    Set pTable = Tbl
+    pWorksheetName = Tbl.WorksheetName
+    
+    ' Create the UserForm
+    Set TempForm = ThisWorkbook.VBProject.VBComponents.Add(vbext_ct_MSForm)
+    pFormName = TempForm.Name
+    
+    Set Tbl.Form = New TableManager.FormClass
+    Tbl.Form.Name = pFormName
+    Set pFormObj = VBA.UserForms.Add(TempForm.Name)
+    Set Tbl.Form.FormObj = pFormObj
+    pFormObj.Caption = Tbl.Name
+    
+    Set Evt = New TableManager.EventClass
+    Set Evt.TableObj = Tbl
+    Set Evt.FormObj = pFormObj
+    Evt.Name = pFormName
+    pEvents.Add Evt
+    
+    TableManager.Texture Tbl
+    
+    Set LogoImage = TableManager.Logo(Tbl, LogoHeight, LogoWidth)
+    
+    With pFormObj
+        
+        Top = LogoHeight + 2 * StandardGap
+        
+        ' Build the field labels and fields
+        For I = 0 To Tbl.CellCount - 1
+            Set Field = Tbl.TableCells.Item(I)
+            
+            ' Build the field label
+            BuildLabel Top, Field, MaxLabelWidth, Lbl
+            
+            ' Build the data field
+            If Field.Locked Then
+                ' Set this up as a constant (label)
+                BuildDataLabel Top, Field, MaxFieldWidth, Lbl
+                
+            Else
+                ' Field is unlocked
+                Select Case Field.CellType
+                Case xlValidateInputOnly
+                    ' Set this up as a text field
+                    BuildText Top, Field, MaxFieldWidth, Lbl, Tbl
+                    
+                Case xlValidateList
+                    ' Set this up as a combobox
+                    BuildCombo Top, Field, MaxFieldWidth, Lbl, Tbl
+                    
+                Case xlValidateCustom: Stop
 
-310                   Case xlValidateDate:
-                          ' Set this up as a textbox
-320                       BuildDate Top, Field, MaxFieldWidth, Lbl, Tbl
+                Case xlValidateDate:
+                    ' Set this up as a textbox
+                    BuildDate Top, Field, MaxFieldWidth, Lbl, Tbl
 
-330                   Case xlValidateDecimal
-                          ' Set this up as a textbox
-340                       BuildDate Top, Field, MaxFieldWidth, Lbl, Tbl
+                Case xlValidateDecimal
+                    ' Set this up as a textbox
+                    BuildDate Top, Field, MaxFieldWidth, Lbl, Tbl
 
-350                   Case xlValidateTextLength
-                          ' Set this up as a text field
-360                       BuildText Top, Field, MaxFieldWidth, Lbl, Tbl
+                Case xlValidateTextLength
+                    ' Set this up as a text field
+                    BuildText Top, Field, MaxFieldWidth, Lbl, Tbl
 
-370                   Case xlValidateTime: Stop
+                Case xlValidateTime: Stop
 
-380                   Case xlValidateWholeNumber:
-                          ' Set this up as a textbox
-390                       BuildWholeNumber Top, Field, MaxFieldWidth, Lbl, Tbl
-                      
-400                   Case Else: Stop
-410                   End Select
-420               End If ' Field is locked
-                  
-430           Next I
-                  
-              ' Position the controls now that we know all the widths
-440           DataLeft = MaxLabelWidth + 2 * StandardGap
-450           For Each Ctl In pFormObj.Controls
-460               If Left(Ctl.Name, 3) = "lbl" Then
-470                   Ctl.Width = MaxLabelWidth
-480                   Ctl.Left = StandardGap
-490               Else
-500                   If Ctl.Name <> "Filler" Then
-510                       Ctl.Width = MaxFieldWidth
-520                       Ctl.Left = DataLeft
-530                   End If
-540               End If
-550           Next Ctl
-              
-560           Top = Top + StandardGap
-              
-              ' TODO: Arrange the buttons based on the width of the form
-              ' A wide form would have fewer rows of buttons than a narrow form
-                  
-              ' Add First Row of Buttons
-570           DataLeft = StandardGap
-580           BuildButton "Validate Form", Top, DataLeft, _
-                  "Validate the contents of the Form", Tbl
-              
-590           BuildButton "Copy To Table", Top, DataLeft, _
-                  "Copy the contents of the Form to the Table row", Tbl
-              
-600           BuildButton "Next Row", Top, DataLeft, _
-                  "Move to next row of the Table", Tbl
-              
-610           BuildButton "Previous Row", Top, DataLeft, _
-                  "Move to previous row of the Table", Tbl
-              
-              ' Second row of buttons
-620           Top = Top + ButtonHeight + StandardGap
-630           DataLeft = StandardGap
-640           BuildButton "Insert Above", Top, DataLeft, _
-                  "Insert a blank line above this Table row and move to it", Tbl
-              
-650           BuildButton "Insert Below", Top, DataLeft, _
-                  "Insert a blank line below this Table row and move to it", Tbl
-              
-660           BuildButton "Insert At Top", Top, DataLeft, _
-                  "Insert a blank line above the first row of the Table and move to it", Tbl
-              
-670           BuildButton "Insert At Bottom", Top, DataLeft, _
-                  "Insert a blank line below the last row of the Table and move to it", Tbl
-
-              ' Third row of buttons
-680           MaxButtonWidth = DataLeft + ButtonWidth + 2 * StandardGap
-690           Top = Top + ButtonHeight + StandardGap
-700           DataLeft = StandardGap
-710           BuildButton "Delete This Row", Top, DataLeft, _
-                  "Delete this row of the Table", Tbl
-              
-720           BuildButton "Go To Top", Top, DataLeft, _
-                  "Move to the first row of the Table", Tbl
-              
-730           BuildButton "Go To Bottom", Top, DataLeft, _
-                  "Move to the last row of the Table", Tbl
-
-740           BuildButton "Cancel", Top, DataLeft, _
-                  "Exit the Form without changing the Table any further", Tbl
-              
-750           Top = Top + ButtonHeight + StandardGap
-              
-              ' Set Properties for TempForm now that we know all the heights and widths
-760           .Caption = Tbl.Name
-770           .Width = Application.Max( _
-                  MaxLabelWidth + MaxFieldWidth + 4 * StandardGap, _
-                  MaxButtonWidth)
-780           .Height = Top + 3 * StandardGap
-              
-790           If Not LogoImage Is Nothing Then
-800               LogoImage.Left = .Width - LogoWidth
-810               LogoImage.Left = 0
-820               LogoImage.Left = .InsideWidth - LogoImage.Width - StandardGap
-830               LogoImage.Top = StandardGap
-'840               Set pFormObj.Picture = LogoImage
-850           End If
-              
-860       End With ' pFormObj
-          
-870       Set BuildForm = pFormObj
-              
+                Case xlValidateWholeNumber:
+                    ' Set this up as a textbox
+                    BuildWholeNumber Top, Field, MaxFieldWidth, Lbl, Tbl
+                
+                Case Else: Stop
+                End Select
+            End If ' Field is locked
+            
+        Next I
+            
+        ' Position the controls now that we know all the widths
+        DataLeft = MaxLabelWidth + 2 * StandardGap
+        For Each Ctl In pFormObj.Controls
+            If Left(Ctl.Name, 3) = "lbl" Then
+                Ctl.Width = MaxLabelWidth
+                Ctl.Left = StandardGap
+            Else
+                If Ctl.Name <> "Filler" Then
+                    Ctl.Width = MaxFieldWidth
+                    Ctl.Left = DataLeft
+                End If
+            End If
+        Next Ctl
+        
+        Top = Top + StandardGap
+        
+        NumRows = 4
+        NumCols = 3
+        
+        If MaxLabelWidth + MaxFieldWidth > 4 * ButtonWidth + (4 + 2) * StandardGap Then
+            NumRows = 3
+            NumCols = 4
+        End If
+        
+        If MaxLabelWidth + MaxFieldWidth > 6 * ButtonWidth + (6 + 2) * StandardGap Then
+            NumRows = 2
+            NumCols = 6
+        End If
+        
+        MaxButtonWidth = NumCols * ButtonWidth + (NumCols + 2) * StandardGap
+        
+        BuildAllButtons Top, Tbl, NumRows, NumCols
+        
+        ' Set Properties for TempForm now that we know all the heights and widths
+        .Width = Application.Max( _
+            MaxLabelWidth + MaxFieldWidth + NumCols * StandardGap, _
+            MaxButtonWidth)
+        
+        Top = Top + ButtonHeight + StandardGap
+        .Height = Top + NumRows * StandardGap
+        
+        If Not LogoImage Is Nothing Then
+            LogoImage.Left = .Width - LogoWidth
+            LogoImage.Left = 0
+            LogoImage.Left = .InsideWidth - LogoImage.Width - StandardGap
+            LogoImage.Top = StandardGap
+        End If
+        
+    End With ' pFormObj
+    
+    Set BuildForm = pFormObj
+        
 Done:
-880       Exit Function
+    Exit Function
 ErrorHandler:
-          
-890       RaiseError Err.Number, Err.Source, RoutineName, Err.Description
+    
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
 End Function ' BuildForm
 
-Private Sub BuildButton( _
+Private Sub BuildAllButtons( _
+    ByRef Top As Single, _
+    ByVal Tbl As TableManager.TableClass, _
+    ByVal NumRows As Long, _
+    ByVal NumCols As Long)
+    
+    Dim DataLeft As Single
+    Dim Arrangement As String
+    
+    Const RoutineName = Module_Name & "BuildAllButtons"
+    On Error GoTo ErrorHandler
+
+    Debug.Assert Initializing
+    Debug.Assert NumRows = 2 Or NumRows = 3 Or NumRows = 4
+    Debug.Assert NumCols = 3 Or NumCols = 4 Or NumCols = 6
+    Debug.Assert NumRows * NumCols = 12
+    
+    Arrangement = Format(NumRows, "0") & " Rows of " & Format(NumCols, "0")
+    
+    Select Case Arrangement
+    Case "2 Rows of 6"
+        ' Add First Row of Buttons
+        DataLeft = StandardGap
+        ' First row of buttons
+        BuildButtonRow 0, 5, Top, DataLeft, Tbl
+        
+        ' Second row of buttons
+        Top = Top + ButtonHeight + StandardGap
+        DataLeft = StandardGap
+        BuildButtonRow 6, 11, Top, DataLeft, Tbl
+
+    Case "3 Rows of 4"
+        ' Add First Row of Buttons
+        DataLeft = StandardGap
+        ' First row of buttons
+        BuildButtonRow 0, 3, Top, DataLeft, Tbl
+        
+        ' Second row of buttons
+        Top = Top + ButtonHeight + StandardGap
+        DataLeft = StandardGap
+        BuildButtonRow 4, 7, Top, DataLeft, Tbl
+
+        ' Third row of buttons
+        Top = Top + ButtonHeight + StandardGap
+        DataLeft = StandardGap
+        BuildButtonRow 8, 11, Top, DataLeft, Tbl
+        
+    Case "4 Rows of 3"
+        ' Add First Row of Buttons
+        DataLeft = StandardGap
+        ' First row of buttons
+        BuildButtonRow 0, 2, Top, DataLeft, Tbl
+        
+        ' Second row of buttons
+        Top = Top + ButtonHeight + StandardGap
+        DataLeft = StandardGap
+        BuildButtonRow 3, 5, Top, DataLeft, Tbl
+
+        ' Third row of buttons
+        Top = Top + ButtonHeight + StandardGap
+        DataLeft = StandardGap
+        BuildButtonRow 6, 8, Top, DataLeft, Tbl
+
+        ' Fourth row of buttons
+        Top = Top + ButtonHeight + StandardGap
+        DataLeft = StandardGap
+        BuildButtonRow 9, 11, Top, DataLeft, Tbl
+    
+    Case Else: Stop
+    End Select
+
+Done:
+    Exit Sub
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
+End Sub ' BuildAllButtons
+
+Private Sub BuildButtonRow( _
+    ByVal LowerBound As Long, _
+    ByVal UpperBound As Long, _
+    ByRef Top As Single, _
+    ByRef DataLeft As Single, _
+    ByVal Tbl As TableManager.TableClass)
+
+    Const RoutineName = Module_Name & "BuildButtonRow"
+    On Error GoTo ErrorHandler
+    
+    Dim I As Long
+
+    Dim ButtonNames() As Variant
+    Dim ButtonLabels() As Variant
+    
+    ButtonNames = Array( _
+        "Validate Form", "Copy To Table", "Next Row", "Previous Row", _
+        "Insert Above", "Insert Below", "Insert at Top", "Insert at Bottom", _
+        "Delete This Row", "Go To Top", "Go To Bottom", "Cancel")
+    
+    ButtonLabels = Array( _
+        "Validate the contents of the Form", _
+        "Copy the contents of the Form to the Table row", _
+        "Move to previous row of the Table", _
+        "Move to next row of the Table", _
+        "Insert a blank line above this Table row and move to it", _
+        "Insert a blank line below this Table row and move to it", _
+        "Insert a blank line above the first row of the Table and move to it", _
+        "Insert a blank line below the last row of the Table and move to it", _
+        "Delete this row of the Table", _
+        "Move to the first row of the Table", _
+        "Move to the last row of the Table", _
+        "Exit the Form without changing the Table any further")
+        
+        For I = LowerBound To UpperBound
+            BuildOneButton ButtonNames(I), Top, DataLeft, _
+                ButtonLabels(I), Tbl
+        Next I
+Done:
+    Exit Sub
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
+End Sub
+
+Private Sub BuildOneButton( _
     ByVal Cption As String, _
     ByVal Top As Single, _
     ByRef Lft As Single, _
@@ -242,7 +332,7 @@ Private Sub BuildButton( _
     Dim Ctl As Control
     Dim Evt As TableManager.EventClass
     
-    Const RoutineName = Module_Name & "BuildButton"
+    Const RoutineName = Module_Name & "BuildOneButton"
     On Error GoTo ErrorHandler
 
     Debug.Assert Initializing
@@ -280,7 +370,7 @@ Done:
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
-End Sub ' BuildButton
+End Sub ' BuildOneButton
 
 Private Function BuildCaption( _
     ByVal InTitle As String, _
