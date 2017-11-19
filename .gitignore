@@ -1,0 +1,5 @@
+# Forms
+# Ignore the machine generated UserForms
+# Human generated forms will not start with UserForm
+UserForm*
+#####################
