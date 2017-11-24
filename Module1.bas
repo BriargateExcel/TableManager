@@ -1,9 +1,10 @@
 Attribute VB_Name = "Module1"
 Option Explicit
 
-Private Const Module_Name = "Module1."
+Private Const Module_Name As String = "Module1."
 
 Public Sub Auto_Open()
-    TableManager.autoopen (ThisWorkbook.Name)
+    TableManager.AutoOpen ThisWorkbook
 End Sub
+
 

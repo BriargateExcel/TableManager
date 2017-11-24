@@ -1,94 +1,51 @@
 Attribute VB_Name = "SharedRoutines"
 Option Explicit
 
-Private Const Module_Name = "SharedRoutines."
+Private Const Module_Name As String = "SharedRoutines."
 
-Global Const Success = True
-Global Const Failure = False
-Global Const NoError = 0
-
-Function ActiveCellTableName() As String
+Public Function ActiveCellTableName() As String
 '   Function returns table name if active cell is in a table and
-'   "" if it isn't.
+'   vbnullstring if it isn't.
 
-    ActiveCellTableName = ""
-    
+    ActiveCellTableName = vbNullString
+
 '   Statement produces error when active cell is not in a table.
     On Error Resume Next
     ActiveCellTableName = ActiveCell.ListObject.Name
-    
+
     On Error GoTo 0 ' Reset the error handling
-End Function
+End Function ' ActiveCellTableName
 
 Public Function CheckForVBAProjectAccessEnabled(ByVal WkBkName As String) As Boolean
-'   Description:
-'   Checks that access to the VBA project is enabled
-'   If not enabled, tells the user how to enable it
-'   Inputs:
-'   None
-'   Outputs:
-'   Me       Success/Failure
-'   Requisites:
-'   SharedRoutines
-'   Notes:
-'   Any notes
-'   Example:
-'   How to call this routine
-'   History
-'   05/14/2017 RRD Initial Programming
 
-'   Declarations
     Dim VBP As Object ' as VBProject
     Dim WkBk As Workbook
 
-'   Error Handling Initialization
-    On Error GoTo ErrHandler
+    Const RoutineName As String = Module_Name & "CheckForVBAProjectAccessEnabled"
+    On Error GoTo ErrorHandler
+    
     Set WkBk = Workbooks(WkBkName)
-    CheckForVBAProjectAccessEnabled = TableManager.Failure
 
-'   Procedure
-    If Val(Application.Version) >= 10 Then
+    If Val(Application.VERSION) >= 10 Then
         Set VBP = WkBk.VBProject
     Else
         MsgBox "This application must be run on Excel 2002 or greater", _
             vbCritical, "Excel Version Check"
-        GoTo ErrHandler
+        GoTo ErrorHandler
     End If
 
-    CheckForVBAProjectAccessEnabled = TableManager.Success
-
-ErrHandler:
-    Set VBP = Nothing
-
-    Select Case Err.Number
-        Case Is = TableManager.NoError: 'Do nothing
-        Case Else:
-            MsgBox "Your security settings do not allow this procedure to run." & vbCrLf & vbCrLf & _
-                "To change your security setting:" & vbCrLf & vbCrLf & _
-                " 1. Select Tools - Macro - Security" & vbCrLf & _
-                " 2. Click the 'Trusted Sources' tab" & vbCrLf & _
-                " 3. Check 'Trust access to Visual Basic Project'", _
-                vbCritical
-    End Select
+'@Ignore LineLabelNotUsed
+Done:
+    Exit Function
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
 End Function ' CheckForVBAProjectAccessEnabled
 
-Public Function DspErrMsg(ByVal sRoutine As String)
-
-    Const bDebugMode    As Boolean = True   'Set to false when put into production
-
-    DspErrMsg = MsgBox( _
-        Err.Number & ":" & Err.Description, _
-        IIf(bDebugMode, vbAbortRetryIgnore, vbCritical) + _
-            IIf(Err.Number = 999, 0, vbMsgBoxHelpButton), _
-        sRoutine, _
-        Err.HelpFile, _
-        Err.HelpContext)
-End Function
-
 Public Function InScope( _
     ByVal ModuleList As Variant, _
-    ByVal ModuleName As String _
+    ByVal ModuleName As String, _
+    ByVal RoutineName As String _
     ) As Boolean
 
 '   Uses the name of the module where InScope is called
@@ -96,33 +53,282 @@ Public Function InScope( _
 '   Returns true if the Filter result has any entries
 '   In other words, returns True if ModuleName is found in ModuleList
 
-    InScope = _
+'     Log RoutineName & ":    " & ModuleName
+
+    Dim OneDimArray
+    
+    Const ThisRoutine As String = Module_Name & "InScope"
+    On Error GoTo ErrorHandler
+    
+    Dim NumDim As Long: NumDim = NumberOfArrayDimensions(ModuleList)
+    
+    If NumDim > 2 Then
+        MsgBox "InScope cannot handle arrays with " & _
+            "more than 2 dimensions", _
+            vbOKOnly Or vbCritical, _
+            "NumDim Error"
+        Exit Function
+    End If
+    
+    If NumDim = 2 Then
+        Dim I As Long
+        ReDim OneDimArray(UBound(ModuleList, 1) - 1) As Variant
+        For I = 0 To UBound(ModuleList, 1) - 1
+            OneDimArray(I) = ModuleList(I + 1, 1)
+        Next I
+        
+        InScope = _
+            (UBound( _
+                Filter(OneDimArray, _
+                    ModuleName, _
+                    True, _
+                    CompareMethod.BinaryCompare) _
+            ) > -1)
+          Exit Function
+    End If
+
+     InScope = _
         (UBound( _
             Filter(ModuleList, _
                 ModuleName, _
                 True, _
                 CompareMethod.BinaryCompare) _
         ) > -1)
-End Function
 
-Public Function VBAMatch( _
-    ByVal Target As Variant, _
-    ByVal SearchRange As Range, _
-    Optional ByVal TreatAsString As Boolean = False _
-    ) As Long
+'@Ignore LineLabelNotUsed
+Done:
+    Exit Function
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, ThisRoutine & "." & RoutineName, Err.Description
 
-    On Error GoTo NotFound
+End Function ' InScope
+
+Public Sub ShowAnyForm(ByVal FormName As String, Optional ByVal Modal As FormShowConstants = vbModal)
+' http://www.cpearson.com/Excel/showanyform.htm
+
+    Const RoutineName As String = Module_Name & "ShowAnyForm"
+    On Error GoTo ErrorHandler
     
-    If IsDate(Target) And Not TreatAsString Then
-        VBAMatch = Application.Match(CLng(Target), SearchRange, 0)
-        Exit Function
+    ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+    ' ShowAnyForm
+    ' This procedure will show the UserForm named in FormName, either modally or
+    ' modelessly, as indicated by the value of Modal.  If a form is already loaded,
+    ' it is reshown without unloading/reloading the form.
+    ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+    Dim Obj As Object
+    ''''''''''''''''''''''''''''''''''''''''''''''''''''
+    ' Loop through the VBA.UserForm object (works like
+    ' a collection), to see if the form named by
+    ' FormName is already loaded. If so, just call
+    ' Show and exit the procedure. If it is not loaded,
+    ' add it to the VBA.UserForms object and then
+    ' show it.
+    ''''''''''''''''''''''''''''''''''''''''''''''''''''
+    For Each Obj In VBA.UserForms
+        If StrComp(Obj.Name, FormName, vbTextCompare) = 0 Then
+'           ''''''''''''''''''''''''''''''''''''
+'           ' START DEBUGGING/ILLUSTRATION ONLY
+'           ''''''''''''''''''''''''''''''''''''
+'           Obj.Label1.Caption = "Form Already Loaded"
+'           ''''''''''''''''''''''''''''''''''''
+'           ' END DEBUGGING/ILLUSTRATION ONLY
+'           ''''''''''''''''''''''''''''''''''''
+            Obj.Show Modal
+            Exit Sub
+        End If
+    Next Obj
+
+    ''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+    ' If we make it here, the form named by FormName was
+    ' not loaded, and thus not found in VBA.UserForms.
+    ' Call the Add method of VBA.UserForms to load the
+    ' form and then call Show to show the form.
+    ''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+    With VBA.UserForms
+        On Error Resume Next
+        Err.Clear
+        Set Obj = .Add(FormName)
+        If Err.Number <> 0 Then
+            MsgBox "Err: " & CStr(Err.Number) & "   " & Err.Description
+            Exit Sub
+        End If
+        ''''''''''''''''''''''''''''''''''''
+        ' START DEBUGGING/ILLUSTRATION ONLY
+        ''''''''''''''''''''''''''''''''''''
+        Obj.Label1.Caption = "Form Loaded By ShowAnyForm"
+        ''''''''''''''''''''''''''''''''''''
+        ' END DEBUGGING/ILLUSTRATION ONLY
+        ''''''''''''''''''''''''''''''''''''
+        Obj.Show Modal
+    End With
+    
+'@Ignore LineLabelNotUsed
+Done:
+    Exit Sub
+ErrorHandler:
+   RaiseError Err.Number, Err.Source, RoutineName, Err.Description
+   
+End Sub ' ShowAnyForm
+
+Public Sub RaiseError( _
+    ByVal errorno As Long, _
+    ByVal src As String, _
+    ByVal proc As String, _
+    ByVal desc As String)
+
+' https://excelmacromastery.com/vba-error-handling/
+' Reraises an error and adds line number and current procedure name
+    
+    Dim SourceOfError As String
+    
+    ' Check if procedure where error occurs the line no and proc details
+    If src = ThisWorkbook.VBProject.Name Then
+        ' Add error line number if present
+        If Erl <> 0 Then
+            SourceOfError = vbCrLf & "Line no: " & Erl & " "
+        End If
+   
+        ' Add procedure to source
+        SourceOfError = SourceOfError & vbCrLf & proc
+        
     Else
-        VBAMatch = Application.WorksheetFunction.Match(Target, SearchRange, 0)
+        ' If error has already been raised then just add on procedure name
+        SourceOfError = src & vbCrLf & proc
+    End If
+    
+    ' If the code stops here,
+    ' make sure DisplayError is placed in the top most Sub
+    Err.Raise errorno, SourceOfError, desc
+    
+End Sub ' RaiseError
+
+Public Sub DisplayError(ByVal Procname As String)
+
+' https://excelmacromastery.com/vba-error-handling/
+' Displays the error when it reaches the topmost sub
+' Note: You can add a call to logging from this sub
+
+    Dim Msg As String
+    Msg = "The following error occurred: " & vbCrLf & Err.Description _
+                    & vbCrLf & vbCrLf & "Error Location is: "
+
+    Msg = Msg + Err.Source & vbCrLf & Procname ' & " " & src & " " & desc
+
+    ' Display message
+    MsgBox Msg, Title:="Error"
+End Sub ' DisplayError
+
+'Public Sub Log(ParamArray Msg() As Variant)
+'' http://analystcave.com/vba-proper-vba-error-handling/
+'' https://excelmacromastery.com/vba-error-handling/
+'
+'    Dim Filename As String
+'    Filename = MainWorkbook.Path & "\error_log.txt"
+'    Dim MsgString As Variant
+'    Dim I As Long
+'
+'    Exit Sub
+'
+'    ' Archive file at certain size
+'    If FileLen(Filename) > 20000 Then
+'        FileCopy Filename, _
+'            Replace(Filename, ".txt", _
+'                Format$(Now, "ddmmyyyy hhmmss.txt"))
+'        Kill Filename
+'    End If
+'
+'    ' Open the file to write
+'    Dim filenumber As Long
+'    filenumber = FreeFile
+'    Open Filename For Append As #filenumber
+'
+'    MsgString = Msg(LBound(Msg))
+'    For I = LBound(Msg) + 1 To UBound(Msg)
+'        MsgString = "," & MsgString & Msg(I)
+'    Next I
+'
+'    Print #filenumber, Now & ":  " & MsgString
+'
+'    Close #filenumber
+'
+'End Sub ' Log
+
+Public Function TimeFormat(ByVal Dt As Date) As String
+    TimeFormat = Format$(Dt, "hh:mm:ss")
+End Function ' TimeFormat
+
+Public Function NumberOfArrayDimensions(ByVal Arr As Variant) As Long
+' http://www.cpearson.com/excel/vbaarrays.htm
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+' NumberOfArrayDimensions
+' This function returns the number of dimensions of an array. An unallocated dynamic array
+' has 0 dimensions. This condition can also be tested with IsArrayEmpty.
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+    Dim Ndx As Long
+    Dim Res As Long
+    
+    Const RoutineName As String = Module_Name & "NumberOfArrayDimensions"
+    On Error GoTo ErrorHandler
+    
+    On Error Resume Next
+    Res = UBound(Arr, 2) ' If Arr has only one element, this will fail
+    If Err.Number <> 0 Then
+        NumberOfArrayDimensions = 1
+        On Error GoTo 0
         Exit Function
     End If
-
-NotFound:
-    VBAMatch = 0
     
-End Function ' VBAMatch
+    On Error Resume Next
+    ' Loop, increasing the dimension index Ndx, until an error occurs.
+    ' An error will occur when Ndx exceeds the number of dimension
+    ' in the array. Return Ndx - 1.
+    Do
+        Ndx = Ndx + 1
+        Res = UBound(Arr, Ndx)
+    Loop Until Err.Number <> 0
+    
+    On Error GoTo ErrorHandler
+    
+    NumberOfArrayDimensions = Ndx - 1
+
+'@Ignore LineLabelNotUsed
+Done:
+    Exit Function
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
+
+End Function ' NumberOfArrayDimensions
+
+Public Function HasVal(ByVal Target As Range) As Boolean
+
+    Const RoutineName As String = Module_Name & "HasVal"
+    On Error GoTo ErrorHandler
+    
+    Dim v As Variant
+    
+    On Error Resume Next
+    
+    v = Target.Validation.Type
+    If Err.Number = 0 Then
+        HasVal = True
+    Else
+        HasVal = False
+    End If
+
+'@Ignore LineLabelNotUsed
+Done:
+    Exit Function
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
+
+End Function ' HasVal
+
+
+
+
+
+
+
+
+
 

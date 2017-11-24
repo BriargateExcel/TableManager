@@ -9,83 +9,21 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = True
 Option Explicit
 
-Private Const Module_Name As String = "WorksheetClass."
-
-Public WithEvents WS As Worksheet
-Attribute WS.VB_VarHelpID = -1
-
+Private pWorksheet As Worksheet
 Private pName As String
 
-Public Sub Add(ByVal Sht As Worksheet)
-'   Description:Add a control
-'   Inputs: Ctl The control to be added
-'   Outputs: *None
-'   Requisites:
-'   SharedRoutines
-'   Example:
+Private pWorksheetEvent As TableManager.EventClass
 
-'     Date
-'   05/14/2017 RRD Ini Modification
+Private Sub Class_Initialize()
+    Debug.Assert Initializing
+    Set pWorksheetEvent = New TableManager.EventClass
+End Sub ' Class_Initialize
 
-'   Declarations
-    Const Routine_Name = Module_Name & "Add"
-    
-    Dim Obj As Object
+Public Property Get Worksheet() As Worksheet: Set Worksheet = pWorksheet: End Property
+Public Property Set Worksheet(ByVal WS As Worksheet): Set pWorksheet = WS: End Property
 
-'   Error Handling Initialization
-    On Error GoTo ErrHandler
-           
-'   Procedure
-    If TableManager.WorksheetExists(Sht.Name, Module_Name) Then TableManager.WorksheetRemove Sht.Name, Module_Name
-        
-    If Sht.Name <> "" Then
-        Set Obj = New TableManager.EventHandler
-        TableManager.WorksheetAdd Sht, Module_Name
-    End If
-        
-ErrHandler:
-    Select Case Err.Number
-        Case Is = TableManager.NoError: 'Do nothing
-        Case Else: 'Display Error Message Box
-            Select Case TableManager.DspErrMsg(Routine_Name)
-                Case Is = vbAbort: Stop: Resume    'Debug mode
-                Case Is = vbRetry: Resume          'Try again
-                Case Is = vbIgnore: 'End routine
-            End Select
-    End Select
-    
-End Sub
-
-Public Sub CollectData(ByVal WS As Worksheet): pName = WS.Name: End Sub
-
-Private Sub WS_BeforeDoubleClick( _
-    ByVal Target As Range, _
-    Cancel As Boolean)
-    
-    Dim TableName As String
-    Dim Tbl As TableManager.TableClass
-    
-    Cancel = True
-
-    TableName = TableManager.ActiveCellTableName
-    
-    If TableName <> "" Then
-        Set Tbl = TableManager.TableItem(TableName, Module_Name)
-        Set Tbl.Target = Target
-        Tbl.Form.PopulateForm Tbl
-        Tbl.Form.Show
-    Else
-        MsgBox "The selected cell is not inside a table. " & _
-            "Double-click a cell inside a table.", _
-            vbOKOnly Or vbExclamation, _
-            "Selected Cell Not in a Table"
-    End If
-    
-End Sub
+Public Property Get WorksheetEvent() As Object: Set WorksheetEvent = pWorksheetEvent: End Property
+Public Property Set WorksheetEvent(ByVal WS As Worksheet): Set pWorksheetEvent = WS: End Property
 
 Public Property Get Name() As String: Name = pName: End Property
-
-Public Property Let Name(ByVal Vbl As String): pName = Vbl: End Property
-
-Private Sub Class_Terminate(): Set WS = Nothing: End Sub
-
+Public Property Let Name(ByVal NM As String): pName = NM: End Property

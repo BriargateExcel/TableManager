@@ -1,126 +1,96 @@
 Attribute VB_Name = "XLAM_Module"
 Option Explicit
 
-Private Const Module_Name = "XLAM_Module."
+Private Const Module_Name As String = "XLAM_Module."
 
-Public Function BuildTable( _
-    ByVal WS As Worksheet, _
-    ByVal TableName As String _
-    ) As Boolean
+Private Init As Boolean
+Private pMainWorkbook As Workbook
 
-'   Description: Build a data form for the table
-'   Inputs:
-'   Target       The cell the user selected
-'   TableName   The name of the table containing Target
-'   Outputs:
-'   Me       Success/Failure
-'   Requisites:
-'   SharedRoutines
-'   Notes:
-'   Any notes
-'   Example:
-'   How to call this routine
-'   History
-'   06/09/2017 RRD Initial Programming
-'   09/09/17 RRD Changed to ignore tables with no editable data
+Public Function MainWorkbook() As Workbook
+    Set MainWorkbook = pMainWorkbook
+End Function
 
-'   Declarations
-    Const Routine_Name = Module_Name & "BuildTable"
+Public Sub BuildTable( _
+    ByVal WS As TableManager.WorksheetClass, _
+    ByVal TblObj As ListObject)
+    
     Dim Tbl As Variant
+    Dim Frm As TableManager.FormClass
     
-'   Error Handling Initialization
-    On Error GoTo ErrHandler
-    BuildTable = TableManager.Failure
+    Const RoutineName As String = Module_Name & "BuildTable"
+    On Error GoTo ErrorHandler
     
-'   Procedure
-
-'   Gather the table data
+    ' Gather the table data
     Set Tbl = New TableManager.TableClass
-    If Tbl.CollectData(WS, TableName) Then
-        Set Tbl.Form = New TableManager.FormClass
-        Tbl.Form.Name = TableName
-        
-        Tbl.Form.BuildForm (Tbl)
+    Tbl.Name = TblObj.Name
+    Set Tbl.Table = TblObj
+    If Tbl.CollectTableData(WS, Tbl) Then
+        Set Frm = New TableManager.FormClass
         TableManager.TableAdd Tbl, Module_Name
+        
+        Set Frm.FormObj = Frm.BuildForm(Tbl)
+        Set Tbl.Form = Frm
     End If
     
-ErrHandler:
-    Select Case Err.Number
-        Case Is = TableManager.NoError: 'Do nothing
-        Case Else:
-            Select Case TableManager.DspErrMsg(Routine_Name)
-                Case Is = vbAbort: Stop: Resume    'Debug mode - Trace
-                Case Is = vbRetry: Resume          'Try again
-                Case Is = vbIgnore: 'End routine
-            End Select
-    End Select
+'@Ignore LineLabelNotUsed
+Done:
+    Exit Sub
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
-End Function ' BuildTable
+End Sub ' BuildTable
 
-Public Sub AutoOpen(ByVal WkBkName As String)
-'   Description: Description of what function does
-'   Inputs:
-'   Outputs:
-'   Me       Success/Failure
-'   Requisites:
-'   None
-'   Notes:
-'   Any notes
-'   Example:
-'   How to call this routine
-'   History
-'   2017-06-17 RRD Initial Programming
-
-'   Declarations
-    Const Routine_Name = Module_Name & "." & "AutoOpen"
+Public Sub AutoOpen(ByVal WkBk As Workbook)
     
     Dim Sht As Worksheet
     Dim Tbl As ListObject
     Dim UserFrm As Object
-    Dim SheetClass As TableManager.WorksheetClass
-    Dim WkBk As Workbook
-
-'   Error Handling Initialization
-    On Error GoTo ErrHandler
+    Dim WkSht As TableManager.WorksheetClass
     
-    Set WkBk = Workbooks(WkBkName)
-    TableManager.CheckForVBAProjectAccessEnabled (WkBk.Name)
+    Const RoutineName As String = Module_Name & "AutoOpen"
+    On Error GoTo ErrorHandler
     
-'   Delete existing forms (used for cleanup while debugging)
-    For Each UserFrm In ThisWorkbook.VBProject.VBComponents
-        If UserFrm.Type = vbext_ct_MSForm Then
-            ThisWorkbook.VBProject.VBComponents.Remove UserFrm
+    Init = True
+    Set pMainWorkbook = WkBk
+    
+    CheckForVBAProjectAccessEnabled (ThisWorkbook.Name)
+    
+    For Each UserFrm In Application.ThisWorkbook.VBProject.VBComponents
+        If UserFrm.Type = vbext_ct_MSForm And _
+            Left$(UserFrm.Name, 8) = "UserForm" _
+        Then
+            Application.ThisWorkbook.VBProject.VBComponents.Remove UserFrm
         End If
     Next UserFrm
     
-'   Procedure
-    TableManager.TableSetNewClass Module_Name
     TableManager.WorksheetSetNewClass Module_Name
+    TableManager.TableSetNewClass Module_Name
     
-    For Each Sht In WkBk.Worksheets
-        Set SheetClass = TableManager.NewWorksheetClass
-        Set SheetClass.WS = Sht
-        SheetClass.Name = Sht.Name
-        TableManager.WorksheetAdd SheetClass, Module_Name
+    For Each Sht In MainWorkbook.Worksheets
+        Set WkSht = New TableManager.WorksheetClass
+        Set WkSht.Worksheet = Sht
+        WkSht.Name = Sht.Name
         
         For Each Tbl In Sht.ListObjects
-            TableManager.BuildTable Sht, Tbl.Name
+            BuildTable WkSht, Tbl
         Next Tbl
+        
+        TableManager.WorksheetAdd WkSht, Module_Name
     Next Sht
     
     DoEvents
+    
+    Init = False
 
-ErrHandler:
-    Select Case Err.Number
-        Case Is = TableManager.NoError: 'Do nothing
-        Case Else:
-            Select Case TableManager.DspErrMsg(Routine_Name)
-                Case Is = vbAbort: Stop: Resume    'Debug mode - Trace
-                Case Is = vbRetry: Resume          'Try again
-                Case Is = vbIgnore: 'End routine
-            End Select
-    End Select
+'@Ignore LineLabelNotUsed
+Done:
+    Exit Sub
+ErrorHandler:
+    DisplayError RoutineName
 
-End Sub      ' AutoOpen
+End Sub ' AutoOpen
 
+Public Function Initializing() As Boolean
+    Initializing = Init
+End Function ' Initializing
 
