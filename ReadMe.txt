@@ -1,2 +1,3 @@
-The VBA code in this repository edits an Excel table. It goes along with the Briargate Excel post http://briargateexcel.com/2017/06/19/vba-event-handler-2/ and other posts.
 # BriargateExcel Table Manager
+The VBA code in this repository allows the user to edit the contents of an Excel table.
+There is extensive informatin on the process in the [BriargateExcel blog](BriargateExcel.com).
