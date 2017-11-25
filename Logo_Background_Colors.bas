@@ -3,8 +3,8 @@ Option Explicit
 
 Private Const Module_Name As String = "Logo_Background_Colors."
 
-Private Const DarkestColor As Long = &H763232 ' AF Dark Blue
-Private Const LightestColor  As Long = &HE7E2E2 ' AF Light Gray
+Private Const DarkestColor = &H763232 ' AF Dark Blue
+Private Const LightestColor = &HE7E2E2 ' AF Light Gray
 
 Public Sub DisableButton(ByVal Btn As MSForms.CommandButton)
     Btn.Enabled = False

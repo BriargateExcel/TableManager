@@ -28,7 +28,6 @@ Public Function CheckForVBAProjectAccessEnabled(ByVal WkBkName As String) As Boo
 
     If Val(Application.VERSION) >= 10 Then
         Set VBP = WkBk.VBProject
-        CheckForVBAProjectAccessEnabled = True
     Else
         MsgBox "This application must be run on Excel 2002 or greater", _
             vbCritical, "Excel Version Check"
@@ -56,7 +55,7 @@ Public Function InScope( _
 
 '     Log RoutineName & ":    " & ModuleName
 
-    Dim OneDimArray() As Variant
+    Dim OneDimArray
     
     Const ThisRoutine As String = Module_Name & "InScope"
     On Error GoTo ErrorHandler
@@ -219,40 +218,40 @@ Public Sub DisplayError(ByVal Procname As String)
     MsgBox Msg, Title:="Error"
 End Sub ' DisplayError
 
-Public Sub Log(ParamArray Msg() As Variant)
-' http://analystcave.com/vba-proper-vba-error-handling/
-' https://excelmacromastery.com/vba-error-handling/
-    
-    Dim Filename As String
-    Filename = MainWorkbook.Path & "\error_log.txt"
-    Dim MsgString As Variant
-    Dim I As Long
-    
-    Exit Sub
-
-    ' Archive file at certain size
-    If FileLen(Filename) > 20000 Then
-        FileCopy Filename, _
-            Replace(Filename, ".txt", _
-                Format$(Now, "ddmmyyyy hhmmss.txt"))
-        Kill Filename
-    End If
-
-    ' Open the file to write
-    Dim filenumber As Long
-    filenumber = FreeFile
-    Open Filename For Append As #filenumber
-
-    MsgString = Msg(LBound(Msg))
-    For I = LBound(Msg) + 1 To UBound(Msg)
-        MsgString = "," & MsgString & Msg(I)
-    Next I
-
-    Print #filenumber, Now & ":  " & MsgString
-
-    Close #filenumber
-    
-End Sub ' Log
+'Public Sub Log(ParamArray Msg() As Variant)
+'' http://analystcave.com/vba-proper-vba-error-handling/
+'' https://excelmacromastery.com/vba-error-handling/
+'
+'    Dim Filename As String
+'    Filename = MainWorkbook.Path & "\error_log.txt"
+'    Dim MsgString As Variant
+'    Dim I As Long
+'
+'    Exit Sub
+'
+'    ' Archive file at certain size
+'    If FileLen(Filename) > 20000 Then
+'        FileCopy Filename, _
+'            Replace(Filename, ".txt", _
+'                Format$(Now, "ddmmyyyy hhmmss.txt"))
+'        Kill Filename
+'    End If
+'
+'    ' Open the file to write
+'    Dim filenumber As Long
+'    filenumber = FreeFile
+'    Open Filename For Append As #filenumber
+'
+'    MsgString = Msg(LBound(Msg))
+'    For I = LBound(Msg) + 1 To UBound(Msg)
+'        MsgString = "," & MsgString & Msg(I)
+'    Next I
+'
+'    Print #filenumber, Now & ":  " & MsgString
+'
+'    Close #filenumber
+'
+'End Sub ' Log
 
 Public Function TimeFormat(ByVal Dt As Date) As String
     TimeFormat = Format$(Dt, "hh:mm:ss")

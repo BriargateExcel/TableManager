@@ -21,7 +21,6 @@ End Sub ' Class_Initialize
 
 Public Property Get Count() As Long: Count = pAllControls.Count: End Property
 
-'@DefaultMember
 Public Property Get Item(ByVal vIndex As Variant) As Control
 Attribute Item.VB_UserMemId = 0
 'Attribute Item.VB_UserMemId = 0

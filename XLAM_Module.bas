@@ -53,13 +53,7 @@ Public Sub AutoOpen(ByVal WkBk As Workbook)
     Init = True
     Set pMainWorkbook = WkBk
     
-    If Not CheckForVBAProjectAccessEnabled(ThisWorkbook.Name) Then
-        MsgBox "You must set the project access for the " & _
-            "TableManager Add-In to work", _
-            vbOKOnly Or vbCritical, _
-            "Project Access"
-    
-    End If
+    CheckForVBAProjectAccessEnabled (ThisWorkbook.Name)
     
     For Each UserFrm In Application.ThisWorkbook.VBProject.VBComponents
         If UserFrm.Type = vbext_ct_MSForm And _

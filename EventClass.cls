@@ -11,38 +11,29 @@ Option Explicit
 
 Private Const Module_Name As String = "EventClass."
 
-Private WithEvents pSheetEvent As Worksheet
-Attribute pSheetEvent.VB_VarHelpID = -1
+Public WithEvents SheetEvent As Worksheet
+Attribute SheetEvent.VB_VarHelpID = -1
+Private pSheetObj As Object
 
 Private pTableObj As TableManager.TableClass
 
-Private WithEvents pFormEvent As MSForms.UserForm
-Attribute pFormEvent.VB_VarHelpID = -1
+Public WithEvents FormEvent As MSForms.UserForm
+Attribute FormEvent.VB_VarHelpID = -1
 Private pFormObj As Object
 
-Private WithEvents pButtonEvent As MSForms.CommandButton
-Attribute pButtonEvent.VB_VarHelpID = -1
+Public WithEvents ButtonEvent As MSForms.CommandButton
+Attribute ButtonEvent.VB_VarHelpID = -1
 Private pButtonObj As MSForms.CommandButton
 
-Private WithEvents pTextEvent As MSForms.TextBox
-Attribute pTextEvent.VB_VarHelpID = -1
+Public WithEvents TextEvent As MSForms.TextBox
+Attribute TextEvent.VB_VarHelpID = -1
 Private pTextObj As MSForms.TextBox
 
-Private WithEvents pComboEvent As MSForms.ComboBox
-Attribute pComboEvent.VB_VarHelpID = -1
+Public WithEvents ComboEvent As MSForms.ComboBox
+Attribute ComboEvent.VB_VarHelpID = -1
 Private pComboObj As MSForms.ComboBox
 
 Private pName As String
-
-Public Property Set SheetEvent(ByVal WS As Worksheet): Set pSheetEvent = WS: End Property
-
-Public Property Set FormEvent(ByVal UF As MSForms.UserForm): Set pFormEvent = UF: End Property
-
-Public Property Set ButtonEvent(ByVal CB As MSForms.CommandButton): Set pButtonEvent = CB: End Property
-
-Public Property Set TextEvent(ByVal TB As MSForms.TextBox): Set pTextEvent = TB: End Property
-
-Public Property Set ComboEvent(ByVal CB As MSForms.ComboBox): Set pComboEvent = CB: End Property
 
 Public Property Set TableObj(ByVal Tbl As TableManager.TableClass)
     Debug.Assert Initializing
@@ -54,31 +45,31 @@ Public Property Set FormObj(ByVal FO As Object)
     Debug.Assert Initializing
 
     Set pFormObj = FO
-    Set pFormEvent = FO
+    Set Me.FormEvent = FO
 End Property
 
 Public Property Set ButtonObj(ByVal Btn As MSForms.CommandButton)
     Debug.Assert Initializing
 
     Set pButtonObj = Btn
-    Set pButtonEvent = Btn
+    Set ButtonEvent = Btn
 End Property ' ButtonObj
 
 Public Property Set TextObj(ByVal Txt As MSForms.TextBox)
     Debug.Assert Initializing
 
     Set pTextObj = Txt
-    Set pTextEvent = Txt
+    Set TextEvent = Txt
 End Property ' TextObj
 
 Public Property Set ComboObj(ByVal Cmb As MSForms.ComboBox)
     Debug.Assert Initializing
 
-    Set pComboEvent = Cmb
+    Set ComboEvent = Cmb
     Set pComboObj = Cmb
 End Property ' ComboObj
 
-Private Sub pFormEvent_MouseMove( _
+Private Sub FormEvent_MouseMove( _
     ByVal Button As Integer, _
     ByVal Shift As Integer, _
     ByVal x As Single, _
@@ -109,7 +100,7 @@ ErrorHandler:
 
 End Sub ' FormEvent_MouseMove
 
-Private Sub pButtonEvent_MouseMove( _
+Private Sub ButtonEvent_MouseMove( _
     ByVal Button As Integer, _
     ByVal Shift As Integer, _
     ByVal x As Single, _
@@ -130,7 +121,7 @@ ErrorHandler:
 
 End Sub ' ButtonEvent_MouseMove
 
-Private Sub pTextEvent_MouseMove( _
+Private Sub TextEvent_MouseMove( _
     ByVal Button As Integer, _
     ByVal Shift As Integer, _
     ByVal x As Single, _
@@ -159,7 +150,7 @@ ErrorHandler:
 
 End Sub ' TextEvent_MouseMove
 
-Private Sub pComboEvent_MouseMove( _
+Private Sub ComboEvent_MouseMove( _
     ByVal Combo As Integer, _
     ByVal Shift As Integer, _
     ByVal x As Single, _
@@ -188,7 +179,9 @@ ErrorHandler:
 
 End Sub ' ComboEvent_MouseMove
 
-Private Sub pSheetEvent_BeforeDoubleClick( _
+Public Property Get Sheet() As Worksheet: Set Sheet = pSheetObj: End Property
+
+Private Sub SheetEvent_BeforeDoubleClick( _
     ByVal Target As Range, _
     Cancel As Boolean)
     
@@ -231,7 +224,7 @@ ErrorHandler:
 
 End Sub ' SheetEvent_BeforeDoubleClick
 
-Private Sub pButtonEvent_Click()
+Private Sub ButtonEvent_Click()
     Dim Target As Range
     Dim TableName As String
     Dim Tbl As TableManager.TableClass
@@ -243,7 +236,7 @@ Private Sub pButtonEvent_Click()
     Set Tbl = New TableManager.TableClass
     Set Tbl = TableManager.Table(TableName, Module_Name)
     
-    Select Case pButtonEvent.Caption
+    Select Case Me.ButtonEvent.Caption
     Case "Validate Form"
         If TableManager.ValidateForm(Tbl, Module_Name) Then
             MsgBox "There are no validation errors in this form", _
@@ -325,7 +318,7 @@ Private Sub pButtonEvent_Click()
     
     Case Else
         MsgBox _
-            "This button does not exist: " & pButtonEvent.Caption & " Select another.", _
+            "This button does not exist: " & Me.ButtonEvent.Caption & " Select another.", _
             vbOKOnly Or vbExclamation, "Button Does Not Exist"
 
     End Select

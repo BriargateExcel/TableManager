@@ -70,7 +70,6 @@ Public Property Get WrapCount() As Long: WrapCount = pWrapCount: End Property
 Public Property Get Table() As ListObject: Set Table = pTable: End Property
 Public Property Set Table(ByVal Tbl As ListObject): Set pTable = Tbl: End Property
 
-'@Ignore FunctionReturnValueNotUsed
 Public Function CollectTableData( _
     ByVal WS As TableManager.WorksheetClass, _
     ByVal Tbl As TableManager.TableClass _
