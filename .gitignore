@@ -1,6 +1,5 @@
-# Forms Needed for Personal.xlsb
-# *.frm
-# *.frx
+*.frm
+*.frx
 #####################
 # Don't need to retain Personal.xlsb in git
 Personal.xlsb
