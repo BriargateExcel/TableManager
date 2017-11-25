@@ -19,14 +19,7 @@ Private pTable As TableManager.TableClass
 Private pControls As TableManager.ControlsClass
 Private pEvents As TableManager.EventsClass
 
-'Private pHeight As Single       ' Form height
-'Private pWidth As Single        ' Form width
-'Private pTop As Single          ' Position of top of form
-'Private pLeft As Single         ' Position of form left edge
-'Private pCaption As String      ' Form caption
 Private pEnabled As Boolean     ' Whether form is enabled
-Private pPrevBtn As String
-Private pNextBtn As String
 
 ' TODO: Calculate the gaps and multipliers based on font and font size
 Private Const StandardGap As Long = 12
@@ -115,9 +108,10 @@ Public Function BuildForm( _
                     ' Set this up as a combobox
                     BuildCombo Top, Field, MaxFieldWidth, Lbl, Tbl
                     
-                Case xlValidateCustom: Stop
-
-                Case xlValidateDate:
+                Case xlValidateCustom
+                    MsgBox "Custom validation is not yet implemented", vbOKOnly Or vbExclamation, "Custom Validation"
+                
+                Case xlValidateDate
                     ' Set this up as a textbox
                     BuildDate Top, Field, MaxFieldWidth, Lbl, Tbl
 
@@ -129,13 +123,14 @@ Public Function BuildForm( _
                     ' Set this up as a text field
                     BuildText Top, Field, MaxFieldWidth, Lbl, Tbl
 
-                Case xlValidateTime: Stop
+                Case xlValidateTime
+                    MsgBox "Time validation is not yet implemented", vbOKOnly Or vbExclamation, "Time Validation"
 
                 Case xlValidateWholeNumber:
                     ' Set this up as a textbox
                     BuildWholeNumber Top, Field, MaxFieldWidth, Lbl, Tbl
                 
-                Case Else: Stop
+'                Case Else: Stop
                 End Select
             End If ' Field is locked
             
@@ -270,7 +265,7 @@ Private Sub BuildAllButtons( _
         DataLeft = StandardGap
         BuildButtonRow 9, 11, Top, DataLeft, Tbl
     
-    Case Else: Stop
+'    Case Else: Stop
     End Select
 
 '@Ignore LineLabelNotUsed
@@ -352,13 +347,6 @@ Private Sub BuildOneButton( _
         .ControlTipText = Tip
     End With
     
-    If Ctl.Caption = "Previous Row" Then
-        pPrevBtn = Ctl.Name
-    End If
-    If Ctl.Caption = "Next Row" Then
-        pNextBtn = Ctl.Name
-    End If
-
     pControls.Add Ctl
     
     Set Evt = New TableManager.EventClass
@@ -638,12 +626,6 @@ ErrorHandler:
 
 End Sub ' BuildWholeNumber
 
-'Public Function NextButton() As String: NextButton = pNextBtn: End Function
-
-'Public Function PrevButton() As String: PrevButton = pPrevBtn: End Function
-
-'Public Property Get Caption() As String: Caption = pCaption: End Property
-
 Public Property Get Controls() As TableManager.ControlsClass: Set Controls = pControls: End Property
 
 Public Property Get Enabled() As Boolean: Enabled = pEnabled: End Property
@@ -654,19 +636,11 @@ Public Property Get FormObj() As MSForms.UserForm: Set FormObj = pFormObj: End P
 
 Public Property Set FormObj(ByVal FO As MSForms.UserForm): Set pFormObj = FO: End Property
 
-'Public Property Get Height() As Single: Height = pHeight: End Property
-
-'Public Property Get Left() As Single: Left = pLeft: End Property
-
 Public Property Get Name() As String: Name = pFormName: End Property
 
 Public Property Let Name(ByVal FN As String): pFormName = FN: End Property
 
 Public Property Get Table() As TableManager.TableClass: Set Table = pTable: End Property
-
-'Public Property Get Top() As Single: Top = pTop: End Property
-
-'Public Property Get Width() As Single: Width = pWidth: End Property
 
 Public Property Get WorksheetName() As String: WorksheetName = pWorksheetName: End Property
 
