@@ -20,12 +20,12 @@ Public Sub BuildTableDataDescriptionArray(ByVal WkBkName As String)
                       "xlValidateTime", "xlValidateTextLength", "xlValidateCustom")
     
     Dim Operators As Variant
-    Operators = Array("", "xlBetween", "xlNotBetween", "xlEqual", _
+    Operators = Array(vbNullString, "xlBetween", "xlNotBetween", "xlEqual", _
                       "xlNotEqual", "xlGreater", "xlLess", "xlGreaterEqual", _
                       "xlLessEqual")
     
     Dim AlertStyle As Variant
-    AlertStyle = Array("", "xlValidAlertStop", "xlValidAlertWarning", _
+    AlertStyle = Array(vbNullString, "xlValidAlertStop", "xlValidAlertWarning", _
                        "xlValidAlertInformation")
     
     Dim RowCount As Long
@@ -59,7 +59,7 @@ Public Sub BuildTableDataDescriptionArray(ByVal WkBkName As String)
                     TAry(RowCount, 4) = Operators(Cll.Operator)
                 End If
                 TAry(RowCount, 5) = AlertStyle(Cll.ValidAlertStyle)
-                If Left(Cll.ValidationFormula1, 1) = "=" Then
+                If Left$(Cll.ValidationFormula1, 1) = "=" Then
                     TAry(RowCount, 6) = "''" & Cll.ValidationFormula1
                 Else
                     TAry(RowCount, 6) = Cll.ValidationFormula1

@@ -27,14 +27,13 @@ Private pAllCells As Scripting.Dictionary
 
 Private Sub Class_Initialize()
     Set pAllCells = New Scripting.Dictionary
-End Sub ' Class_Initialize
+End Sub                                          ' Class_Initialize
 
 Public Property Get Count() As Long: Count = pAllCells.Count: End Property
 
 '@DefaultMember
 Public Property Get Item(ByVal vIndex As Variant) As TableManager.CellClass
-Attribute Item.VB_UserMemId = 0
-'Attribute Item.VB_UserMemId = 0
+    'Attribute Item.VB_UserMemId = 0
     
     Const RoutineName As String = Module_Name & "Get Item"
     
@@ -49,10 +48,10 @@ Attribute Item.VB_UserMemId = 0
     Set Item = pAllCells(vIndex)
     On Error GoTo 0
 
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Property
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
     
@@ -67,13 +66,13 @@ Public Sub Add(ByVal Cll As TableManager.CellClass)
     
     If Cll.HeaderText <> vbNullString Then pAllCells.Add Cll.Name, Cll
         
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Sub
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
-End Sub ' Add
+End Sub                                          ' Add
 
 Public Sub Remove(ByVal vIndex As Variant)
     
@@ -90,10 +89,11 @@ Public Sub Remove(ByVal vIndex As Variant)
         pAllCells.Remove vIndex
     End If
 
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Sub
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
     
-End Sub ' Remove
+End Sub                                          ' Remove
+

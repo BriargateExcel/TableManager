@@ -62,27 +62,27 @@ Public Property Set ButtonObj(ByVal Btn As MSForms.CommandButton)
 
     Set pButtonObj = Btn
     Set pButtonEvent = Btn
-End Property ' ButtonObj
+End Property                                     ' ButtonObj
 
 Public Property Set TextObj(ByVal Txt As MSForms.TextBox)
     Debug.Assert Initializing
 
     Set pTextObj = Txt
     Set pTextEvent = Txt
-End Property ' TextObj
+End Property                                     ' TextObj
 
 Public Property Set ComboObj(ByVal Cmb As MSForms.ComboBox)
     Debug.Assert Initializing
 
     Set pComboEvent = Cmb
     Set pComboObj = Cmb
-End Property ' ComboObj
+End Property                                     ' ComboObj
 
 Private Sub pFormEvent_MouseMove( _
-    ByVal Button As Integer, _
-    ByVal Shift As Integer, _
-    ByVal x As Single, _
-    ByVal y As Single)
+        ByVal Button As Integer, _
+        ByVal Shift As Integer, _
+        ByVal x As Single, _
+        ByVal y As Single)
 
     On Error GoTo ErrorHandler
     Const RoutineName As String = Module_Name & "FormEvent_MouseMove"
@@ -101,19 +101,19 @@ Private Sub pFormEvent_MouseMove( _
 
     PaintButtons
    
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Sub
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
-End Sub ' FormEvent_MouseMove
+End Sub                                          ' FormEvent_MouseMove
 
 Private Sub pButtonEvent_MouseMove( _
-    ByVal Button As Integer, _
-    ByVal Shift As Integer, _
-    ByVal x As Single, _
-    ByVal y As Single)
+        ByVal Button As Integer, _
+        ByVal Shift As Integer, _
+        ByVal x As Single, _
+        ByVal y As Single)
     
     On Error GoTo ErrorHandler
     Const RoutineName As String = Module_Name & "ButtonEvent_MouseMove"
@@ -122,19 +122,19 @@ Private Sub pButtonEvent_MouseMove( _
     
     HighLightButton pButtonObj
         
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Sub
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
-End Sub ' ButtonEvent_MouseMove
+End Sub                                          ' ButtonEvent_MouseMove
 
 Private Sub pTextEvent_MouseMove( _
-    ByVal Button As Integer, _
-    ByVal Shift As Integer, _
-    ByVal x As Single, _
-    ByVal y As Single)
+        ByVal Button As Integer, _
+        ByVal Shift As Integer, _
+        ByVal x As Single, _
+        ByVal y As Single)
 
     On Error GoTo ErrorHandler
     Const RoutineName As String = Module_Name & "TextEvent_MouseMove"
@@ -151,19 +151,19 @@ Private Sub pTextEvent_MouseMove( _
 
     PaintButtons
     
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Sub
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
-End Sub ' TextEvent_MouseMove
+End Sub                                          ' TextEvent_MouseMove
 
 Private Sub pComboEvent_MouseMove( _
-    ByVal Combo As Integer, _
-    ByVal Shift As Integer, _
-    ByVal x As Single, _
-    ByVal y As Single)
+        ByVal Combo As Integer, _
+        ByVal Shift As Integer, _
+        ByVal x As Single, _
+        ByVal y As Single)
 
     On Error GoTo ErrorHandler
     Const RoutineName As String = Module_Name & "ComboEvent_MouseMove"
@@ -180,17 +180,17 @@ Private Sub pComboEvent_MouseMove( _
 
     PaintButtons
 
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Sub
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
-End Sub ' ComboEvent_MouseMove
+End Sub                                          ' ComboEvent_MouseMove
 
 Private Sub pSheetEvent_BeforeDoubleClick( _
-    ByVal Target As Range, _
-    Cancel As Boolean)
+        ByVal Target As Range, _
+        Cancel As Boolean)
     
     Dim Isect As Range
     
@@ -205,7 +205,7 @@ Private Sub pSheetEvent_BeforeDoubleClick( _
     TableName = ActiveCellTableName
     If TableName = vbNullString Then
         MsgBox "Please select a cell in the body of the table", _
-            vbOKOnly Or vbExclamation, "Select a Table Cell"
+               vbOKOnly Or vbExclamation, "Select a Table Cell"
         Exit Sub
     End If
     
@@ -216,20 +216,20 @@ Private Sub pSheetEvent_BeforeDoubleClick( _
     Set Isect = Application.Intersect(Target, Tbl.Table.HeaderRowRange)
     If Not Isect Is Nothing Then
         MsgBox "Please select a cell in the body of the table", _
-            vbOKOnly Or vbExclamation, "Selected a Header Cell"
+               vbOKOnly Or vbExclamation, "Selected a Header Cell"
         Exit Sub
     End If
     
     TableManager.PopulateForm Tbl, Module_Name
     ShowAnyForm Tbl.Form.Name
     
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Sub
 ErrorHandler:
     DisplayError RoutineName
 
-End Sub ' SheetEvent_BeforeDoubleClick
+End Sub                                          ' SheetEvent_BeforeDoubleClick
 
 Private Sub pButtonEvent_Click()
     Dim Target As Range
@@ -247,23 +247,23 @@ Private Sub pButtonEvent_Click()
     Case "Validate Form"
         If TableManager.ValidateForm(Tbl, Module_Name) Then
             MsgBox "There are no validation errors in this form", _
-                vbOKOnly, "Successful Copy"
+                   vbOKOnly, "Successful Copy"
         Else
             MsgBox "There is/are a validation error(s)", _
-                vbOKOnly Or vbExclamation, _
-                "Data Validation Error"
+                   vbOKOnly Or vbExclamation, _
+                   "Data Validation Error"
         End If
     
     Case "Copy To Table"
         If TableManager.ValidateForm(Tbl, Module_Name) Then
             TableManager.PopulateTable Tbl, Module_Name
             MsgBox "Form data successfully copied to Table", _
-                vbOKOnly, "Successful Copy"
+                   vbOKOnly, "Successful Copy"
         Else
             MsgBox "There is/are a validation error(s). " & _
-                "Correct the error then copy the Form to the Table.", _
-                vbOKOnly Or vbExclamation, _
-                "Data Validation Error"
+                   "Correct the error then copy the Form to the Table.", _
+                   vbOKOnly Or vbExclamation, _
+                   "Data Validation Error"
         End If
     
     Case "Next Row"
@@ -327,23 +327,23 @@ Private Sub pButtonEvent_Click()
     
     Case Else
         MsgBox _
-            "This button does not exist: " & pButtonEvent.Caption & " Select another.", _
-            vbOKOnly Or vbExclamation, "Button Does Not Exist"
+        "This button does not exist: " & pButtonEvent.Caption & " Select another.", _
+                                       vbOKOnly Or vbExclamation, "Button Does Not Exist"
 
     End Select
     
     PaintButtons
     
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Sub
 ErrorHandler:
     DisplayError RoutineName
 
-End Sub ' ButtonEvent_Click
+End Sub                                          ' ButtonEvent_Click
 
 Private Sub PaintButtons()
-'   Sets all the button colors to reflect the current state of the form
+    '   Sets all the button colors to reflect the current state of the form
 
     On Error GoTo ErrorHandler
     Const RoutineName As String = Module_Name & "PaintButtons"
@@ -359,20 +359,20 @@ Private Sub PaintButtons()
                     DisableButton Ctl
                 End If
                 If .Caption = "Next Row" And pTableObj.ActiveRow = pTableObj.LastRow _
-                Then
+                   Then
                     DisableButton Ctl
                 End If
             End If
-        End With ' Ctl
+        End With                                 ' Ctl
     Next Ctl
     
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Sub
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
-End Sub ' PaintButtons
+End Sub                                          ' PaintButtons
 
 Public Property Get Name() As String: Name = pName: End Property
 Public Property Let Name(ByVal NM As String): pName = NM: End Property

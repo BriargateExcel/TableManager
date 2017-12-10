@@ -17,7 +17,7 @@ Private pWorksheetEvent As TableManager.EventClass
 Private Sub Class_Initialize()
     Debug.Assert Initializing
     Set pWorksheetEvent = New TableManager.EventClass
-End Sub ' Class_Initialize
+End Sub                                          ' Class_Initialize
 
 Public Property Get Worksheet() As Worksheet: Set Worksheet = pWorksheet: End Property
 Public Property Set Worksheet(ByVal WS As Worksheet): Set pWorksheet = WS: End Property
@@ -27,3 +27,4 @@ Public Property Set WorksheetEvent(ByVal WS As Worksheet): Set pWorksheetEvent =
 
 Public Property Get Name() As String: Name = pName: End Property
 Public Property Let Name(ByVal NM As String): pName = NM: End Property
+

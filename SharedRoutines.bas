@@ -4,21 +4,21 @@ Option Explicit
 Private Const Module_Name As String = "SharedRoutines."
 
 Public Function ActiveCellTableName() As String
-'   Function returns table name if active cell is in a table and
-'   vbnullstring if it isn't.
+    '   Function returns table name if active cell is in a table and
+    '   vbnullstring if it isn't.
 
     ActiveCellTableName = vbNullString
 
-'   Statement produces error when active cell is not in a table.
+    '   Statement produces error when active cell is not in a table.
     On Error Resume Next
     ActiveCellTableName = ActiveCell.ListObject.Name
 
-    On Error GoTo 0 ' Reset the error handling
-End Function ' ActiveCellTableName
+    On Error GoTo 0                              ' Reset the error handling
+End Function                                     ' ActiveCellTableName
 
 Public Function CheckForVBAProjectAccessEnabled(ByVal WkBkName As String) As Boolean
 
-    Dim VBP As Object ' as VBProject
+    Dim VBP As Object                            ' as VBProject
     Dim WkBk As Workbook
 
     Const RoutineName As String = Module_Name & "CheckForVBAProjectAccessEnabled"
@@ -31,30 +31,30 @@ Public Function CheckForVBAProjectAccessEnabled(ByVal WkBkName As String) As Boo
         CheckForVBAProjectAccessEnabled = True
     Else
         MsgBox "This application must be run on Excel 2002 or greater", _
-            vbCritical, "Excel Version Check"
+               vbCritical, "Excel Version Check"
         GoTo ErrorHandler
     End If
 
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Function
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
-End Function ' CheckForVBAProjectAccessEnabled
+End Function                                     ' CheckForVBAProjectAccessEnabled
 
 Public Function InScope( _
-    ByVal ModuleList As Variant, _
-    ByVal ModuleName As String, _
-    ByVal RoutineName As String _
-    ) As Boolean
+       ByVal ModuleList As Variant, _
+       ByVal ModuleName As String, _
+       ByVal RoutineName As String _
+       ) As Boolean
 
-'   Uses the name of the module where InScope is called
-'   Filters the name against the list of valid module names
-'   Returns true if the Filter result has any entries
-'   In other words, returns True if ModuleName is found in ModuleList
+    '   Uses the name of the module where InScope is called
+    '   Filters the name against the list of valid module names
+    '   Returns true if the Filter result has any entries
+    '   In other words, returns True if ModuleName is found in ModuleList
 
-'     Log RoutineName & ":    " & ModuleName
+    '     Log RoutineName & ":    " & ModuleName
 
     Dim OneDimArray() As Variant
     
@@ -65,9 +65,9 @@ Public Function InScope( _
     
     If NumDim > 2 Then
         MsgBox "InScope cannot handle arrays with " & _
-            "more than 2 dimensions", _
-            vbOKOnly Or vbCritical, _
-            "NumDim Error"
+               "more than 2 dimensions", _
+               vbOKOnly Or vbCritical, _
+               "NumDim Error"
         Exit Function
     End If
     
@@ -79,33 +79,33 @@ Public Function InScope( _
         Next I
         
         InScope = _
+                (UBound( _
+                 Filter(OneDimArray, _
+                        ModuleName, _
+                        True, _
+                        CompareMethod.BinaryCompare) _
+                 ) > -1)
+        Exit Function
+    End If
+
+    InScope = _
             (UBound( _
-                Filter(OneDimArray, _
+             Filter(ModuleList, _
                     ModuleName, _
                     True, _
                     CompareMethod.BinaryCompare) _
-            ) > -1)
-          Exit Function
-    End If
+             ) > -1)
 
-     InScope = _
-        (UBound( _
-            Filter(ModuleList, _
-                ModuleName, _
-                True, _
-                CompareMethod.BinaryCompare) _
-        ) > -1)
-
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Function
 ErrorHandler:
     RaiseError Err.Number, Err.Source, ThisRoutine & "." & RoutineName, Err.Description
 
-End Function ' InScope
+End Function                                     ' InScope
 
 Public Sub ShowAnyForm(ByVal FormName As String, Optional ByVal Modal As FormShowConstants = vbModal)
-' http://www.cpearson.com/Excel/showanyform.htm
+    ' http://www.cpearson.com/Excel/showanyform.htm
 
     Const RoutineName As String = Module_Name & "ShowAnyForm"
     On Error GoTo ErrorHandler
@@ -127,13 +127,13 @@ Public Sub ShowAnyForm(ByVal FormName As String, Optional ByVal Modal As FormSho
     ''''''''''''''''''''''''''''''''''''''''''''''''''''
     For Each Obj In VBA.UserForms
         If StrComp(Obj.Name, FormName, vbTextCompare) = 0 Then
-'           ''''''''''''''''''''''''''''''''''''
-'           ' START DEBUGGING/ILLUSTRATION ONLY
-'           ''''''''''''''''''''''''''''''''''''
-'           Obj.Label1.Caption = "Form Already Loaded"
-'           ''''''''''''''''''''''''''''''''''''
-'           ' END DEBUGGING/ILLUSTRATION ONLY
-'           ''''''''''''''''''''''''''''''''''''
+            '           ''''''''''''''''''''''''''''''''''''
+            '           ' START DEBUGGING/ILLUSTRATION ONLY
+            '           ''''''''''''''''''''''''''''''''''''
+            '           Obj.Label1.Caption = "Form Already Loaded"
+            '           ''''''''''''''''''''''''''''''''''''
+            '           ' END DEBUGGING/ILLUSTRATION ONLY
+            '           ''''''''''''''''''''''''''''''''''''
             Obj.Show Modal
             Exit Sub
         End If
@@ -163,22 +163,22 @@ Public Sub ShowAnyForm(ByVal FormName As String, Optional ByVal Modal As FormSho
         Obj.Show Modal
     End With
     
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Sub
 ErrorHandler:
-   RaiseError Err.Number, Err.Source, RoutineName, Err.Description
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
    
-End Sub ' ShowAnyForm
+End Sub                                          ' ShowAnyForm
 
 Public Sub RaiseError( _
-    ByVal errorno As Long, _
-    ByVal src As String, _
-    ByVal proc As String, _
-    ByVal desc As String)
+       ByVal errorno As Long, _
+       ByVal src As String, _
+       ByVal proc As String, _
+       ByVal desc As String)
 
-' https://excelmacromastery.com/vba-error-handling/
-' Reraises an error and adds line number and current procedure name
+    ' https://excelmacromastery.com/vba-error-handling/
+    ' Reraises an error and adds line number and current procedure name
     
     Dim SourceOfError As String
     
@@ -201,27 +201,27 @@ Public Sub RaiseError( _
     ' make sure DisplayError is placed in the top most Sub
     Err.Raise errorno, SourceOfError, desc
     
-End Sub ' RaiseError
+End Sub                                          ' RaiseError
 
 Public Sub DisplayError(ByVal Procname As String)
 
-' https://excelmacromastery.com/vba-error-handling/
-' Displays the error when it reaches the topmost sub
-' Note: You can add a call to logging from this sub
+    ' https://excelmacromastery.com/vba-error-handling/
+    ' Displays the error when it reaches the topmost sub
+    ' Note: You can add a call to logging from this sub
 
     Dim Msg As String
     Msg = "The following error occurred: " & vbCrLf & Err.Description _
-                    & vbCrLf & vbCrLf & "Error Location is: "
+        & vbCrLf & vbCrLf & "Error Location is: "
 
-    Msg = Msg + Err.Source & vbCrLf & Procname ' & " " & src & " " & desc
+    Msg = Msg + Err.Source & vbCrLf & Procname   ' & " " & src & " " & desc
 
     ' Display message
     MsgBox Msg, Title:="Error"
-End Sub ' DisplayError
+End Sub                                          ' DisplayError
 
 Public Sub Log(ParamArray Msg() As Variant)
-' http://analystcave.com/vba-proper-vba-error-handling/
-' https://excelmacromastery.com/vba-error-handling/
+    ' http://analystcave.com/vba-proper-vba-error-handling/
+    ' https://excelmacromastery.com/vba-error-handling/
     
     Dim Filename As String
     Filename = MainWorkbook.Path & "\error_log.txt"
@@ -233,8 +233,8 @@ Public Sub Log(ParamArray Msg() As Variant)
     ' Archive file at certain size
     If FileLen(Filename) > 20000 Then
         FileCopy Filename, _
-            Replace(Filename, ".txt", _
-                Format$(Now, "ddmmyyyy hhmmss.txt"))
+                 Replace(Filename, ".txt", _
+                         Format$(Now, "ddmmyyyy hhmmss.txt"))
         Kill Filename
     End If
 
@@ -252,19 +252,19 @@ Public Sub Log(ParamArray Msg() As Variant)
 
     Close #filenumber
     
-End Sub ' Log
+End Sub                                          ' Log
 
 Public Function TimeFormat(ByVal Dt As Date) As String
     TimeFormat = Format$(Dt, "hh:mm:ss")
-End Function ' TimeFormat
+End Function                                     ' TimeFormat
 
 Public Function NumberOfArrayDimensions(ByVal Arr As Variant) As Long
-' http://www.cpearson.com/excel/vbaarrays.htm
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-' NumberOfArrayDimensions
-' This function returns the number of dimensions of an array. An unallocated dynamic array
-' has 0 dimensions. This condition can also be tested with IsArrayEmpty.
-'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+    ' http://www.cpearson.com/excel/vbaarrays.htm
+    ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+    ' NumberOfArrayDimensions
+    ' This function returns the number of dimensions of an array. An unallocated dynamic array
+    ' has 0 dimensions. This condition can also be tested with IsArrayEmpty.
+    '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
     Dim Ndx As Long
     Dim Res As Long
     
@@ -272,7 +272,7 @@ Public Function NumberOfArrayDimensions(ByVal Arr As Variant) As Long
     On Error GoTo ErrorHandler
     
     On Error Resume Next
-    Res = UBound(Arr, 2) ' If Arr has only one element, this will fail
+    Res = UBound(Arr, 2)                         ' If Arr has only one element, this will fail
     If Err.Number <> 0 Then
         NumberOfArrayDimensions = 1
         On Error GoTo 0
@@ -292,13 +292,13 @@ Public Function NumberOfArrayDimensions(ByVal Arr As Variant) As Long
     
     NumberOfArrayDimensions = Ndx - 1
 
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Function
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
-End Function ' NumberOfArrayDimensions
+End Function                                     ' NumberOfArrayDimensions
 
 Public Function HasVal(ByVal Target As Range) As Boolean
 
@@ -316,30 +316,30 @@ Public Function HasVal(ByVal Target As Range) As Boolean
         HasVal = False
     End If
 
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Function
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
-End Function ' HasVal
+End Function                                     ' HasVal
 
-Public Function ConvertToLetter(ByVal iCol As Long) As String
-    Dim iAlpha As Integer
-    Dim iRemainder As Integer
+Public Function ConvertToLetter(ByVal Col As Long) As String
+    Dim Alpha As Long
+    Dim Remainder As Long
 
-    iAlpha = Int(iCol / 27)
-    iRemainder = iCol - (iAlpha * 26)
+    Alpha = Int(Col / 27)
+    Remainder = Col - (Alpha * 26)
     
-    If iAlpha > 0 Then
-        ConvertToLetter = Chr$(iAlpha + 64)
+    If Alpha > 0 Then
+        ConvertToLetter = Chr$(Alpha + 64)
     End If
     
-    If iRemainder > 0 Then
-        ConvertToLetter = ConvertToLetter & Chr$(iRemainder + 64)
+    If Remainder > 0 Then
+        ConvertToLetter = ConvertToLetter & Chr$(Remainder + 64)
     End If
 
-End Function ' ConvertToLetter
+End Function                                     ' ConvertToLetter
 
 Public Sub ClearTable(ByVal LstObj As ListObject)
     If LstObj.ListRows.Count > 1 Then
@@ -348,19 +348,19 @@ Public Sub ClearTable(ByVal LstObj As ListObject)
         LstObj.DataBodyRange.Clear
     End If
 
-End Sub ' ClearTable
+End Sub                                          ' ClearTable
 
 Public Function Contains( _
-    ByVal objCollection As Object, _
-    ByVal StrName As String _
-    ) As Boolean
+       ByVal Coll As Object, _
+       ByVal StrName As String _
+       ) As Boolean
     
     Dim Obj As Object
 
     On Error Resume Next
     
-    Set Obj = objCollection(StrName)
+    Set Obj = Coll(StrName)
     Contains = (Err.Number = 0)
- End Function ' Contains
+End Function                                     ' Contains
 
 

@@ -3,38 +3,38 @@ Option Explicit
 
 Private Const Module_Name As String = "Logo_Background_Colors."
 
-Private Const DarkestColor As Long = &H763232 ' AF Dark Blue
-Private Const LightestColor  As Long = &HE7E2E2 ' AF Light Gray
+Private Const DarkestColor As Long = &H763232    ' AF Dark Blue
+Private Const LightestColor  As Long = &HE7E2E2  ' AF Light Gray
 
 Public Sub DisableButton(ByVal Btn As MSForms.CommandButton)
     Btn.Enabled = False
-End Sub ' DisableButton
+End Sub                                          ' DisableButton
 
 Public Sub EnableButton(ByVal Btn As MSForms.CommandButton)
     Btn.Enabled = True
-End Sub ' EnableButton
+End Sub                                          ' EnableButton
 
 Public Sub HighLightButton(ByVal Btn As MSForms.CommandButton)
     Btn.ForeColor = DarkestColor
     Btn.BackColor = LightestColor
     Btn.Enabled = True
-End Sub ' HighLightButton
+End Sub                                          ' HighLightButton
 
 Public Sub HighLightControl(ByVal Ctl As Control)
     Ctl.ForeColor = DarkestColor
     Ctl.BackColor = LightestColor
-End Sub ' HighLightControl
+End Sub                                          ' HighLightControl
 
 Public Sub LowLightButton(ByVal Btn As MSForms.CommandButton)
     Btn.ForeColor = LightestColor
     Btn.BackColor = DarkestColor
     Btn.Enabled = True
-End Sub ' LowLightButton
+End Sub                                          ' LowLightButton
 
 Public Sub LowLightControl(ByVal Ctl As Control)
     Ctl.ForeColor = LightestColor
     Ctl.BackColor = DarkestColor
-End Sub ' LowLightControl
+End Sub                                          ' LowLightControl
 
 Public Sub Texture(ByRef Tbl As TableManager.TableClass)
     Const RoutineName As String = Module_Name & "Texture"
@@ -44,7 +44,7 @@ Public Sub Texture(ByRef Tbl As TableManager.TableClass)
         Set Tbl.Form.FormObj.Picture = LoadPicture(MainWorkbook.Path & "\texture.jpg")
     End If
     
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Sub
 ErrorHandler:
@@ -52,10 +52,10 @@ ErrorHandler:
 End Sub
 
 Public Function Logo( _
-    ByRef Tbl As TableManager.TableClass, _
-    ByRef LogoHeight As Single, _
-    ByRef LogoWidth As Single _
-    ) As Control
+       ByRef Tbl As TableManager.TableClass, _
+       ByRef LogoHeight As Single, _
+       ByRef LogoWidth As Single _
+       ) As Control
     
     Dim LogoImage As Control
     
@@ -80,9 +80,11 @@ Public Function Logo( _
         Set Logo = Nothing
     End If
     
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Function
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Function
+
+

@@ -11,8 +11,8 @@ Public Function MainWorkbook() As Workbook
 End Function
 
 Public Sub BuildTable( _
-    ByVal WS As TableManager.WorksheetClass, _
-    ByVal TblObj As ListObject)
+       ByVal WS As TableManager.WorksheetClass, _
+       ByVal TblObj As ListObject)
     
     Dim Tbl As Variant
     Dim Frm As TableManager.FormClass
@@ -32,13 +32,13 @@ Public Sub BuildTable( _
         Set Tbl.Form = Frm
     End If
     
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Sub
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
-End Sub ' BuildTable
+End Sub                                          ' BuildTable
 
 Public Sub AutoOpen(ByVal WkBk As Workbook)
     
@@ -55,16 +55,16 @@ Public Sub AutoOpen(ByVal WkBk As Workbook)
     
     If Not CheckForVBAProjectAccessEnabled(ThisWorkbook.Name) Then
         MsgBox "You must set the project access for the " & _
-            "TableManager Add-In to work", _
-            vbOKOnly Or vbCritical, _
-            "Project Access"
+               "TableManager Add-In to work", _
+               vbOKOnly Or vbCritical, _
+               "Project Access"
     
     End If
     
     For Each UserFrm In Application.ThisWorkbook.VBProject.VBComponents
         If UserFrm.Type = vbext_ct_MSForm And _
-            Left$(UserFrm.Name, 8) = "UserForm" _
-        Then
+           Left$(UserFrm.Name, 8) = "UserForm" _
+           Then
             Application.ThisWorkbook.VBProject.VBComponents.Remove UserFrm
         End If
     Next UserFrm
@@ -88,15 +88,16 @@ Public Sub AutoOpen(ByVal WkBk As Workbook)
     
     Init = False
 
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Sub
 ErrorHandler:
     DisplayError RoutineName
 
-End Sub ' AutoOpen
+End Sub                                          ' AutoOpen
 
 Public Function Initializing() As Boolean
     Initializing = Init
-End Function ' Initializing
+End Function                                     ' Initializing
+
 

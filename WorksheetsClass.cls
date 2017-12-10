@@ -17,14 +17,13 @@ Private Sub Class_Initialize()
     Debug.Assert Initializing
 
     Set pAllSheets = New Scripting.Dictionary
-End Sub ' Class_Initialize
+End Sub                                          ' Class_Initialize
 
 Public Property Get Count() As Long: Count = TableCount(pAllSheets.Count): End Property
 
 '@DefaultMember
 Public Property Get Item(ByVal vIndex As Variant) As TableManager.WorksheetClass
-Attribute Item.VB_UserMemId = 0
-'Attribute Item.VB_UserMemId = 0
+    'Attribute Item.VB_UserMemId = 0
     
     Const RoutineName As String = Module_Name & "Get Item"
     
@@ -39,10 +38,10 @@ Attribute Item.VB_UserMemId = 0
     Set Item = pAllSheets(vIndex)
     On Error GoTo 0
     
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Property
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
@@ -65,13 +64,13 @@ Public Sub Add(ByVal Sht As TableManager.WorksheetClass)
         Set pAllSheets.Item(Sht.Worksheet.Name).WorksheetEvent.SheetEvent = Sht.Worksheet
     End If
         
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Sub
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
-End Sub ' Add
+End Sub                                          ' Add
 
 Public Sub Remove(ByVal vIndex As Variant)
 
@@ -88,10 +87,11 @@ Public Sub Remove(ByVal vIndex As Variant)
         TableRemove vIndex, Module_Name
     End If
 
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Sub
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
     
-End Sub ' Remove
+End Sub                                          ' Remove
+

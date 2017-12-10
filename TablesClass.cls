@@ -17,14 +17,13 @@ Private Sub Class_Initialize()
     Debug.Assert Initializing
 
     Set pAllTables = New Scripting.Dictionary
-End Sub ' Class_Initialize
+End Sub                                          ' Class_Initialize
 
 Public Property Get Count() As Long: Count = pAllTables.Count: End Property
 
 '@DefaultMember
 Public Property Get Item(ByVal vIndex As Variant) As TableManager.TableClass
-Attribute Item.VB_UserMemId = 0
-'Attribute Item.VB_UserMemId = 0
+    'Attribute Item.VB_UserMemId = 0
 
     Const RoutineName As String = Module_Name & "Get Item"
     
@@ -39,10 +38,10 @@ Attribute Item.VB_UserMemId = 0
     Set Item = pAllTables(vIndex)
     On Error GoTo 0
 
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Property
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
@@ -57,17 +56,17 @@ Public Sub Add(ByVal Tbl As TableManager.TableClass)
            
     If Tbl.Name <> vbNullString Then pAllTables.Add Tbl.Name, Tbl
         
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Sub
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
     
-End Sub ' Add
+End Sub                                          ' Add
 
 Public Function Exists(ByVal vIndex As Variant) As Boolean
     Exists = pAllTables.Exists(vIndex)
-End Function ' Exists
+End Function                                     ' Exists
 
 Public Sub Remove(ByVal vIndex As Variant)
     
@@ -84,14 +83,11 @@ Public Sub Remove(ByVal vIndex As Variant)
         pAllTables.Remove vIndex
     End If
 
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Sub
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
     
-End Sub ' Remove
+End Sub                                          ' Remove
 
-Public Function ListOfTables() As String()
-    ListOfTables = pAllTables.Keys
-End Function

@@ -25,7 +25,7 @@ Private pTarget As Range
 
 Private Sub Class_Initialize()
     Set pCells = New TableManager.CellsClass
-End Sub ' Class_Initialize
+End Sub                                          ' Class_Initialize
 
 Public Property Get ActiveRow() As Long
     ActiveRow = Me.DBRow
@@ -51,6 +51,7 @@ Public Property Get MaxFieldLength() As Single: MaxFieldLength = pMaxField: End 
 Public Property Get MaxHeaderLength() As Single: MaxHeaderLength = pMaxHeader: End Property
 
 Public Property Get Name() As String: Name = pTableName: End Property
+
 Public Property Let Name(ByVal TN As String): pTableName = TN: End Property
 
 Public Property Get NumColumns() As Long: NumColumns = pCells.Count: End Property
@@ -72,9 +73,9 @@ Public Property Set Table(ByVal Tbl As ListObject): Set pTable = Tbl: End Proper
 
 '@Ignore FunctionReturnValueNotUsed
 Public Function CollectTableData( _
-    ByVal WS As TableManager.WorksheetClass, _
-    ByVal Tbl As TableManager.TableClass _
-    ) As Boolean
+       ByVal WS As TableManager.WorksheetClass, _
+       ByVal Tbl As TableManager.TableClass _
+       ) As Boolean
 
     Dim Element As Range
     Dim OneCell As TableManager.CellClass
@@ -104,26 +105,26 @@ Public Function CollectTableData( _
         CollectTableData = True
     End If
 
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Function
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
-End Function ' CollectTableData
+End Function                                     ' CollectTableData
 
 Public Function FirstCell() As Range
     Set FirstCell = pTable.DataBodyRange(1, 1)
-End Function ' FirstCell
+End Function                                     ' FirstCell
 
 Public Function LastCell() As Range
-'    Set LastCell = pTable.DataBodyRange(pTable.ListRows.Count, pTable.ListColumns.Count)
+    '    Set LastCell = pTable.DataBodyRange(pTable.ListRows.Count, pTable.ListColumns.Count)
     Set LastCell = pTable.DataBodyRange(pTable.ListRows.Count, 1)
-End Function ' LastCell
+End Function                                     ' LastCell
 
 Public Function LastRow() As Long
     LastRow = pTarget.ListObject.ListRows.Count
-End Function ' LastRow
+End Function                                     ' LastRow
 
 Public Sub NextRow()
     Dim DBRow As Long
@@ -140,9 +141,9 @@ Public Sub NextRow()
         TableManager.TurnOffCellDescriptions Me, Module_Name
     Else
         MsgBox "Cannot advance to the next row; already at last row", _
-            vbOKOnly Or vbExclamation, "Already at End of Table"
+               vbOKOnly Or vbExclamation, "Already at End of Table"
     End If
-End Sub ' NextRow
+End Sub                                          ' NextRow
 
 Public Sub PreviousRow()
     Dim DBRow As Long
@@ -159,16 +160,16 @@ Public Sub PreviousRow()
         TableManager.TurnOffCellDescriptions Me, Module_Name
     Else
         MsgBox "Cannot move to the previous row; already at first row", _
-            vbOKOnly Or vbExclamation, _
-            "Already at Beginning of Table"
+               vbOKOnly Or vbExclamation, _
+               "Already at Beginning of Table"
     End If
-End Sub ' PreviousRow
+End Sub                                          ' PreviousRow
 
 Public Function DBRow() As Long
     Dim THRow As Long: THRow = Me.ActiveTarget.ListObject.HeaderRowRange.Row
     Dim TRow As Long: TRow = Me.ActiveTarget.Row
     DBRow = TRow - THRow
-End Function ' DBRow
+End Function                                     ' DBRow
 
 Public Function DBCol(ByVal ColumnName As String) As Long
     Dim Rng As Range
@@ -177,9 +178,10 @@ Public Function DBCol(ByVal ColumnName As String) As Long
     Set Rng = Me.ActiveTarget.ListObject.HeaderRowRange
     v = Application.WorksheetFunction.Match(ColumnName, Rng, 0)
     DBCol = v
-End Function ' DBCol
+End Function                                     ' DBCol
 
 Public Function CellCount() As Long: CellCount = pCells.Count: End Function
+
 
 
 

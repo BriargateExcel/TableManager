@@ -13,13 +13,13 @@ Private Const Module_Name As String = "FormClass."
 
 Private pFormName As String
 Private pWorksheetName As String
-Private pFormObj As Object 'MSForms.UserForm; when declared as UserFrom it has no height or width
-                            ' When declared as an object, it has both height and width
+Private pFormObj As Object                       'MSForms.UserForm; when declared as UserFrom it has no height or width
+' When declared as an object, it has both height and width
 Private pTable As TableManager.TableClass
 Private pControls As TableManager.ControlsClass
 Private pEvents As TableManager.EventsClass
 
-Private pEnabled As Boolean     ' Whether form is enabled
+Private pEnabled As Boolean                      ' Whether form is enabled
 
 ' TODO: Calculate the gaps and multipliers based on font and font size
 Private Const StandardGap As Long = 12
@@ -33,8 +33,8 @@ Private Const WidthMultiplier As Long = 6
 Private Const TextMultiplier As Long = 5
 
 Public Function BuildForm( _
-    ByVal Tbl As TableManager.TableClass _
-    ) As MSForms.UserForm
+       ByVal Tbl As TableManager.TableClass _
+       ) As MSForms.UserForm
     Dim TempForm As VBComponent
     
     Dim Field As Variant
@@ -130,9 +130,9 @@ Public Function BuildForm( _
                     ' Set this up as a textbox
                     BuildWholeNumber Top, Field, MaxFieldWidth, Lbl, Tbl
                 
-'                Case Else: Stop
+                    '                Case Else: Stop
                 End Select
-            End If ' Field is locked
+            End If                               ' Field is locked
             
         Next I
             
@@ -171,8 +171,8 @@ Public Function BuildForm( _
         
         ' Set Properties for TempForm now that we know all the heights and widths
         .Width = Application.WorksheetFunction.Max( _
-            MaxLabelWidth + MaxFieldWidth + NumCols * StandardGap, _
-            MaxButtonWidth)
+                 MaxLabelWidth + MaxFieldWidth + NumCols * StandardGap, _
+                 MaxButtonWidth)
         
         Top = Top + ButtonHeight + StandardGap
         .Height = Top + NumRows * StandardGap
@@ -184,24 +184,24 @@ Public Function BuildForm( _
             LogoImage.Top = StandardGap
         End If
         
-    End With ' pFormObj
+    End With                                     ' pFormObj
     
     Set BuildForm = pFormObj
         
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Function
 ErrorHandler:
     
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
-End Function ' BuildForm
+End Function                                     ' BuildForm
 
 Private Sub BuildAllButtons( _
-    ByRef Top As Single, _
-    ByVal Tbl As TableManager.TableClass, _
-    ByVal NumRows As Long, _
-    ByVal NumCols As Long)
+        ByRef Top As Single, _
+        ByVal Tbl As TableManager.TableClass, _
+        ByVal NumRows As Long, _
+        ByVal NumCols As Long)
     
     Dim DataLeft As Single
     Dim Arrangement As String
@@ -265,22 +265,22 @@ Private Sub BuildAllButtons( _
         DataLeft = StandardGap
         BuildButtonRow 9, 11, Top, DataLeft, Tbl
     
-'    Case Else: Stop
+        '    Case Else: Stop
     End Select
 
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Sub
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
-End Sub ' BuildAllButtons
+End Sub                                          ' BuildAllButtons
 
 Private Sub BuildButtonRow( _
-    ByVal LowerBound As Long, _
-    ByVal UpperBound As Long, _
-    ByRef Top As Single, _
-    ByRef DataLeft As Single, _
-    ByVal Tbl As TableManager.TableClass)
+        ByVal LowerBound As Long, _
+        ByVal UpperBound As Long, _
+        ByRef Top As Single, _
+        ByRef DataLeft As Single, _
+        ByVal Tbl As TableManager.TableClass)
 
     Const RoutineName As String = Module_Name & "BuildButtonRow"
     On Error GoTo ErrorHandler
@@ -291,29 +291,29 @@ Private Sub BuildButtonRow( _
     Dim ButtonLabels() As Variant
     
     ButtonNames = Array( _
-        "Validate Form", "Copy To Table", "Next Row", "Previous Row", _
-        "Insert Above", "Insert Below", "Insert at Top", "Insert at Bottom", _
-        "Delete This Row", "Go To Top", "Go To Bottom", "Cancel")
+                  "Validate Form", "Copy To Table", "Next Row", "Previous Row", _
+                  "Insert Above", "Insert Below", "Insert at Top", "Insert at Bottom", _
+                  "Delete This Row", "Go To Top", "Go To Bottom", "Cancel")
     
     ButtonLabels = Array( _
-        "Validate the contents of the Form", _
-        "Copy the contents of the Form to the Table row", _
-        "Move to previous row of the Table", _
-        "Move to next row of the Table", _
-        "Insert a blank line above this Table row and move to it", _
-        "Insert a blank line below this Table row and move to it", _
-        "Insert a blank line above the first row of the Table and move to it", _
-        "Insert a blank line below the last row of the Table and move to it", _
-        "Delete this row of the Table", _
-        "Move to the first row of the Table", _
-        "Move to the last row of the Table", _
-        "Exit the Form without changing the Table any further")
+                   "Validate the contents of the Form", _
+                   "Copy the contents of the Form to the Table row", _
+                   "Move to previous row of the Table", _
+                   "Move to next row of the Table", _
+                   "Insert a blank line above this Table row and move to it", _
+                   "Insert a blank line below this Table row and move to it", _
+                   "Insert a blank line above the first row of the Table and move to it", _
+                   "Insert a blank line below the last row of the Table and move to it", _
+                   "Delete this row of the Table", _
+                   "Move to the first row of the Table", _
+                   "Move to the last row of the Table", _
+                   "Exit the Form without changing the Table any further")
         
-        For I = LowerBound To UpperBound
-            BuildOneButton ButtonNames(I), Top, DataLeft, _
-                ButtonLabels(I), Tbl
-        Next I
-'@Ignore LineLabelNotUsed
+    For I = LowerBound To UpperBound
+        BuildOneButton ButtonNames(I), Top, DataLeft, _
+                       ButtonLabels(I), Tbl
+    Next I
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Sub
 ErrorHandler:
@@ -321,11 +321,11 @@ ErrorHandler:
 End Sub
 
 Private Sub BuildOneButton( _
-    ByVal Cption As String, _
-    ByVal Top As Single, _
-    ByRef Lft As Single, _
-    ByVal Tip As String, _
-    ByVal Tbl As TableManager.TableClass)
+        ByVal Cption As String, _
+        ByVal Top As Single, _
+        ByRef Lft As Single, _
+        ByVal Tip As String, _
+        ByVal Tbl As TableManager.TableClass)
     
     Dim Ctl As Control
     Dim Evt As TableManager.EventClass
@@ -356,18 +356,18 @@ Private Sub BuildOneButton( _
     Evt.Name = Cption
     pEvents.Add Evt
     
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Sub
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
-End Sub ' BuildOneButton
+End Sub                                          ' BuildOneButton
 
 Private Function BuildCaption( _
-    ByVal InTitle As String, _
-    ByVal InMessage As String _
-    ) As String
+        ByVal InTitle As String, _
+        ByVal InMessage As String _
+        ) As String
     
     Dim Msg As String
     
@@ -380,11 +380,11 @@ Private Function BuildCaption( _
 End Function
 
 Private Sub BuildCombo( _
-    ByRef Top As Single, _
-    ByVal Field As Variant, _
-    ByRef MaxFieldWidth As Single, _
-    ByRef Lbl As Control, _
-    ByRef Tbl As TableManager.TableClass)
+        ByRef Top As Single, _
+        ByVal Field As Variant, _
+        ByRef MaxFieldWidth As Single, _
+        ByRef Lbl As Control, _
+        ByRef Tbl As TableManager.TableClass)
 
     Const RoutineName As String = Module_Name & "BuildCombo"
     On Error GoTo ErrorHandler
@@ -417,19 +417,19 @@ Private Sub BuildCombo( _
     Evt.Name = Field.Name
     pEvents.Add Evt
     
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Sub
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
-End Sub ' BuildCombo
+End Sub                                          ' BuildCombo
 
 Private Sub BuildDataLabel( _
-    ByRef Top As Single, _
-    ByVal Field As Variant, _
-    ByRef MaxFieldWidth As Single, _
-    ByRef Lbl As Control)
+        ByRef Top As Single, _
+        ByVal Field As Variant, _
+        ByRef MaxFieldWidth As Single, _
+        ByRef Lbl As Control)
 
     Const RoutineName As String = Module_Name & "BuildDataLabel"
     On Error GoTo ErrorHandler
@@ -451,20 +451,20 @@ Private Sub BuildDataLabel( _
     End With
     Set Field.FormControl = Ctl
     
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Sub
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
-End Sub ' BuildDataLabel
+End Sub                                          ' BuildDataLabel
 
 Private Sub BuildDate( _
-    ByRef Top As Single, _
-    ByVal Field As Variant, _
-    ByRef MaxFieldWidth As Single, _
-    ByRef Lbl As Control, _
-    ByRef Tbl As TableManager.TableClass)
+        ByRef Top As Single, _
+        ByVal Field As Variant, _
+        ByRef MaxFieldWidth As Single, _
+        ByRef Lbl As Control, _
+        ByRef Tbl As TableManager.TableClass)
 
     Const RoutineName As String = Module_Name & "BuildDate"
     On Error GoTo ErrorHandler
@@ -492,19 +492,19 @@ Private Sub BuildDate( _
     Evt.Name = Field.Name
     pEvents.Add Evt
     
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Sub
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
-End Sub ' BuildDate
+End Sub                                          ' BuildDate
 
 Private Sub BuildLabel( _
-    ByVal Top As Single, _
-    ByVal Field As Variant, _
-    ByRef MaxLabelWidth As Single, _
-    ByRef Lbl As Control)
+        ByVal Top As Single, _
+        ByVal Field As Variant, _
+        ByRef MaxLabelWidth As Single, _
+        ByRef Lbl As Control)
 
     Const RoutineName As String = Module_Name & "BuildLabel"
     On Error GoTo ErrorHandler
@@ -522,20 +522,20 @@ Private Sub BuildLabel( _
         If .Width > MaxLabelWidth Then MaxLabelWidth = .Width
     End With
     
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Sub
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
-End Sub ' BuildLabel
+End Sub                                          ' BuildLabel
 
 Private Sub BuildText( _
-    ByRef Top As Single, _
-    ByVal Field As Variant, _
-    ByRef MaxFieldWidth As Single, _
-    ByRef Lbl As Control, _
-    ByRef Tbl As TableManager.TableClass)
+        ByRef Top As Single, _
+        ByVal Field As Variant, _
+        ByRef MaxFieldWidth As Single, _
+        ByRef Lbl As Control, _
+        ByRef Tbl As TableManager.TableClass)
 
     Const RoutineName As String = Module_Name & "BuildText"
     On Error GoTo ErrorHandler
@@ -576,20 +576,20 @@ Private Sub BuildText( _
     Evt.Name = Field.Name
     pEvents.Add Evt
     
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Sub
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
-End Sub ' BuildText
+End Sub                                          ' BuildText
 
 Private Sub BuildWholeNumber( _
-    ByRef Top As Single, _
-    ByVal Field As Variant, _
-    ByRef MaxFieldWidth As Single, _
-    ByRef Lbl As Control, _
-    ByRef Tbl As TableManager.TableClass)
+        ByRef Top As Single, _
+        ByVal Field As Variant, _
+        ByRef MaxFieldWidth As Single, _
+        ByRef Lbl As Control, _
+        ByRef Tbl As TableManager.TableClass)
 
     Const RoutineName As String = Module_Name & "BuildWholeNumber"
     On Error GoTo ErrorHandler
@@ -618,13 +618,13 @@ Private Sub BuildWholeNumber( _
     Evt.Name = Field.Name
     pEvents.Add Evt
     
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Sub
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
-End Sub ' BuildWholeNumber
+End Sub                                          ' BuildWholeNumber
 
 Public Property Get Controls() As TableManager.ControlsClass: Set Controls = pControls: End Property
 
@@ -649,12 +649,6 @@ Private Sub Class_Initialize()
 
     Set pControls = New TableManager.ControlsClass
     Set pEvents = New TableManager.EventsClass
-End Sub ' Class_Initialize
-
-
-
-
-
-
+End Sub                                          ' Class_Initialize
 
 

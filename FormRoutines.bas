@@ -5,12 +5,12 @@ Private Const Module_Name As String = "FormRoutines."
 
 Private Function ModuleList() As Variant
     ModuleList = Array("EventClass.")
-End Function ' ModuleList
+End Function                                     ' ModuleList
 
 Public Function ValidateForm( _
-    ByVal Tbl As TableManager.TableClass, _
-    ByVal ModuleName As String _
-    ) As Boolean
+       ByVal Tbl As TableManager.TableClass, _
+       ByVal ModuleName As String _
+       ) As Boolean
     
     Dim Field As TableManager.CellClass
     Dim Intermediate As Boolean: Intermediate = True
@@ -27,29 +27,29 @@ Public Function ValidateForm( _
         
         Select Case Field.CellType
 
-        Case XlDVType.xlValidateInputOnly ' Validate only when user changes value
+        Case XlDVType.xlValidateInputOnly        ' Validate only when user changes value
             ' Input can be anything; no validation checking possible
             Check = True
             
-        Case XlDVType.xlValidateWholeNumber ' Whole numeric values
+        Case XlDVType.xlValidateWholeNumber      ' Whole numeric values
             Check = ValidateWholeNumber(Tbl, Field)
 
-        Case XlDVType.xlValidateDecimal ' Numeric values
+        Case XlDVType.xlValidateDecimal          ' Numeric values
             Check = ValidateDecimal(Tbl, Field)
 
-        Case XlDVType.xlValidateList ' Value must be present in a specified list
+        Case XlDVType.xlValidateList             ' Value must be present in a specified list
             Check = ValidateList(Field)
 
-        Case XlDVType.xlValidateDate ' Date Values
+        Case XlDVType.xlValidateDate             ' Date Values
             Check = ValidateDate(Tbl, Field)
 
-        Case XlDVType.xlValidateTime ' Time values
+        Case XlDVType.xlValidateTime             ' Time values
             Check = ValidateTime(Tbl, Field)
 
-        Case XlDVType.xlValidateTextLength ' Length of text
+        Case XlDVType.xlValidateTextLength       ' Length of text
             Check = ValidateTextLength(Tbl, Field)
 
-        Case XlDVType.xlValidateCustom ' Validate by arbitrary formula
+        Case XlDVType.xlValidateCustom           ' Validate by arbitrary formula
             Check = ValidateCustom(Tbl, Field)
 
         End Select
@@ -62,13 +62,13 @@ Public Function ValidateForm( _
     
     ValidateForm = Intermediate
     
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Function
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
-End Function ' ValidateForm
+End Function                                     ' ValidateForm
 
 Private Function ValString(ByVal Val As Variant) As String
     Const RoutineName As String = Module_Name & "ValString"
@@ -99,21 +99,21 @@ Private Function ValString(ByVal Val As Variant) As String
         End If
     End Select
     
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Function
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
-End Function ' ValString
+End Function                                     ' ValString
 
 Private Function CheckRanges( _
-    ByVal Val1 As Variant, _
-    ByVal Val2 As Variant, _
-    ByVal FormVal As Variant, _
-    ByVal TableVal As Variant, _
-    ByVal Field As TableManager.CellClass _
-    ) As Boolean
+        ByVal Val1 As Variant, _
+        ByVal Val2 As Variant, _
+        ByVal FormVal As Variant, _
+        ByVal TableVal As Variant, _
+        ByVal Field As TableManager.CellClass _
+        ) As Boolean
     
     ' Return True if value is validated
     
@@ -127,9 +127,9 @@ Private Function CheckRanges( _
             CheckRanges = True
         Else
             MsgBox Field.Name & " must be between " & _
-                Val1 & " and " & Val2, _
-                vbOKOnly Or vbExclamation, _
-                "Range Error"
+                   Val1 & " and " & Val2, _
+                   vbOKOnly Or vbExclamation, _
+                   "Range Error"
             Field.FormControl = ValString(TableVal)
             CheckRanges = False
         End If
@@ -139,9 +139,9 @@ Private Function CheckRanges( _
             CheckRanges = True
         Else
             MsgBox Field.Name & " must not be between " & _
-                Val1 & " and " & Val2, _
-                vbOKOnly Or vbExclamation, _
-                "Range Error"
+                   Val1 & " and " & Val2, _
+                   vbOKOnly Or vbExclamation, _
+                   "Range Error"
             Field.FormControl = ValString(TableVal)
             CheckRanges = False
         End If
@@ -151,8 +151,8 @@ Private Function CheckRanges( _
             CheckRanges = True
         Else
             MsgBox Field.Name & " must equal " & Val1, _
-                vbOKOnly Or vbExclamation, _
-                "Range Error"
+                   vbOKOnly Or vbExclamation, _
+                   "Range Error"
             Field.FormControl = ValString(TableVal)
             CheckRanges = False
         End If
@@ -162,8 +162,8 @@ Private Function CheckRanges( _
             CheckRanges = True
         Else
             MsgBox Field.Name & " must not equal " & Val1, _
-                vbOKOnly Or vbExclamation, _
-                "Range Error"
+                   vbOKOnly Or vbExclamation, _
+                   "Range Error"
             Field.FormControl = ValString(TableVal)
             CheckRanges = False
         End If
@@ -173,8 +173,8 @@ Private Function CheckRanges( _
             CheckRanges = True
         Else
             MsgBox Field.Name & " must be greater than " & Val1, _
-                vbOKOnly Or vbExclamation, _
-                "Range Error"
+                   vbOKOnly Or vbExclamation, _
+                   "Range Error"
             Field.FormControl = ValString(TableVal)
             CheckRanges = False
         End If
@@ -184,8 +184,8 @@ Private Function CheckRanges( _
             CheckRanges = True
         Else
             MsgBox Field.Name & " must be greater than " & Val1, _
-                vbOKOnly Or vbExclamation, _
-                "Range Error"
+                   vbOKOnly Or vbExclamation, _
+                   "Range Error"
             Field.FormControl = ValString(TableVal)
             CheckRanges = False
         End If
@@ -195,8 +195,8 @@ Private Function CheckRanges( _
             CheckRanges = True
         Else
             MsgBox Field.Name & " must be greater than or equal to " & Val1, _
-                vbOKOnly Or vbExclamation, _
-                "Range Error"
+                   vbOKOnly Or vbExclamation, _
+                   "Range Error"
             Field.FormControl = ValString(TableVal)
             CheckRanges = False
         End If
@@ -206,26 +206,26 @@ Private Function CheckRanges( _
             CheckRanges = True
         Else
             MsgBox Field.Name & " must be less than or equal to " & Val1, _
-                vbOKOnly Or vbExclamation, _
-                "Range Error"
+                   vbOKOnly Or vbExclamation, _
+                   "Range Error"
             Field.FormControl = ValString(TableVal)
             CheckRanges = False
         End If
 
     End Select
     
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Function
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
-End Function ' CheckRanges
+End Function                                     ' CheckRanges
 
 Private Function ValidateWholeNumber( _
-    ByVal Tbl As TableManager.TableClass, _
-    ByVal Field As Variant _
-    ) As Boolean
+        ByVal Tbl As TableManager.TableClass, _
+        ByVal Field As Variant _
+        ) As Boolean
 
     ' Return True if value is validated
     
@@ -248,24 +248,24 @@ Private Function ValidateWholeNumber( _
     Dim FormVal As Long: FormVal = Field.FormControl
     If Err.Number <> 0 Then
         MsgBox "Cell " & Field.Name & " must be a whole number", _
-            vbOKOnly Or vbCritical, "Whole Number"
+               vbOKOnly Or vbCritical, "Whole Number"
         On Error GoTo ErrorHandler
     End If
     
     ValidateWholeNumber = CheckRanges(Whole1, Whole2, FormVal, TableVal, Field)
     
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Function
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
-End Function ' ValidateWholeNumber
+End Function                                     ' ValidateWholeNumber
 
 Private Function ValidateDecimal( _
-    ByVal Tbl As TableManager.TableClass, _
-    ByVal Field As Variant _
-    ) As Boolean
+        ByVal Tbl As TableManager.TableClass, _
+        ByVal Field As Variant _
+        ) As Boolean
 
     ' Return True if value is validated
     
@@ -288,23 +288,23 @@ Private Function ValidateDecimal( _
     Dim FormVal As Double: FormVal = Field.FormControl
     If Err.Number <> 0 Then
         MsgBox "Cell " & Field.Name & " must be a number", _
-            vbOKOnly Or vbCritical, "Decimal Number"
+               vbOKOnly Or vbCritical, "Decimal Number"
         On Error GoTo ErrorHandler
     End If
     
     ValidateDecimal = CheckRanges(Dec1, Dec2, FormVal, TableVal, Field)
     
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Function
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
-End Function ' ValidateDecimal
+End Function                                     ' ValidateDecimal
 
 Private Function ValidateList( _
-    ByVal Field As Variant _
-    ) As Boolean
+        ByVal Field As Variant _
+        ) As Boolean
 
     ' Return True if value is validated
     
@@ -317,26 +317,26 @@ Private Function ValidateList( _
         ValidateList = True
     Else
         MsgBox "The value in " & _
-            Field.HeaderText & _
-            " is not found in the validation list." & vbCrLf _
-            & "Correct the value and try again.", _
-            vbOKOnly Or vbCritical, _
-            "Validation List Error"
+               Field.HeaderText & _
+               " is not found in the validation list." & vbCrLf _
+             & "Correct the value and try again.", _
+               vbOKOnly Or vbCritical, _
+               "Validation List Error"
     
     End If
     
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Function
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
-End Function ' ValidateList
+End Function                                     ' ValidateList
 
 Private Function ValidateDate( _
-    ByVal Tbl As TableManager.TableClass, _
-    ByVal Field As Variant _
-    ) As Boolean
+        ByVal Tbl As TableManager.TableClass, _
+        ByVal Field As Variant _
+        ) As Boolean
 
     ' Return True if value is validated
     
@@ -375,25 +375,25 @@ Private Function ValidateDate( _
             ' An empty date or a zero is a "date"
         Else
             MsgBox "Cell " & Field.Name & " must be a date", _
-                vbOKOnly Or vbCritical, "Date Error"
+                   vbOKOnly Or vbCritical, "Date Error"
         End If
     End If
     On Error GoTo ErrorHandler
     
     ValidateDate = CheckRanges(Date1, Date2, FormVal, TableVal, Field)
     
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Function
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
-End Function ' ValidateDate
+End Function                                     ' ValidateDate
 
 Private Function ValidateTime( _
-    ByVal Tbl As TableManager.TableClass, _
-    ByVal Field As Variant _
-    ) As Boolean
+        ByVal Tbl As TableManager.TableClass, _
+        ByVal Field As Variant _
+        ) As Boolean
 
     ' Return True if value is validated
     
@@ -416,23 +416,23 @@ Private Function ValidateTime( _
     On Error Resume Next
     FormVal = Field.FormControl
     If Err.Number <> 0 Then MsgBox "Cell " & Field.Name & " must be a date", _
-        vbOKOnly Or vbCritical, "Time Error"
+       vbOKOnly Or vbCritical, "Time Error"
     On Error GoTo ErrorHandler
     
     ValidateTime = CheckRanges(Time1, Time2, FormVal, TableVal, Field)
     
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Function
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
-End Function ' ValidateTime
+End Function                                     ' ValidateTime
 
 Private Function ValidateTextLength( _
-    ByVal Tbl As TableManager.TableClass, _
-    ByVal Field As Variant _
-    ) As Boolean
+        ByVal Tbl As TableManager.TableClass, _
+        ByVal Field As Variant _
+        ) As Boolean
 
     ' Return True if value is validated
     
@@ -445,8 +445,8 @@ Private Function ValidateTextLength( _
     Dim FormVal As String
     FormVal = Field.FormControl
     If Err.Number <> 0 Then _
-        MsgBox "Cell " & Field.HeaderText & " must be a string ", _
-            vbOKOnly Or vbCritical, "String Length Error"
+       MsgBox "Cell " & Field.HeaderText & " must be a string ", _
+       vbOKOnly Or vbCritical, "String Length Error"
     On Error GoTo ErrorHandler
     
     If Len(FormVal) = 0 And Field.IgnoreBlank Then
@@ -458,34 +458,34 @@ Private Function ValidateTextLength( _
         ValidateTextLength = True
     Else
         MsgBox Field.Name & " must be a string of length " & _
-            Lgth, _
-            vbOKOnly Or vbExclamation, _
-            "String Length Error"
+               Lgth, _
+               vbOKOnly Or vbExclamation, _
+               "String Length Error"
         Dim TableVal As String
         TableVal = Tbl.DBRange(Tbl.DBRow, Tbl.DBCol(Field.HeaderText))
         Field.FormControl = TimeFormat(TableVal)
         ValidateTextLength = False
     End If
     
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Function
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
-End Function ' ValidateTextLength
+End Function                                     ' ValidateTextLength
 
 Private Function ValidateCustom( _
-    ByVal Tbl As TableManager.TableClass, _
-    ByVal Field As Variant _
-    ) As Boolean
+        ByVal Tbl As TableManager.TableClass, _
+        ByVal Field As Variant _
+        ) As Boolean
 
     ' Return True if value is validated
     
     Const RoutineName As String = Module_Name & "ValidateCustom"
     On Error GoTo ErrorHandler
     
-'    Dim FormVal As Variant: FormVal = Field.FormControl
+    '    Dim FormVal As Variant: FormVal = Field.FormControl
     Dim TableVal As Variant: TableVal = Tbl.DBRange(Tbl.DBRow, Tbl.DBCol(Field.HeaderText))
     
     On Error Resume Next
@@ -494,23 +494,23 @@ Private Function ValidateCustom( _
     On Error GoTo ErrorHandler
 
     If ValForm1 Then
-         ValidateCustom = True
+        ValidateCustom = True
     Else
-         ValidateCustom = False
-         Field.FormControl = ValString(TableVal)
+        ValidateCustom = False
+        Field.FormControl = ValString(TableVal)
     End If
     
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Function
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
-End Function ' ValidateList
+End Function                                     ' ValidateList
 
 Public Sub PopulateForm( _
-    ByVal Tbl As TableManager.TableClass, _
-    ByVal ModuleName As String)
+       ByVal Tbl As TableManager.TableClass, _
+       ByVal ModuleName As String)
 
     Const RoutineName As String = Module_Name & "PopulateForm"
     Debug.Assert InScope(ModuleList, ModuleName, RoutineName)
@@ -530,7 +530,7 @@ Public Sub PopulateForm( _
         Field.ControlValue = DBRange(DBRow, DBCol)
         
         Select Case Left$(Field.FormControl.Name, 3)
-        Case "lbl": ' Do nothing
+        Case "lbl":                              ' Do nothing
         Case "val": Field.FormControl.Caption = DBRange(DBRow, DBCol)
         Case "fld": Field.FormControl.Text = DBRange(DBRow, DBCol)
         Case "cmb": Field.FormControl.Text = DBRange(DBRow, DBCol)
@@ -538,8 +538,8 @@ Public Sub PopulateForm( _
         Case "dat": Field.FormControl.Text = DBRange(DBRow, DBCol)
         Case Else
             MsgBox _
-                "This is an illegal field type: " & Left$(Field.FormControl.Name, 3), _
-                vbOKOnly Or vbExclamation, "Illegal Field Type"
+        "This is an illegal field type: " & Left$(Field.FormControl.Name, 3), _
+                                            vbOKOnly Or vbExclamation, "Illegal Field Type"
 
         End Select
         
@@ -547,17 +547,17 @@ Public Sub PopulateForm( _
     
     TableManager.TurnOffCellDescriptions Tbl, ModuleName
     
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Sub
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
-End Sub ' PopulateForm
+End Sub                                          ' PopulateForm
 
 Public Sub ClearForm( _
-    ByVal Tbl As TableManager.TableClass, _
-    ByVal ModuleName As String)
+       ByVal Tbl As TableManager.TableClass, _
+       ByVal ModuleName As String)
 
     Const RoutineName As String = Module_Name & "ClearForm"
     Debug.Assert InScope(ModuleList, ModuleName, RoutineName)
@@ -571,7 +571,7 @@ Public Sub ClearForm( _
         Set Field = Tbl.TableCells.Item(I)
 
         Select Case Left$(Field.FormControl.Name, 3)
-        Case "lbl": ' Do nothing
+        Case "lbl":                              ' Do nothing
         Case "val": Field.FormControl.Caption = vbNullString
         Case "fld": Field.FormControl.Text = vbNullString
         Case "cmb": Field.FormControl.Text = vbNullString
@@ -579,8 +579,8 @@ Public Sub ClearForm( _
         Case "dat": Field.FormControl.Text = vbNullString
         Case Else
             MsgBox _
-                "This is an illegal field type: " & Left$(Field.FormControl.Name, 3), _
-                vbOKOnly Or vbExclamation, "Illegal Field Type"
+        "This is an illegal field type: " & Left$(Field.FormControl.Name, 3), _
+                                            vbOKOnly Or vbExclamation, "Illegal Field Type"
 
         End Select
         
@@ -588,13 +588,12 @@ Public Sub ClearForm( _
     
     TableManager.TurnOffCellDescriptions Tbl, ModuleName
     
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Sub
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
-End Sub ' ClearForm
-
+End Sub                                          ' ClearForm
 
 

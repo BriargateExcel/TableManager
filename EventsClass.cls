@@ -17,14 +17,13 @@ Private Sub Class_Initialize()
     Debug.Assert Initializing
 
     Set pAllEvents = New Scripting.Dictionary
-End Sub ' Class_Initialize
+End Sub                                          ' Class_Initialize
 
 Public Property Get Count() As Long: Count = pAllEvents.Count: End Property
 
 '@DefaultMember
 Public Property Get Item(ByVal vIndex As Variant) As TableManager.EventClass
-Attribute Item.VB_UserMemId = 0
-'Attribute Item.VB_UserMemId = 0
+    'Attribute Item.VB_UserMemId = 0
     
     Const RoutineName As String = Module_Name & "Get Item"
     
@@ -39,10 +38,10 @@ Attribute Item.VB_UserMemId = 0
     Set Item = pAllEvents(vIndex)
     On Error GoTo 0
 
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Property
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
@@ -57,13 +56,13 @@ Public Sub Add(ByVal Evt As TableManager.EventClass)
            
     If Evt.Name <> vbNullString Then pAllEvents.Add Evt.Name, Evt
         
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Sub
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
     
-End Sub ' Add
+End Sub                                          ' Add
 
 Public Sub Remove(ByVal vIndex As Variant)
 
@@ -80,10 +79,11 @@ Public Sub Remove(ByVal vIndex As Variant)
         pAllEvents.Remove vIndex
     End If
 
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Sub
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
     
-End Sub ' Remove
+End Sub                                          ' Remove
+
