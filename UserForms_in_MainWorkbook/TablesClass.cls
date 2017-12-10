@@ -91,7 +91,3 @@ ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
     
 End Sub ' Remove
-
-Public Function ListOfTables() As String()
-    ListOfTables = pAllTables.Keys
-End Function

@@ -60,7 +60,8 @@ Public Sub CollectCellData( _
     Debug.Assert CellID.Count = 1
     
     pHeaderText = CellID
-    pName = Replace(pHeaderText, " ", vbNullString)
+    
+    pName = RemoveSpecial(pHeaderText)
     pTableName = Tbl.Name
     
     Set DataCell = CellID.Offset(1, 0)
@@ -129,8 +130,8 @@ End Sub ' LetCellValue
 
 Public Property Get Length() As Long: Length = Len(pHeaderText): End Property
 
-Public Property Get Control() As Control: Set Control = pControl: End Property
-Public Property Set Control(ByVal Ctl As Control): Set pControl = Ctl: End Property
+Public Property Get Control() As Control: Control = pControl: End Property
+Public Property Let Control(ByVal Ctl As Control): pControl = Ctl: End Property
 
 Public Property Get TableName() As String: TableName = pTableName: End Property
 
@@ -176,8 +177,12 @@ Public Property Let ErrorTitle(ByVal ET As String): pErrorTitle = ET: End Proper
 Public Property Get ErrorMessage() As String: ErrorMessage = pErrorMessage: End Property
 Public Property Let ErrorMessage(ByVal EM As String): pErrorMessage = EM: End Property
 
-
-
-
-
-
+Private Function RemoveSpecial(ByVal InputString As String) As String
+    Dim SpecialChars As String
+    Dim I As Long
+    SpecialChars = "\/:*?""<>| ,#"
+    For I = 1 To Len(SpecialChars)
+        InputString = Replace$(InputString, Mid$(SpecialChars, I, 1), vbNullString)
+    Next
+    RemoveSpecial = InputString
+End Function

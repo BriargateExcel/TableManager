@@ -2,41 +2,41 @@ VERSION 1.0 CLASS
 BEGIN
   MultiUse = -1  'True
 END
-Attribute VB_Name = "TablesClass"
+Attribute VB_Name = "ControlsClass"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
 
-Private Const Module_Name As String = "TablesClass."
+Private Const Module_Name As String = "ControlsClass."
 
-Private pAllTables As Scripting.Dictionary
+Private pAllControls As Scripting.Dictionary
 
 Private Sub Class_Initialize()
     Debug.Assert Initializing
 
-    Set pAllTables = New Scripting.Dictionary
+    Set pAllControls = New Scripting.Dictionary:
 End Sub ' Class_Initialize
 
-Public Property Get Count() As Long: Count = pAllTables.Count: End Property
+Public Property Get Count() As Long: Count = pAllControls.Count: End Property
 
 '@DefaultMember
-Public Property Get Item(ByVal vIndex As Variant) As TableManager.TableClass
+Public Property Get Item(ByVal vIndex As Variant) As Control
 Attribute Item.VB_UserMemId = 0
 'Attribute Item.VB_UserMemId = 0
 
     Const RoutineName As String = Module_Name & "Get Item"
     
     On Error Resume Next
-    Set Item = pAllTables.Items()(vIndex)
+    Set Item = pAllControls.Items()(vIndex)
     If Err.Number = 0 Then
         On Error GoTo 0
         Exit Function
     End If
     
     On Error Resume Next
-    Set Item = pAllTables(vIndex)
+    Set Item = pAllControls(vIndex)
     On Error GoTo 0
 
 '@Ignore LineLabelNotUsed
@@ -48,14 +48,16 @@ ErrorHandler:
 
 End Property
 
-Public Sub Add(ByVal Tbl As TableManager.TableClass)
+Public Property Get ListControls(): ListControls = pAllControls.Keys: End Property
+
+Public Sub Add(ByVal Ctl As Control)
     
     Debug.Assert Initializing
 
     Const RoutineName As String = Module_Name & "Add"
     On Error GoTo ErrorHandler
-           
-    If Tbl.Name <> vbNullString Then pAllTables.Add Tbl.Name, Tbl
+    
+    If Ctl.Name <> vbNullString Then pAllControls.Add Ctl.Name, Ctl
         
 '@Ignore LineLabelNotUsed
 Done:
@@ -65,10 +67,6 @@ ErrorHandler:
     
 End Sub ' Add
 
-Public Function Exists(ByVal vIndex As Variant) As Boolean
-    Exists = pAllTables.Exists(vIndex)
-End Function ' Exists
-
 Public Sub Remove(ByVal vIndex As Variant)
     
     Debug.Assert Initializing
@@ -77,11 +75,11 @@ Public Sub Remove(ByVal vIndex As Variant)
     On Error GoTo ErrorHandler
    
     If CStr(vIndex) = "*" Then
-        Set pAllTables = Nothing
-        Set pAllTables = New Scripting.Dictionary
+        Set pAllControls = Nothing
+        Set pAllControls = New Collection
     Else
-        If Not pAllTables.Exists(vIndex) Then Err.Raise 9
-        pAllTables.Remove vIndex
+        If Not pAllControls.Exists(vIndex) Then Err.Raise 9
+        pAllControls.Remove vIndex
     End If
 
 '@Ignore LineLabelNotUsed
@@ -89,9 +87,5 @@ Done:
     Exit Sub
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
-    
-End Sub ' Remove
 
-Public Function ListOfTables() As String()
-    ListOfTables = pAllTables.Keys
-End Function
+End Sub ' Remove

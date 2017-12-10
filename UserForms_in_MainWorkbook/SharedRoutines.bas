@@ -104,72 +104,96 @@ ErrorHandler:
 
 End Function ' InScope
 
-Public Sub ShowAnyForm(ByVal FormName As String, Optional ByVal Modal As FormShowConstants = vbModal)
-' http://www.cpearson.com/Excel/showanyform.htm
-
-    Const RoutineName As String = Module_Name & "ShowAnyForm"
-    On Error GoTo ErrorHandler
-    
-    ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-    ' ShowAnyForm
-    ' This procedure will show the UserForm named in FormName, either modally or
-    ' modelessly, as indicated by the value of Modal.  If a form is already loaded,
-    ' it is reshown without unloading/reloading the form.
-    ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-    Dim Obj As Object
-    ''''''''''''''''''''''''''''''''''''''''''''''''''''
-    ' Loop through the VBA.UserForm object (works like
-    ' a collection), to see if the form named by
-    ' FormName is already loaded. If so, just call
-    ' Show and exit the procedure. If it is not loaded,
-    ' add it to the VBA.UserForms object and then
-    ' show it.
-    ''''''''''''''''''''''''''''''''''''''''''''''''''''
-    For Each Obj In VBA.UserForms
-        If StrComp(Obj.Name, FormName, vbTextCompare) = 0 Then
-'           ''''''''''''''''''''''''''''''''''''
-'           ' START DEBUGGING/ILLUSTRATION ONLY
-'           ''''''''''''''''''''''''''''''''''''
-'           Obj.Label1.Caption = "Form Already Loaded"
-'           ''''''''''''''''''''''''''''''''''''
-'           ' END DEBUGGING/ILLUSTRATION ONLY
-'           ''''''''''''''''''''''''''''''''''''
-            Obj.Show Modal
-            Exit Sub
-        End If
-    Next Obj
-
-    ''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-    ' If we make it here, the form named by FormName was
-    ' not loaded, and thus not found in VBA.UserForms.
-    ' Call the Add method of VBA.UserForms to load the
-    ' form and then call Show to show the form.
-    ''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-    With VBA.UserForms
-        On Error Resume Next
-        Err.Clear
-        Set Obj = .Add(FormName)
-        If Err.Number <> 0 Then
-            MsgBox "Err: " & CStr(Err.Number) & "   " & Err.Description
-            Exit Sub
-        End If
-        ''''''''''''''''''''''''''''''''''''
-        ' START DEBUGGING/ILLUSTRATION ONLY
-        ''''''''''''''''''''''''''''''''''''
-        Obj.Label1.Caption = "Form Loaded By ShowAnyForm"
-        ''''''''''''''''''''''''''''''''''''
-        ' END DEBUGGING/ILLUSTRATION ONLY
-        ''''''''''''''''''''''''''''''''''''
-        Obj.Show Modal
-    End With
-    
-'@Ignore LineLabelNotUsed
-Done:
-    Exit Sub
-ErrorHandler:
-   RaiseError Err.Number, Err.Source, RoutineName, Err.Description
-   
-End Sub ' ShowAnyForm
+'Public Sub ShowAnyForm( _
+'    ByVal FormName As String, _
+'    Optional ByVal Modal As FormShowConstants = vbModal)
+'' http://www.cpearson.com/Excel/showanyform.htm
+'
+'    Const RoutineName As String = Module_Name & "ShowAnyForm"
+'    On Error GoTo ErrorHandler
+'
+'    ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'    ' ShowAnyForm
+'    ' This procedure will show the UserForm named in FormName, either modally or
+'    ' modelessly, as indicated by the value of Modal.  If a form is already loaded,
+'    ' it is reshown without unloading/reloading the form.
+'    ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+''    Dim Obj As Object
+'    ''''''''''''''''''''''''''''''''''''''''''''''''''''
+'    ' Loop through the VBA.UserForm object (works like
+'    ' a collection), to see if the form named by
+'    ' FormName is already loaded. If so, just call
+'    ' Show and exit the procedure. If it is not loaded,
+'    ' add it to the VBA.UserForms object and then
+'    ' show it.
+'    ''''''''''''''''''''''''''''''''''''''''''''''''''''
+'
+'    Dim I As Long
+'    Dim Obj As Object
+'    For I = 1 To MainWorkbook.VBProject.VBComponents.Count
+'        Set Obj = MainWorkbook.VBProject.VBComponents.Item(I)
+'        If StrComp(Obj.Name, FormName, vbTextCompare) = 0 Then
+'            Obj.Show Modal
+'            Exit Sub
+'        End If
+'    Next I
+''    Dim Tbl As TableManager.TableClass
+''    For I = 0 To TableManager.TableCount(Module_Name) - 1
+''        Set Tbl = TableManager.TableItem(I, Module_Name)
+''        If Tbl.Form.Name = FormName Then
+''            Dim Frm As MSForms.UserForm
+''            Set Frm = Tbl.Form.FormObj
+''            Frm.Show Modal
+''        End If
+''    Next I
+'
+'
+'
+''    For Each Obj In VBA.UserForms
+''        If StrComp(Obj.Name, FormName, vbTextCompare) = 0 Then
+'''           ''''''''''''''''''''''''''''''''''''
+'''           ' START DEBUGGING/ILLUSTRATION ONLY
+'''           ''''''''''''''''''''''''''''''''''''
+'''           Obj.Label1.Caption = "Form Already Loaded"
+'''           ''''''''''''''''''''''''''''''''''''
+'''           ' END DEBUGGING/ILLUSTRATION ONLY
+'''           ''''''''''''''''''''''''''''''''''''
+''            Obj.Show Modal
+''            Exit Sub
+''        End If
+''    Next Obj
+'
+'    ''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'    ' If we make it here, the form named by FormName was
+'    ' not loaded, and thus not found in VBA.UserForms.
+'    ' Call the Add method of VBA.UserForms to load the
+'    ' form and then call Show to show the form.
+'    ''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+''    With VBA.UserForms
+''        On Error Resume Next
+''        Err.Clear
+''        Set Obj = .Add(FormName)
+''        If Err.Number <> 0 Then
+''            MsgBox "Err: " & CStr(Err.Number) & "   " & Err.Description
+''            Exit Sub
+''        End If
+''        ''''''''''''''''''''''''''''''''''''
+''        ' START DEBUGGING/ILLUSTRATION ONLY
+''        ''''''''''''''''''''''''''''''''''''
+''        Obj.Label1.Caption = "Form Loaded By ShowAnyForm"
+''        ''''''''''''''''''''''''''''''''''''
+''        ' END DEBUGGING/ILLUSTRATION ONLY
+''        ''''''''''''''''''''''''''''''''''''
+''        Obj.Show Modal
+''    End With
+'
+''@Ignore LineLabelNotUsed
+'Done:
+'    Exit Sub
+'ErrorHandler:
+'   RaiseError Err.Number, Err.Source, RoutineName, Err.Description
+'
+'End Sub ' ShowAnyForm
 
 Public Sub RaiseError( _
     ByVal errorno As Long, _
@@ -213,7 +237,7 @@ Public Sub DisplayError(ByVal Procname As String)
     Msg = "The following error occurred: " & vbCrLf & Err.Description _
                     & vbCrLf & vbCrLf & "Error Location is: "
 
-    Msg = Msg + Err.Source & vbCrLf & Procname ' & " " & src & " " & desc
+    Msg = Msg & Err.Source & vbCrLf & Procname ' & " " & src & " " & desc
 
     ' Display message
     MsgBox Msg, Title:="Error"
@@ -324,43 +348,12 @@ ErrorHandler:
 
 End Function ' HasVal
 
-Public Function ConvertToLetter(ByVal iCol As Long) As String
-    Dim iAlpha As Integer
-    Dim iRemainder As Integer
 
-    iAlpha = Int(iCol / 27)
-    iRemainder = iCol - (iAlpha * 26)
-    
-    If iAlpha > 0 Then
-        ConvertToLetter = Chr$(iAlpha + 64)
-    End If
-    
-    If iRemainder > 0 Then
-        ConvertToLetter = ConvertToLetter & Chr$(iRemainder + 64)
-    End If
 
-End Function ' ConvertToLetter
 
-Public Sub ClearTable(ByVal LstObj As ListObject)
-    If LstObj.ListRows.Count > 1 Then
-        LstObj.DataBodyRange.Delete
-    ElseIf LstObj.ListRows.Count > 0 Then
-        LstObj.DataBodyRange.Clear
-    End If
 
-End Sub ' ClearTable
 
-Public Function Contains( _
-    ByVal objCollection As Object, _
-    ByVal StrName As String _
-    ) As Boolean
-    
-    Dim Obj As Object
 
-    On Error Resume Next
-    
-    Set Obj = objCollection(StrName)
-    Contains = (Err.Number = 0)
- End Function ' Contains
+
 
 

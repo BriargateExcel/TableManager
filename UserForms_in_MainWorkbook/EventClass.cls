@@ -54,7 +54,7 @@ Public Property Set FormObj(ByVal FO As Object)
     Debug.Assert Initializing
 
     Set pFormObj = FO
-    Set pFormEvent = FO
+    Set pFormEvent = FO.Designer
 End Property
 
 Public Property Set ButtonObj(ByVal Btn As MSForms.CommandButton)
@@ -220,8 +220,11 @@ Private Sub pSheetEvent_BeforeDoubleClick( _
         Exit Sub
     End If
     
+    TableManager.FormNameToShow Tbl.Form.Name
+    
     TableManager.PopulateForm Tbl, Module_Name
-    ShowAnyForm Tbl.Form.Name
+    Application.Run "ReqTracker.MainModule.ShowForm"
+    Stop
     
 '@Ignore LineLabelNotUsed
 Done:
@@ -312,13 +315,11 @@ Private Sub pButtonEvent_Click()
         TableManager.TurnOnCellDescriptions pTableObj, Module_Name
         Set pTableObj.ActiveTarget = pTableObj.FirstCell
         TableManager.TurnOffCellDescriptions pTableObj, Module_Name
-        TableManager.PopulateForm Tbl, Module_Name
     
     Case "Go To Bottom"
         TableManager.TurnOnCellDescriptions pTableObj, Module_Name
         Set pTableObj.ActiveTarget = pTableObj.LastCell
         TableManager.TurnOffCellDescriptions pTableObj, Module_Name
-        TableManager.PopulateForm Tbl, Module_Name
     
     Case Is = "Cancel"
         TableManager.TurnOnCellDescriptions pTableObj, Module_Name
