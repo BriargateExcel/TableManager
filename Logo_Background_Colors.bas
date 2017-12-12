@@ -3,6 +3,8 @@ Option Explicit
 
 Private Const Module_Name As String = "Logo_Background_Colors."
 
+'TODO Use a parameter table to set the highlight and lowlight colors
+
 Private Const DarkestColor As Long = &H763232    ' AF Dark Blue
 Private Const LightestColor  As Long = &HE7E2E2  ' AF Light Gray
 
@@ -51,40 +53,5 @@ ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Sub
 
-Public Function Logo( _
-       ByRef Tbl As TableManager.TableClass, _
-       ByRef LogoHeight As Single, _
-       ByRef LogoWidth As Single _
-       ) As Control
-    
-    Dim LogoImage As Control
-    
-    Const RoutineName As String = Module_Name & "Logo"
-    On Error GoTo ErrorHandler
-    
-    If Dir(MainWorkbook.Path & "\logo.jpg") <> vbNullString Then
-        Set LogoImage = Tbl.Form.FormObj.Controls.Add("Forms.Image.1")
-        Set LogoImage.Picture = LoadPicture(MainWorkbook.Path & "\logo.jpg")
-        With LogoImage
-            .PictureAlignment = fmPictureAlignmentTopRight
-            .PictureSizeMode = fmPictureSizeModeZoom
-            .BorderStyle = fmBorderStyleNone
-            .BackStyle = fmBackStyleTransparent
-            .AutoSize = True
-            LogoHeight = .Height
-            LogoWidth = .Width
-        End With
-        Set Logo = LogoImage
-    Else
-        LogoHeight = 0
-        Set Logo = Nothing
-    End If
-    
-    '@Ignore LineLabelNotUsed
-Done:
-    Exit Function
-ErrorHandler:
-    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
-End Function
 
 

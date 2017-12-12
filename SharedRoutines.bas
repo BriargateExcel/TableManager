@@ -16,18 +16,18 @@ Public Function ActiveCellTableName() As String
     On Error GoTo 0                              ' Reset the error handling
 End Function                                     ' ActiveCellTableName
 
-Public Function CheckForVBAProjectAccessEnabled(ByVal WkBkName As String) As Boolean
+Public Function CheckForVBAProjectAccessEnabled(ByVal WkbkName As String) As Boolean
 
     Dim VBP As Object                            ' as VBProject
-    Dim WkBk As Workbook
+    Dim Wkbk As Workbook
 
     Const RoutineName As String = Module_Name & "CheckForVBAProjectAccessEnabled"
     On Error GoTo ErrorHandler
     
-    Set WkBk = Workbooks(WkBkName)
+    Set Wkbk = Workbooks(WkbkName)
 
     If Val(Application.VERSION) >= 10 Then
-        Set VBP = WkBk.VBProject
+        Set VBP = Wkbk.VBProject
         CheckForVBAProjectAccessEnabled = True
     Else
         MsgBox "This application must be run on Excel 2002 or greater", _
@@ -310,11 +310,7 @@ Public Function HasVal(ByVal Target As Range) As Boolean
     On Error Resume Next
     
     v = Target.Validation.Type
-    If Err.Number = 0 Then
-        HasVal = True
-    Else
-        HasVal = False
-    End If
+    HasVal = (Err.Number = 0)
 
     '@Ignore LineLabelNotUsed
 Done:

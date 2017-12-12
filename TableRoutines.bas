@@ -5,7 +5,86 @@ Private Const Module_Name As String = "TableRoutines."
 
 Private pAllTbls As TableManager.TablesClass
 
-Public Sub BuildTableDataDescriptionArray(ByVal WkBkName As String)
+Public Sub ExtendDataValidationThroughAllTables(ByVal Wkbk As Workbook)
+    Dim CurrentSheet As Worksheet
+    Set CurrentSheet = MainWorkbook.ActiveSheet
+    
+    Dim RowCount As Long
+    RowCount = 0
+    Dim Tbl As TableManager.TableClass
+    Dim I As Long
+    For I = 0 To pAllTbls.Count - 1
+        Set Tbl = Table(I, Module_Name)
+        ExtendDataValidationDownTable Tbl
+        MainWorkbook.Worksheets(Tbl.WorksheetName).Activate
+        Tbl.FirstCell.Select
+    Next I
+    
+    CurrentSheet.Activate
+
+End Sub
+
+Private Sub ExtendDataValidationDownTable(ByVal Tbl As TableManager.TableClass)
+    
+    Dim I As Long
+    Dim CopyRange As Range
+    
+    For I = 1 To Tbl.CellCount
+        Set CopyRange = Tbl.ColumnRange(I)
+        CopyRange(1, 1).Copy
+        CopyRange.PasteSpecial Paste:=xlPasteValidation, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+    Next I
+    
+    Application.CutCopyMode = False
+
+End Sub
+
+Public Sub BuildTable( _
+       ByVal WS As TableManager.WorksheetClass, _
+       ByVal TblObj As ListObject)
+    
+    Dim Tbl As Variant
+    Dim Frm As TableManager.FormClass
+    
+    Const RoutineName As String = Module_Name & "BuildTable"
+    On Error GoTo ErrorHandler
+    
+    ' Gather the table data
+    Set Tbl = New TableManager.TableClass
+    Tbl.Name = TblObj.Name
+    Set Tbl.Table = TblObj
+    If Tbl.CollectTableData(WS, Tbl) Then
+        Set Frm = New TableManager.FormClass
+        TableManager.TableAdd Tbl, Module_Name
+        
+        Set Frm.FormObj = Frm.BuildForm(Tbl)
+        Set Tbl.Form = Frm
+    End If
+    
+    '@Ignore LineLabelNotUsed
+Done:
+    Exit Sub
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
+
+End Sub                                          ' BuildTable
+
+Public Function TableDataCollected() As Boolean
+    On Error Resume Next
+    TableDataCollected = (pAllTbls.Count <> 0)
+    TableDataCollected = (Err.Number = 0)
+End Function
+
+Public Sub BuildParameterTableOnWorksheet(ByVal Wkbk As Workbook)
+    Dim Tary As Variant
+    
+    Tary = BuildTableDataDescriptionArray
+    
+    BuildParameterWorksheet Wkbk, Tary, UBound(Tary, 1)
+    
+End Sub
+
+Private Function BuildTableDataDescriptionArray() As Variant
     
     Dim TitleArray As Variant
     TitleArray = Array("Table Name", "Cell Name", "Cell Header Text", _
@@ -13,6 +92,36 @@ Public Sub BuildTableDataDescriptionArray(ByVal WkBkName As String)
                        "Formula 2", "Ignore Blanks", "Show Input Message", _
                        "Input Title", "Input Message", "Show Error Message", _
                        "Error Title", "Error Message")
+    
+    Dim RowCount As Long
+    RowCount = 0
+    Dim Tbl As TableManager.TableClass
+    Dim I As Long
+    For I = 0 To pAllTbls.Count - 1
+        Set Tbl = Table(I, Module_Name)
+        RowCount = RowCount + Tbl.CellCount
+    Next I
+    
+    Dim Tary As Variant
+    ReDim Tary(RowCount, UBound(TitleArray))
+    For I = 0 To UBound(TitleArray)
+        Tary(0, I) = TitleArray(I)
+    Next I
+    
+    RowCount = 1
+    For I = 0 To pAllTbls.Count - 1
+        Set Tbl = Table(I, Module_Name)
+        BuildRow Tary, Tbl, RowCount
+    Next I
+    
+    BuildTableDataDescriptionArray = Tary
+ 
+End Function
+
+Private Sub BuildRow( _
+        ByRef Tary As Variant, _
+        ByVal Tbl As TableManager.TableClass, _
+        ByRef RowCount As Long)
     
     Dim CellTypes As Variant
     CellTypes = Array("xlValidateInputOnly", "xlValidateWholeNumber", _
@@ -28,66 +137,54 @@ Public Sub BuildTableDataDescriptionArray(ByVal WkBkName As String)
     AlertStyle = Array(vbNullString, "xlValidAlertStop", "xlValidAlertWarning", _
                        "xlValidAlertInformation")
     
-    Dim RowCount As Long
-    RowCount = 0
-    Dim Tbl As TableManager.TableClass
-    Dim I As Long
-    For I = 0 To pAllTbls.Count - 1
-        Set Tbl = Table(I, Module_Name)
-        RowCount = RowCount + Tbl.CellCount
-    Next I
-    
-    Dim TAry As Variant
-    ReDim TAry(RowCount, UBound(TitleArray))
-    For I = 0 To UBound(TitleArray)
-        TAry(0, I) = TitleArray(I)
-    Next I
-    
-    RowCount = 1
     Dim Cll As TableManager.CellClass
     Dim J As Long
-    For I = 0 To pAllTbls.Count - 1
-        Set Tbl = Table(I, Module_Name)
-        For J = 0 To Tbl.CellCount - 1
-            Set Cll = Tbl.TableCells(J)
-            TAry(RowCount, 0) = Tbl.Name
-            TAry(RowCount, 1) = Cll.Name
-            TAry(RowCount, 2) = Cll.HeaderText
-            TAry(RowCount, 3) = CellTypes(Cll.CellType)
-            If Cll.CellType <> xlValidateInputOnly Then
-                If Cll.CellType <> xlValidateList Then
-                    TAry(RowCount, 4) = Operators(Cll.Operator)
-                End If
-                TAry(RowCount, 5) = AlertStyle(Cll.ValidAlertStyle)
-                If Left$(Cll.ValidationFormula1, 1) = "=" Then
-                    TAry(RowCount, 6) = "''" & Cll.ValidationFormula1
-                Else
-                    TAry(RowCount, 6) = Cll.ValidationFormula1
-                End If
-                TAry(RowCount, 7) = Cll.ValidationFormula2
-            End If
-            TAry(RowCount, 8) = IIf(Cll.IgnoreBlank, "True", "False")
-            TAry(RowCount, 9) = Cll.ShowInput
-            TAry(RowCount, 10) = Cll.InputTitle
-            TAry(RowCount, 11) = Cll.InputMessage
-            TAry(RowCount, 12) = Cll.ShowError
-            TAry(RowCount, 13) = Cll.ErrorTitle
-            TAry(RowCount, 14) = Cll.ErrorMessage
-            RowCount = RowCount + 1
-        Next J
-    Next I
-    
-    BuildNewTable WkBkName, TAry, RowCount
+    For J = 0 To Tbl.CellCount - 1
+        Set Cll = Tbl.TableCells.Item(J)
+        Tary(RowCount, 0) = Tbl.Name
+        Tary(RowCount, 1) = Cll.Name
+        Tary(RowCount, 2) = Cll.HeaderText
+        Tary(RowCount, 3) = CellTypes(Cll.CellType)
+        PopulateValidationData Tary, RowCount, Operators, Cll, AlertStyle
+        Tary(RowCount, 8) = IIf(Cll.IgnoreBlank, "True", "False")
+        Tary(RowCount, 9) = Cll.ShowInput
+        Tary(RowCount, 10) = Cll.InputTitle
+        Tary(RowCount, 11) = Cll.InputMessage
+        Tary(RowCount, 12) = Cll.ShowError
+        Tary(RowCount, 13) = Cll.ErrorTitle
+        Tary(RowCount, 14) = Cll.ErrorMessage
+        RowCount = RowCount + 1
+    Next J
 End Sub
+Private Sub PopulateValidationData( _
+        ByRef Tary As Variant, _
+        ByVal RowCount As Long, _
+        ByVal Operators As Variant, _
+        ByVal Cll As TableManager.CellClass, _
+        ByVal AlertStyle As Variant)
+    
+    If Cll.CellType <> xlValidateInputOnly Then
+        If Cll.CellType <> xlValidateList Then
+            Tary(RowCount, 4) = Operators(Cll.Operator)
+        End If
+        Tary(RowCount, 5) = AlertStyle(Cll.ValidAlertStyle)
+        If Left$(Cll.ValidationFormula1, 1) = "=" Then
+            Tary(RowCount, 6) = "''" & Cll.ValidationFormula1
+        Else
+            Tary(RowCount, 6) = Cll.ValidationFormula1
+        End If
+        Tary(RowCount, 7) = Cll.ValidationFormula2
+    End If
+End Sub                                          ' PopulateValidationData
 
-Private Sub BuildNewTable( _
-        ByVal WkBkName As Variant, _
-        ByVal TAry As Variant, _
+Private Sub BuildParameterWorksheet( _
+        ByVal Wkbk As Workbook, _
+        ByVal Tary As Variant, _
         ByVal RowCount As Long)
     
     Dim Rng As String
     
-    With Workbooks(WkBkName)
+    With Wkbk
         If Not Contains(.Worksheets, "Parameters") Then
             .Worksheets.Add(After:=.Worksheets(.Worksheets.Count)).Name = "Parameters"
         End If
@@ -95,9 +192,9 @@ Private Sub BuildNewTable( _
             If Contains(.ListObjects, "ParameterTable") Then
                 .ListObjects("ParameterTable").Delete
             End If
-            .Range("$A$1").Resize(UBound(TAry, 1), UBound(TAry, 2)).Value = TAry
+            .Range("$A$1").Resize(UBound(Tary, 1), UBound(Tary, 2)).Value = Tary
     
-            Rng = "$A$1:" & ConvertToLetter(UBound(TAry, 2)) & RowCount - 1
+            Rng = "$A$1:" & ConvertToLetter(UBound(Tary, 2)) & RowCount - 1
             .ListObjects.Add(xlSrcRange, .Range(Rng), , xlYes).Name = "ParameterTable"
     
             .Activate
@@ -106,6 +203,11 @@ Private Sub BuildNewTable( _
     End With
     ActiveWindow.FreezePanes = True
     ActiveSheet.Range(Rng).EntireColumn.AutoFit
+    
+'TODO Add validation to the cells of the ParameterTable
+'TODO Use the Parameter table to designate columns as keys then check them for uniqueness
+'TODO Use a Parameter table to help in adding an "Add New Element" option to the dropdown menus
+
 End Sub
 
 Private Function ModuleList() As Variant

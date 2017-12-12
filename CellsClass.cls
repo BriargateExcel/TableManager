@@ -13,7 +13,7 @@ Private Const Module_Name As String = "CellsClass."
 
 Private pAllCells As Scripting.Dictionary
 
-' TODO:
+' TODO Examine the design of the plural classes - see notes below
 ' All the plural classes are built on a Dictionary
 ' The plural classes: Cells, Controls, Events, Tables, Worksheets
 ' They all have these and only these routines:
@@ -31,6 +31,7 @@ End Sub                                          ' Class_Initialize
 
 Public Property Get Count() As Long: Count = pAllCells.Count: End Property
 
+'TODO Figure out the Rubberduck annotation for a default member
 '@DefaultMember
 Public Property Get Item(ByVal vIndex As Variant) As TableManager.CellClass
     'Attribute Item.VB_UserMemId = 0

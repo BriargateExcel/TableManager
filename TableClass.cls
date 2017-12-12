@@ -37,6 +37,10 @@ Public Property Set ActiveTarget(ByVal Target As Range)
     Set pTarget = Target
 End Property
 
+Public Sub GoToHome()
+    Set pTarget = Me.FirstCell
+End Sub
+
 Public Property Get DBRange() As Range
     Set DBRange = MainWorkbook.Worksheets(pWkShtName).ListObjects(pTableName).DataBodyRange
 End Property
@@ -99,11 +103,8 @@ Public Function CollectTableData( _
         If Not OneCell.Locked Then pLocked = False
     Next Element
     
-    If pLocked Then
-        CollectTableData = False
-    Else
-        CollectTableData = True
-    End If
+
+    CollectTableData = Not pLocked
 
     '@Ignore LineLabelNotUsed
 Done:
@@ -180,7 +181,12 @@ Public Function DBCol(ByVal ColumnName As String) As Long
     DBCol = v
 End Function                                     ' DBCol
 
+Public Function ColumnRange(ByVal ColNum As Long) As Range
+    Set ColumnRange = Range(DBRange(1, ColNum), DBRange(NumRows, ColNum))
+End Function
+
 Public Function CellCount() As Long: CellCount = pCells.Count: End Function
+
 
 
 

@@ -1,46 +1,33 @@
 Attribute VB_Name = "XLAM_Module"
 Option Explicit
 
+' TODO Develop my own VBA error handling technique
+
 Private Const Module_Name As String = "XLAM_Module."
 
 Private Init As Boolean
 Private pMainWorkbook As Workbook
 
+Private Sub ExtendDataValidationDownTable(ByVal Tbl As TableManager.TableClass)
+    
+    Dim I As Long
+    Dim CopyRange As Range
+    
+    For I = 1 To Tbl.CellCount
+        Set CopyRange = Tbl.ColumnRange(I)
+        CopyRange(1, 1).Copy
+        CopyRange.PasteSpecial Paste:=xlPasteValidation, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+    Next I
+    
+    Application.CutCopyMode = False
+
+End Sub
+
 Public Function MainWorkbook() As Workbook
     Set MainWorkbook = pMainWorkbook
 End Function
 
-Public Sub BuildTable( _
-       ByVal WS As TableManager.WorksheetClass, _
-       ByVal TblObj As ListObject)
-    
-    Dim Tbl As Variant
-    Dim Frm As TableManager.FormClass
-    
-    Const RoutineName As String = Module_Name & "BuildTable"
-    On Error GoTo ErrorHandler
-    
-    ' Gather the table data
-    Set Tbl = New TableManager.TableClass
-    Tbl.Name = TblObj.Name
-    Set Tbl.Table = TblObj
-    If Tbl.CollectTableData(WS, Tbl) Then
-        Set Frm = New TableManager.FormClass
-        TableManager.TableAdd Tbl, Module_Name
-        
-        Set Frm.FormObj = Frm.BuildForm(Tbl)
-        Set Tbl.Form = Frm
-    End If
-    
-    '@Ignore LineLabelNotUsed
-Done:
-    Exit Sub
-ErrorHandler:
-    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
-
-End Sub                                          ' BuildTable
-
-Public Sub AutoOpen(ByVal WkBk As Workbook)
+Public Sub AutoOpen(ByVal Wkbk As Workbook)
     
     Dim Sht As Worksheet
     Dim Tbl As ListObject
@@ -51,7 +38,7 @@ Public Sub AutoOpen(ByVal WkBk As Workbook)
     On Error GoTo ErrorHandler
     
     Init = True
-    Set pMainWorkbook = WkBk
+    Set pMainWorkbook = Wkbk
     
     If Not CheckForVBAProjectAccessEnabled(ThisWorkbook.Name) Then
         MsgBox "You must set the project access for the " & _

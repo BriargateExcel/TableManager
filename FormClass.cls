@@ -21,7 +21,7 @@ Private pEvents As TableManager.EventsClass
 
 Private pEnabled As Boolean                      ' Whether form is enabled
 
-' TODO: Calculate the gaps and multipliers based on font and font size
+' TODO Calculate the gaps and multipliers based on font and font size
 Private Const StandardGap As Long = 12
 Private Const ThinGap As Long = 3
 Private Const TextHeight As Long = 18
@@ -35,24 +35,8 @@ Private Const TextMultiplier As Long = 5
 Public Function BuildForm( _
        ByVal Tbl As TableManager.TableClass _
        ) As MSForms.UserForm
+       
     Dim TempForm As VBComponent
-    
-    Dim Field As Variant
-    Dim Top As Single
-    Dim Ctl As Control
-    Dim Lbl As Control
-    Dim MaxLabelWidth As Single
-    Dim MaxFieldWidth As Single
-    Dim MaxButtonWidth As Single
-    Dim DataLeft As Single
-    Dim LogoHeight As Single
-    Dim LogoWidth As Single
-    Dim LogoImage As Control
-    Dim Evt As TableManager.EventClass
-    Dim I As Long
-    Dim NumRows As Long
-    Dim NumCols As Long
-    
     Debug.Assert Initializing
 
     Const RoutineName As Variant = Module_Name & "BuildForm"
@@ -71,121 +55,41 @@ Public Function BuildForm( _
     Set Tbl.Form.FormObj = pFormObj
     pFormObj.Caption = Tbl.Name
     
+    Dim Evt As TableManager.EventClass
     Set Evt = New TableManager.EventClass
     Set Evt.TableObj = Tbl
     Set Evt.FormObj = pFormObj
     Evt.Name = pFormName
     pEvents.Add Evt
     
+    ' Add the texture
     TableManager.Texture Tbl
     
-    Set LogoImage = TableManager.Logo(Tbl, LogoHeight, LogoWidth)
+    ' Add the logo
+    Dim LogoHeight As Single
+    Dim Top As Single
+    BuildLogo LogoHeight, Tbl
+    Top = LogoHeight + 2 * StandardGap
     
-    With pFormObj
-        
-        Top = LogoHeight + 2 * StandardGap
-        
-        ' Build the field labels and fields
-        For I = 0 To Tbl.CellCount - 1
-            Set Field = Tbl.TableCells.Item(I)
-            
-            ' Build the field label
-            BuildLabel Top, Field, MaxLabelWidth, Lbl
-            
-            ' Build the data field
-            If Field.Locked Then
-                ' Set this up as a constant (label)
-                BuildDataLabel Top, Field, MaxFieldWidth, Lbl
-                
-            Else
-                ' Field is unlocked
-                Select Case Field.CellType
-                Case xlValidateInputOnly
-                    ' Set this up as a text field
-                    BuildText Top, Field, MaxFieldWidth, Lbl, Tbl
-                    
-                Case xlValidateList
-                    ' Set this up as a combobox
-                    BuildCombo Top, Field, MaxFieldWidth, Lbl, Tbl
-                    
-                Case xlValidateCustom
-                    MsgBox "Custom validation is not yet implemented", vbOKOnly Or vbExclamation, "Custom Validation"
-                
-                Case xlValidateDate
-                    ' Set this up as a textbox
-                    BuildDate Top, Field, MaxFieldWidth, Lbl, Tbl
-
-                Case xlValidateDecimal
-                    ' Set this up as a textbox
-                    BuildDate Top, Field, MaxFieldWidth, Lbl, Tbl
-
-                Case xlValidateTextLength
-                    ' Set this up as a text field
-                    BuildText Top, Field, MaxFieldWidth, Lbl, Tbl
-
-                Case xlValidateTime
-                    MsgBox "Time validation is not yet implemented", vbOKOnly Or vbExclamation, "Time Validation"
-
-                Case xlValidateWholeNumber:
-                    ' Set this up as a textbox
-                    BuildWholeNumber Top, Field, MaxFieldWidth, Lbl, Tbl
-                
-                    '                Case Else: Stop
-                End Select
-            End If                               ' Field is locked
-            
-        Next I
-            
-        ' Position the controls now that we know all the widths
-        DataLeft = MaxLabelWidth + 2 * StandardGap
-        For Each Ctl In pFormObj.Controls
-            If Left$(Ctl.Name, 3) = "lbl" Then
-                Ctl.Width = MaxLabelWidth
-                Ctl.Left = StandardGap
-            Else
-                If Ctl.Name <> "Filler" Then
-                    Ctl.Width = MaxFieldWidth
-                    Ctl.Left = DataLeft
-                End If
-            End If
-        Next Ctl
-        
-        Top = Top + StandardGap
-        
-        NumRows = 4
-        NumCols = 3
-        
-        If MaxLabelWidth + MaxFieldWidth > 4 * ButtonWidth + (4 + 2) * StandardGap Then
-            NumRows = 3
-            NumCols = 4
-        End If
-        
-        If MaxLabelWidth + MaxFieldWidth > 6 * ButtonWidth + (6 + 2) * StandardGap Then
-            NumRows = 2
-            NumCols = 6
-        End If
-        
-        MaxButtonWidth = NumCols * ButtonWidth + (NumCols + 2) * StandardGap
-        
-        BuildAllButtons Top, Tbl, NumRows, NumCols
-        
-        ' Set Properties for TempForm now that we know all the heights and widths
-        .Width = Application.WorksheetFunction.Max( _
-                 MaxLabelWidth + MaxFieldWidth + NumCols * StandardGap, _
-                 MaxButtonWidth)
-        
-        Top = Top + ButtonHeight + StandardGap
-        .Height = Top + NumRows * StandardGap
-        
-        If Not LogoImage Is Nothing Then
-            LogoImage.Left = .Width - LogoWidth
-            LogoImage.Left = 0
-            LogoImage.Left = .InsideWidth - LogoImage.Width - StandardGap
-            LogoImage.Top = StandardGap
-        End If
-        
-    End With                                     ' pFormObj
+    ' Build the Controls
+    Dim MaxLabelWidth As Single
+    Dim MaxFieldWidth As Single
+    Dim MaxButtonWidth As Single
+    BuildControls Tbl, Top, MaxLabelWidth, MaxFieldWidth
     
+    ' Build the Buttons
+    Dim NumRows As Long
+    Dim NumCols As Long
+    BuildAllButtons Top, MaxLabelWidth, MaxFieldWidth, MaxButtonWidth, Tbl, NumRows, NumCols
+        
+    ' Set Properties for TempForm now that we know all the heights and widths
+    pFormObj.Width = Application.WorksheetFunction.Max( _
+                     MaxLabelWidth + MaxFieldWidth + NumCols * StandardGap, _
+                     MaxButtonWidth)
+        
+    Top = Top + ButtonHeight + StandardGap
+    pFormObj.Height = Top + NumRows * StandardGap
+        
     Set BuildForm = pFormObj
         
     '@Ignore LineLabelNotUsed
@@ -197,11 +101,149 @@ ErrorHandler:
 
 End Function                                     ' BuildForm
 
+Private Sub BuildControls( _
+        ByVal Tbl As TableManager.TableClass, _
+        ByRef Top As Single, _
+        ByRef MaxLabelWidth As Single, _
+        ByRef MaxFieldWidth As Single)
+
+    Dim I As Long
+    Dim Field As Variant
+    Dim Lbl As Control
+    
+    For I = 0 To Tbl.CellCount - 1
+        Set Field = Tbl.TableCells.Item(I)
+            
+        ' Build the field label
+        BuildLabel Top, Field, MaxLabelWidth, Lbl
+            
+        ' Build the data field
+        If Field.Locked Then
+            ' Set this up as a constant (label)
+            BuildDataLabel Top, Field, MaxFieldWidth, Lbl
+                
+        Else
+            ' Field is unlocked
+            Select Case Field.CellType
+            Case xlValidateInputOnly
+                ' Set this up as a text field
+                BuildText Top, Field, MaxFieldWidth, Lbl, Tbl
+                    
+            Case xlValidateList
+                ' Set this up as a combobox
+                BuildCombo Top, Field, MaxFieldWidth, Lbl, Tbl
+                    
+            Case xlValidateCustom
+                MsgBox "Custom validation is not yet implemented", _
+                    vbOKOnly Or vbExclamation, "Custom Validation"
+                'TODO Implement Custom validation
+                
+            Case xlValidateDate
+                ' Set this up as a textbox
+                BuildDate Top, Field, MaxFieldWidth, Lbl, Tbl
+
+            Case xlValidateDecimal
+                ' Set this up as a textbox
+                BuildDate Top, Field, MaxFieldWidth, Lbl, Tbl
+
+            Case xlValidateTextLength
+                ' Set this up as a text field
+                BuildText Top, Field, MaxFieldWidth, Lbl, Tbl
+
+            Case xlValidateTime
+                MsgBox "Time validation is not yet implemented", _
+                    vbOKOnly Or vbExclamation, "Time Validation"
+                'TODO Implement Time validation
+
+            Case xlValidateWholeNumber:
+                ' Set this up as a textbox
+                BuildWholeNumber Top, Field, MaxFieldWidth, Lbl, Tbl
+                
+                '                Case Else: Stop
+            End Select
+        End If                                   ' Field is locked
+            
+    Next I
+
+    ' Position the controls now that we know all the widths
+    Dim DataLeft As Single
+    DataLeft = MaxLabelWidth + 2 * StandardGap
+    
+    Dim Ctl As Control
+    For Each Ctl In pFormObj.Controls
+        If Left$(Ctl.Name, 3) = "lbl" Then
+            Ctl.Width = MaxLabelWidth
+            Ctl.Left = StandardGap
+        Else
+            If Ctl.Name <> "Filler" Then
+                Ctl.Width = MaxFieldWidth
+                Ctl.Left = DataLeft
+            End If
+        End If
+    Next Ctl
+        
+    Top = Top + StandardGap
+End Sub
+
+Private Sub BuildLogo( _
+        ByRef LogoHeight As Single, _
+        ByRef Tbl As TableManager.TableClass)
+    
+    Dim LogoImage As Control
+    Dim LogoWidth As Single
+    Set LogoImage = Logo(Tbl, LogoHeight, LogoWidth)
+    If Not LogoImage Is Nothing Then
+        LogoImage.Left = pFormObj.Width - LogoWidth
+        LogoImage.Left = 0
+        LogoImage.Left = pFormObj.InsideWidth - LogoImage.Width - StandardGap
+        LogoImage.Top = StandardGap
+    End If
+End Sub
+
+Public Function Logo( _
+       ByRef Tbl As TableManager.TableClass, _
+       ByRef LogoHeight As Single, _
+       ByRef LogoWidth As Single _
+       ) As Control
+    
+    Dim LogoImage As Control
+    
+    Const RoutineName As String = Module_Name & "Logo"
+    On Error GoTo ErrorHandler
+    
+    If Dir(MainWorkbook.Path & "\logo.jpg") <> vbNullString Then
+        Set LogoImage = Tbl.Form.FormObj.Controls.Add("Forms.Image.1")
+        Set LogoImage.Picture = LoadPicture(MainWorkbook.Path & "\logo.jpg")
+        With LogoImage
+            .PictureAlignment = fmPictureAlignmentTopRight
+            .PictureSizeMode = fmPictureSizeModeZoom
+            .BorderStyle = fmBorderStyleNone
+            .BackStyle = fmBackStyleTransparent
+            .AutoSize = True
+            LogoHeight = .Height
+            LogoWidth = .Width
+        End With
+        Set Logo = LogoImage
+    Else
+        LogoHeight = 0
+        Set Logo = Nothing
+    End If
+    
+    '@Ignore LineLabelNotUsed
+Done:
+    Exit Function
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
+End Function
+
 Private Sub BuildAllButtons( _
         ByRef Top As Single, _
+        ByVal MaxLabelWidth As Single, _
+        ByVal MaxFieldWidth As Single, _
+        ByRef MaxButtonWidth As Single, _
         ByVal Tbl As TableManager.TableClass, _
-        ByVal NumRows As Long, _
-        ByVal NumCols As Long)
+        ByRef NumRows As Long, _
+        ByRef NumCols As Long)
     
     Dim DataLeft As Single
     Dim Arrangement As String
@@ -210,9 +252,25 @@ Private Sub BuildAllButtons( _
     On Error GoTo ErrorHandler
 
     Debug.Assert Initializing
+    
+    NumRows = 4
+    NumCols = 3
+        
     Debug.Assert NumRows = 2 Or NumRows = 3 Or NumRows = 4
     Debug.Assert NumCols = 3 Or NumCols = 4 Or NumCols = 6
     Debug.Assert NumRows * NumCols = 12
+    
+    If MaxLabelWidth + MaxFieldWidth > 4 * ButtonWidth + (4 + 2) * StandardGap Then
+        NumRows = 3
+        NumCols = 4
+    End If
+    
+    If MaxLabelWidth + MaxFieldWidth > 6 * ButtonWidth + (6 + 2) * StandardGap Then
+        NumRows = 2
+        NumCols = 6
+    End If
+    
+    MaxButtonWidth = NumCols * ButtonWidth + (NumCols + 2) * StandardGap
     
     Arrangement = Format$(NumRows, "0") & " Rows of " & Format$(NumCols, "0")
     
