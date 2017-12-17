@@ -16,16 +16,13 @@ Public Function ActiveCellTableName() As String
     On Error GoTo 0                              ' Reset the error handling
 End Function                                     ' ActiveCellTableName
 
-Public Function CheckForVBAProjectAccessEnabled(ByVal WkbkName As String) As Boolean
+Public Function CheckForVBAProjectAccessEnabled(ByVal Wkbk As Workbook) As Boolean
 
     Dim VBP As Object                            ' as VBProject
-    Dim Wkbk As Workbook
 
     Const RoutineName As String = Module_Name & "CheckForVBAProjectAccessEnabled"
     On Error GoTo ErrorHandler
     
-    Set Wkbk = Workbooks(WkbkName)
-
     If Val(Application.VERSION) >= 10 Then
         Set VBP = Wkbk.VBProject
         CheckForVBAProjectAccessEnabled = True
@@ -359,4 +356,19 @@ Public Function Contains( _
     Contains = (Err.Number = 0)
 End Function                                     ' Contains
 
+Public Function FindLastColumnNumber( _
+       ByVal RowNumber As Integer, _
+       ByVal Sht As Worksheet _
+       ) As Long
+    
+    FindLastColumnNumber = Sht.Cells(RowNumber, Sht.Columns.Count).End(xlToLeft).Column
+End Function                                     ' FindLastColumnNumber
+
+Public Function FindLastColumnLetter( _
+       ByVal RowNumber As Integer, _
+       ByVal Sht As Worksheet _
+       ) As String
+    
+    FindLastColumnLetter = ConvertToLetter(FindLastColumnNumber(RowNumber, Sht))
+End Function                                     ' FindLastColumnLetter
 

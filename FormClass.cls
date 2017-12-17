@@ -135,7 +135,7 @@ Private Sub BuildControls( _
                     
             Case xlValidateCustom
                 MsgBox "Custom validation is not yet implemented", _
-                    vbOKOnly Or vbExclamation, "Custom Validation"
+                       vbOKOnly Or vbExclamation, "Custom Validation"
                 'TODO Implement Custom validation
                 
             Case xlValidateDate
@@ -152,7 +152,7 @@ Private Sub BuildControls( _
 
             Case xlValidateTime
                 MsgBox "Time validation is not yet implemented", _
-                    vbOKOnly Or vbExclamation, "Time Validation"
+                       vbOKOnly Or vbExclamation, "Time Validation"
                 'TODO Implement Time validation
 
             Case xlValidateWholeNumber:
@@ -160,6 +160,10 @@ Private Sub BuildControls( _
                 BuildWholeNumber Top, Field, MaxFieldWidth, Lbl, Tbl
                 
                 '                Case Else: Stop
+                'TODO Add a hypertext "data type" as an option
+                '   Not clear how to set this up for the user because
+                '   I'm not sure if I can modify the Data Validation
+                '   drop down options
             End Select
         End If                                   ' Field is locked
             
@@ -481,7 +485,60 @@ Done:
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
-End Sub                                          ' BuildCombo
+End Sub
+Private Sub BuildText( _
+        ByRef Top As Single, _
+        ByVal Field As Variant, _
+        ByRef MaxFieldWidth As Single, _
+        ByRef Lbl As Control, _
+        ByRef Tbl As TableManager.TableClass)
+
+    Const RoutineName As String = Module_Name & "BuildText"
+    On Error GoTo ErrorHandler
+    
+    Dim Ctl As Control
+    Dim Evt As TableManager.EventClass
+
+    Set Ctl = pFormObj.Controls.Add("Forms.TextBox.1", "fld" & Field.Name, True)
+    With Ctl
+        .Top = Top
+        If Field.Wrap Then
+            .Height = 3 * TextHeight
+            Lbl.Height = 3 * TextHeight
+            Top = Top + 3 * TextHeight
+            .WordWrap = True
+            .MultiLine = True
+            .ScrollBars = fmScrollBarsVertical
+        Else
+            .Height = TextHeight
+            Lbl.Height = TextHeight
+            Top = Top + TextHeight
+            .WordWrap = False
+            .MultiLine = False
+            .ScrollBars = fmScrollBarsNone
+        End If
+        .Width = Field.ColumnWidth * WidthMultiplier
+        If .Width > MaxFieldWidth Then MaxFieldWidth = .Width
+        .Font.Size = FontSize
+        .ControlTipText = BuildCaption(Field.InputTitle, Field.InputMessage)
+        .TextAlign = 1
+    End With
+    Set Field.FormControl = Ctl
+    pControls.Add Ctl
+    Set Evt = New TableManager.EventClass
+    Set Evt.TextObj = Ctl
+    Set Evt.TableObj = Tbl
+    Set Evt.FormObj = pFormObj
+    Evt.Name = Field.Name
+    pEvents.Add Evt
+    
+    '@Ignore LineLabelNotUsed
+Done:
+    Exit Sub
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
+
+End Sub                                          ' BuildText
 
 Private Sub BuildDataLabel( _
         ByRef Top As Single, _
@@ -588,60 +645,6 @@ ErrorHandler:
 
 End Sub                                          ' BuildLabel
 
-Private Sub BuildText( _
-        ByRef Top As Single, _
-        ByVal Field As Variant, _
-        ByRef MaxFieldWidth As Single, _
-        ByRef Lbl As Control, _
-        ByRef Tbl As TableManager.TableClass)
-
-    Const RoutineName As String = Module_Name & "BuildText"
-    On Error GoTo ErrorHandler
-    
-    Dim Ctl As Control
-    Dim Evt As TableManager.EventClass
-
-    Set Ctl = pFormObj.Controls.Add("Forms.TextBox.1", "fld" & Field.Name, True)
-    With Ctl
-        .Top = Top
-        If Field.Wrap Then
-            .Height = 3 * TextHeight
-            Lbl.Height = 3 * TextHeight
-            Top = Top + 3 * TextHeight
-            .WordWrap = True
-            .MultiLine = True
-            .ScrollBars = fmScrollBarsVertical
-        Else
-            .Height = TextHeight
-            Lbl.Height = TextHeight
-            Top = Top + TextHeight
-            .WordWrap = False
-            .MultiLine = False
-            .ScrollBars = fmScrollBarsNone
-        End If
-        .Width = Field.ColumnWidth * WidthMultiplier
-        If .Width > MaxFieldWidth Then MaxFieldWidth = .Width
-        .Font.Size = FontSize
-        .ControlTipText = BuildCaption(Field.InputTitle, Field.InputMessage)
-        .TextAlign = 1
-    End With
-    Set Field.FormControl = Ctl
-    pControls.Add Ctl
-    Set Evt = New TableManager.EventClass
-    Set Evt.TextObj = Ctl
-    Set Evt.TableObj = Tbl
-    Set Evt.FormObj = pFormObj
-    Evt.Name = Field.Name
-    pEvents.Add Evt
-    
-    '@Ignore LineLabelNotUsed
-Done:
-    Exit Sub
-ErrorHandler:
-    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
-
-End Sub                                          ' BuildText
-
 Private Sub BuildWholeNumber( _
         ByRef Top As Single, _
         ByVal Field As Variant, _
@@ -708,5 +711,4 @@ Private Sub Class_Initialize()
     Set pControls = New TableManager.ControlsClass
     Set pEvents = New TableManager.EventsClass
 End Sub                                          ' Class_Initialize
-
 

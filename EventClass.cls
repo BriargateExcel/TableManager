@@ -212,6 +212,7 @@ Private Sub pSheetEvent_BeforeDoubleClick( _
     Set Tbl = New TableManager.TableClass
     Set Tbl = TableItem(TableName, Module_Name)
     Set Tbl.ActiveTarget = Target
+    Set Tbl.Table = Tbl.ActiveTarget.ListObject
     
     Set Isect = Application.Intersect(Target, Tbl.Table.HeaderRowRange)
     If Not Isect Is Nothing Then

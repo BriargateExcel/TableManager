@@ -119,7 +119,6 @@ Public Function FirstCell() As Range
 End Function                                     ' FirstCell
 
 Public Function LastCell() As Range
-    '    Set LastCell = pTable.DataBodyRange(pTable.ListRows.Count, pTable.ListColumns.Count)
     Set LastCell = pTable.DataBodyRange(pTable.ListRows.Count, 1)
 End Function                                     ' LastCell
 
@@ -182,7 +181,8 @@ Public Function DBCol(ByVal ColumnName As String) As Long
 End Function                                     ' DBCol
 
 Public Function ColumnRange(ByVal ColNum As Long) As Range
-    Set ColumnRange = Range(DBRange(1, ColNum), DBRange(NumRows, ColNum))
+    Set ColumnRange = MainWorkbook.Worksheets(pWkShtName).Range( _
+        DBRange(1, ColNum), DBRange(NumRows, ColNum))
 End Function
 
 Public Function CellCount() As Long: CellCount = pCells.Count: End Function

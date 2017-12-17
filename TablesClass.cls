@@ -36,6 +36,11 @@ Public Property Get Item(ByVal vIndex As Variant) As TableManager.TableClass
     
     On Error Resume Next
     Set Item = pAllTables(vIndex)
+    If Err.Number <> 0 Then
+        MsgBox "The Form for this table does not exist. Rebuild the Forms.", _
+               vbOKOnly Or vbExclamation, _
+               "Form Does Not Exist"
+    End If
     On Error GoTo 0
 
     '@Ignore LineLabelNotUsed
@@ -46,7 +51,6 @@ ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
 End Property
-
 Public Sub Add(ByVal Tbl As TableManager.TableClass)
     
     Debug.Assert Initializing

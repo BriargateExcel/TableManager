@@ -8,21 +8,6 @@ Private Const Module_Name As String = "XLAM_Module."
 Private Init As Boolean
 Private pMainWorkbook As Workbook
 
-Private Sub ExtendDataValidationDownTable(ByVal Tbl As TableManager.TableClass)
-    
-    Dim I As Long
-    Dim CopyRange As Range
-    
-    For I = 1 To Tbl.CellCount
-        Set CopyRange = Tbl.ColumnRange(I)
-        CopyRange(1, 1).Copy
-        CopyRange.PasteSpecial Paste:=xlPasteValidation, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
-    Next I
-    
-    Application.CutCopyMode = False
-
-End Sub
-
 Public Function MainWorkbook() As Workbook
     Set MainWorkbook = pMainWorkbook
 End Function
@@ -40,7 +25,7 @@ Public Sub AutoOpen(ByVal Wkbk As Workbook)
     Init = True
     Set pMainWorkbook = Wkbk
     
-    If Not CheckForVBAProjectAccessEnabled(ThisWorkbook.Name) Then
+    If Not CheckForVBAProjectAccessEnabled(ThisWorkbook) Then
         MsgBox "You must set the project access for the " & _
                "TableManager Add-In to work", _
                vbOKOnly Or vbCritical, _
@@ -82,7 +67,6 @@ ErrorHandler:
     DisplayError RoutineName
 
 End Sub                                          ' AutoOpen
-
 Public Function Initializing() As Boolean
     Initializing = Init
 End Function                                     ' Initializing
