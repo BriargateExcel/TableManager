@@ -19,19 +19,27 @@ Private Sub Class_Initialize()
     Set pAllEvents = New Scripting.Dictionary
 End Sub                                          ' Class_Initialize
 
+Private Function ModuleList() As Variant
+    ModuleList = Array("EventsClass.", "FormClass.")
+End Function                                     ' ModuleList
+
 Public Property Get Count() As Long: Count = pAllEvents.Count: End Property
 
 '@DefaultMember
-Public Property Get Item(ByVal vIndex As Variant) As TableManager.EventClass
+Public Property Get Item( _
+    ByVal vIndex As Variant, _
+    ByVal ModuleName As String _
+    ) As TableManager.EventClass
     'Attribute Item.VB_UserMemId = 0
     
     Const RoutineName As String = Module_Name & "Get Item"
-    
+     Debug.Assert InScope(ModuleList, ModuleName, RoutineName)
+       
     On Error Resume Next
     Set Item = pAllEvents.Items()(vIndex)
     If Err.Number = 0 Then
         On Error GoTo 0
-        Exit Function
+        Exit Property
     End If
     
     On Error Resume Next
@@ -47,11 +55,15 @@ ErrorHandler:
 
 End Property
 
-Public Sub Add(ByVal Evt As TableManager.EventClass)
+Public Sub Add( _
+    ByVal Evt As TableManager.EventClass, _
+    ByVal ModuleName As String)
 
     Debug.Assert Initializing
 
     Const RoutineName As String = Module_Name & "Add"
+    Debug.Assert InScope(ModuleList, ModuleName, RoutineName)
+    
     On Error GoTo ErrorHandler
            
     If Evt.Name <> vbNullString Then pAllEvents.Add Evt.Name, Evt
@@ -64,11 +76,15 @@ ErrorHandler:
     
 End Sub                                          ' Add
 
-Public Sub Remove(ByVal vIndex As Variant)
+Public Sub Remove( _
+    ByVal vIndex As Variant, _
+    ByVal ModuleName As String)
 
     Debug.Assert Initializing
     
     Const RoutineName As String = Module_Name & "Remove"
+    Debug.Assert InScope(ModuleList, ModuleName, RoutineName)
+    
     On Error GoTo ErrorHandler
    
     If CStr(vIndex) = "*" Then

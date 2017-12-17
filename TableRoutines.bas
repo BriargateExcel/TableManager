@@ -17,26 +17,28 @@ Private Const ListOfAlertStyles As String = "xlValidAlertStop,xlValidAlertWarnin
 
 Private Const ListOfTruefFalse As String = "True,False"
 
+Private Const ListOfYesNo As String = "Yes,No"
+
 Private Function ParameterDescriptionArray() As Variant
     
     Dim PDA As Variant                           ' Parameter Description Array
         PDA = Array( _
                 Array("Table Name", "xlValidateInputOnly"), _
                 Array("Cell Name", "xlValidateInputOnly"), _
-                Array("Key", "xlValidateInputOnly"), _
-                Array("Cell Header Text", "xlValidateInputOnly", ""), _
+                Array("Key", "xlValidateList", ListOfYesNo), _
+                Array("Cell Header Text", "xlValidateInputOnly"), _
                 Array("Cell Type", "xlValidateList", ListOfTypes, "WrapText"), _
                 Array("Operator", "xlValidateList", ListOfOperators, "WrapText"), _
                 Array("Alert Style", "xlValidateList", ListOfAlertStyles, "WrapText"), _
-                Array("Formula 1", "xlValidateInputOnly"), _
-                Array("Formula 2", "xlValidateInputOnly"), _
+                Array("Formula 1", "xlValidateInputOnly", , "WrapText"), _
+                Array("Formula 2", "xlValidateInputOnly", , "WrapText"), _
                 Array("Ignore Blanks", "xlValidateList", ListOfTruefFalse), _
                 Array("Show Input Message", "xlValidateList", ListOfTruefFalse), _
                 Array("Input Title", "xlValidateInputOnly"), _
-                Array("Input Message", "xlValidateInputOnly"), _
+                Array("Input Message", "xlValidateInputOnly", , "WrapText"), _
                 Array("Show Error Message", "xlValidateList", ListOfTruefFalse), _
                 Array("Error Title", "xlValidateInputOnly"), _
-                Array("Error Message", "xlValidateInputOnly"))
+                Array("Error Message", "xlValidateInputOnly", , "WrapText"))
     
     ParameterDescriptionArray = PDA
     
@@ -59,7 +61,7 @@ Private Sub BuildRow( _
     Dim Cll As TableManager.CellClass
     Dim J As Long
     For J = 0 To Tbl.CellCount - 1
-        Set Cll = Tbl.TableCells.Item(J)
+        Set Cll = Tbl.TableCells.Item(J, Module_Name)
         Tary(RowCount, 0) = Tbl.Name
         Tary(RowCount, 1) = Cll.Name
         Tary(RowCount, 3) = Cll.HeaderText
@@ -252,12 +254,12 @@ Private Sub SetCommonValidationParameters( _
     Cll.FormulaHidden = False
     
     With Cll.Validation
+        .InCellDropdown = (PDA(ColNum)(1) = "xlValidateList")
         .IgnoreBlank = True
-        .InCellDropdown = False
-        .InputTitle = ""
-        .ErrorTitle = ""
-        .InputMessage = ""
-        .ErrorMessage = ""
+        .InputTitle = vbNullString
+        .ErrorTitle = vbNullString
+        .InputMessage = vbNullString
+        .ErrorMessage = vbNullString
         .ShowInput = True
         .ShowError = True
     End With
@@ -277,13 +279,10 @@ Private Sub SetCommonValidationParameters( _
     End If
     
 End Sub
-
 Public Sub ExtendDataValidationThroughAllTables(ByVal Wkbk As Workbook)
     Dim CurrentSheet As Worksheet
     Set CurrentSheet = Wkbk.ActiveSheet
     
-    Dim RowCount As Long
-    RowCount = 0
     Dim Tbl As TableManager.TableClass
     Dim I As Long
     For I = 0 To pAllTbls.Count - 1
@@ -299,23 +298,26 @@ End Sub
 
 Public Sub BuildTable( _
        ByVal WS As TableManager.WorksheetClass, _
-       ByVal TblObj As ListObject)
+       ByVal TblObj As ListObject, _
+       ByVal ModuleName As String)
     
     Dim Tbl As Variant
     Dim Frm As TableManager.FormClass
     
-    Const RoutineName As String = Module_Name & "BuildTable"
+    Const RoutineName As String = Module_Name & "Buildtable"
+    Debug.Assert InScope(ModuleList, ModuleName, RoutineName)
+    
     On Error GoTo ErrorHandler
     
     ' Gather the table data
     Set Tbl = New TableManager.TableClass
     Tbl.Name = TblObj.Name
     Set Tbl.Table = TblObj
-    If Tbl.CollectTableData(WS, Tbl) Then
+    If Tbl.CollectTableData(WS, Tbl, Module_Name) Then
         Set Frm = New TableManager.FormClass
         TableManager.TableAdd Tbl, Module_Name
         
-        Set Frm.FormObj = Frm.BuildForm(Tbl)
+        Set Frm.FormObj = Frm.BuildForm(Tbl, Module_Name)
         Set Tbl.Form = Frm
     End If
     
@@ -374,7 +376,7 @@ Public Sub TurnOnCellDescriptions( _
     On Error GoTo ErrorHandler
 
     For I = 0 To Tbl.CellCount - 1
-        Set Field = Tbl.TableCells.Item(I)
+        Set Field = Tbl.TableCells.Item(I, Module_Name)
         Field.ShowInput = True
         DBCol = Tbl.DBCol(Field.HeaderText)
         On Error Resume Next
@@ -408,7 +410,7 @@ Public Sub TurnOffCellDescriptions( _
     On Error GoTo ErrorHandler
 
     For I = 0 To Tbl.CellCount - 1
-        Set Field = Tbl.TableCells.Item(I)
+        Set Field = Tbl.TableCells.Item(I, Module_Name)
         Field.ShowInput = False
         DBCol = Tbl.DBCol(Field.HeaderText)
         On Error Resume Next
@@ -442,7 +444,7 @@ Public Sub PopulateTable( _
     Dim I As Long
 
     For I = 0 To Tbl.CellCount - 1
-        Set Field = Tbl.TableCells.Item(I)
+        Set Field = Tbl.TableCells.Item(I, Module_Name)
         DBCol = Tbl.DBCol(Field.HeaderText)
 
         Field.ControlValue = DBRange(DBRow, DBCol)
@@ -479,7 +481,7 @@ Public Function Table( _
     Const RoutineName As String = Module_Name & "Table"
     Debug.Assert InScope(ModuleList, ModuleName, RoutineName)
 
-    Set Table = pAllTbls.Item(TableName)
+    Set Table = pAllTbls.Item(TableName, Module_Name)
 
 End Function                                     ' Table
 
@@ -490,7 +492,7 @@ Public Sub TableAdd( _
     Const RoutineName As String = Module_Name & "TableAdd"
     On Error GoTo ErrorHandler
     Debug.Assert InScope(ModuleList, ModuleName, RoutineName)
-    pAllTbls.Add Tbl
+    pAllTbls.Add Tbl, Module_Name
     
     '@Ignore LineLabelNotUsed
 Done:
@@ -513,7 +515,7 @@ Public Function TableExists( _
 
     Const RoutineName As String = Module_Name & "TableExists"
     Debug.Assert InScope(ModuleList, ModuleName, RoutineName)
-    TableExists = pAllTbls.Exists(Tbl)
+    TableExists = pAllTbls.Exists(Tbl, Module_Name)
 End Function                                     ' TableExists
 
 Public Function TableItem( _
@@ -523,7 +525,7 @@ Public Function TableItem( _
 
     Const RoutineName As String = Module_Name & "TableItem"
     Debug.Assert InScope(ModuleList, ModuleName, RoutineName)
-    Set TableItem = pAllTbls.Item(Tbl)
+    Set TableItem = pAllTbls.Item(Tbl, Module_Name)
 End Function                                     ' TableItem
 
 Public Sub TableRemove( _
@@ -532,7 +534,7 @@ Public Sub TableRemove( _
 
     Const RoutineName As String = Module_Name & "TableRemove"
     Debug.Assert InScope(ModuleList, ModuleName, RoutineName)
-    pAllTbls.Remove Val
+    pAllTbls.Remove Val, Module_Name
 End Sub                                          ' TableRemove
 
 Public Sub TableSetNewClass(ByVal ModuleName As String)

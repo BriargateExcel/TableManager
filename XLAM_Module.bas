@@ -50,7 +50,7 @@ Public Sub AutoOpen(ByVal Wkbk As Workbook)
         WkSht.Name = Sht.Name
         
         For Each Tbl In Sht.ListObjects
-            BuildTable WkSht, Tbl
+            BuildTable WkSht, Tbl, Module_Name
         Next Tbl
         
         TableManager.WorksheetAdd WkSht, Module_Name

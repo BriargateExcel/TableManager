@@ -23,7 +23,7 @@ Public Function ValidateForm( _
     On Error GoTo ErrorHandler
     
     For I = 0 To Tbl.CellCount - 1
-        Set Field = Tbl.TableCells.Item(I)
+        Set Field = Tbl.TableCells.Item(I, Module_Name)
         
         Select Case Field.CellType
 
@@ -524,7 +524,7 @@ Public Sub PopulateForm( _
     Dim I As Long
 
     For I = 0 To Tbl.CellCount - 1
-        Set Field = Tbl.TableCells.Item(I)
+        Set Field = Tbl.TableCells.Item(I, Module_Name)
         DBCol = Tbl.DBCol(Field.HeaderText)
 
         Field.ControlValue = DBRange(DBRow, DBCol)
@@ -568,7 +568,7 @@ Public Sub ClearForm( _
     Dim I As Long
 
     For I = 0 To Tbl.CellCount - 1
-        Set Field = Tbl.TableCells.Item(I)
+        Set Field = Tbl.TableCells.Item(I, Module_Name)
 
         Select Case Left$(Field.FormControl.Name, 3)
         Case "lbl":                              ' Do nothing

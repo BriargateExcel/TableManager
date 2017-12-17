@@ -27,6 +27,10 @@ Private Sub Class_Initialize()
     Set pCells = New TableManager.CellsClass
 End Sub                                          ' Class_Initialize
 
+Private Function ModuleList() As Variant
+    ModuleList = Array("TableRoutines.")
+End Function                                     ' ModuleList
+
 Public Property Get ActiveRow() As Long
     ActiveRow = Me.DBRow
 End Property
@@ -78,7 +82,8 @@ Public Property Set Table(ByVal Tbl As ListObject): Set pTable = Tbl: End Proper
 '@Ignore FunctionReturnValueNotUsed
 Public Function CollectTableData( _
        ByVal WS As TableManager.WorksheetClass, _
-       ByVal Tbl As TableManager.TableClass _
+       ByVal Tbl As TableManager.TableClass, _
+       ByVal ModuleName As String _
        ) As Boolean
 
     Dim Element As Range
@@ -87,6 +92,8 @@ Public Function CollectTableData( _
     Debug.Assert Initializing
 
     Const RoutineName As String = Module_Name & "CollectTableData"
+    Debug.Assert InScope(ModuleList, ModuleName, RoutineName)
+    
     On Error GoTo ErrorHandler
     
     pTableName = Tbl.Name
@@ -95,8 +102,8 @@ Public Function CollectTableData( _
     
     For Each Element In pTable.HeaderRowRange
         Set OneCell = New TableManager.CellClass
-        OneCell.CollectCellData Tbl, Element
-        pCells.Add OneCell
+        OneCell.CollectCellData Tbl, Element, Module_Name
+        pCells.Add OneCell, Module_Name
         If OneCell.ColumnWidth > pMaxField Then pMaxField = OneCell.ColumnWidth
         If OneCell.Wrap Then pWrapCount = pWrapCount + 1
         If OneCell.Length > pMaxHeader Then pMaxHeader = OneCell.Length
@@ -186,10 +193,4 @@ Public Function ColumnRange(ByVal ColNum As Long) As Range
 End Function
 
 Public Function CellCount() As Long: CellCount = pCells.Count: End Function
-
-
-
-
-
-
 

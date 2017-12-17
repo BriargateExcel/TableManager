@@ -4,6 +4,7 @@ Option Explicit
 Private Const Module_Name As String = "Logo_Background_Colors."
 
 'TODO Use a parameter table to set the highlight and lowlight colors
+'TODO Add ModuleName Debug check to these routines
 
 Private Const DarkestColor As Long = &H763232    ' AF Dark Blue
 Private Const LightestColor  As Long = &HE7E2E2  ' AF Light Gray

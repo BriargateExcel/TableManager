@@ -29,20 +29,28 @@ Private Sub Class_Initialize()
     Set pAllCells = New Scripting.Dictionary
 End Sub                                          ' Class_Initialize
 
+Private Function ModuleList() As Variant
+    ModuleList = Array("FormClass.", "FormRoutines.", "TableRoutines.", "CellsClass.", "TableClass.")
+End Function                                     ' ModuleList
+
 Public Property Get Count() As Long: Count = pAllCells.Count: End Property
 
 'TODO Figure out the Rubberduck annotation for a default member
 '@DefaultMember
-Public Property Get Item(ByVal vIndex As Variant) As TableManager.CellClass
+Public Property Get Item( _
+    ByVal vIndex As Variant, _
+    ByVal ModuleName As String _
+    ) As TableManager.CellClass
     'Attribute Item.VB_UserMemId = 0
     
     Const RoutineName As String = Module_Name & "Get Item"
+    Debug.Assert InScope(ModuleList, ModuleName, RoutineName)
     
     On Error Resume Next
     Set Item = pAllCells.Items()(vIndex)
     If Err.Number = 0 Then
         On Error GoTo 0
-        Exit Function
+        Exit Property
     End If
     
     On Error Resume Next
@@ -58,11 +66,15 @@ ErrorHandler:
     
 End Property
 
-Public Sub Add(ByVal Cll As TableManager.CellClass)
+Public Sub Add( _
+    ByVal Cll As TableManager.CellClass, _
+    ByVal ModuleName As String)
 
     Debug.Assert Initializing
 
     Const RoutineName As String = Module_Name & "Add"
+    Debug.Assert InScope(ModuleList, ModuleName, RoutineName)
+    
     On Error GoTo ErrorHandler
     
     If Cll.HeaderText <> vbNullString Then pAllCells.Add Cll.Name, Cll
@@ -75,11 +87,15 @@ ErrorHandler:
 
 End Sub                                          ' Add
 
-Public Sub Remove(ByVal vIndex As Variant)
+Public Sub Remove( _
+    ByVal vIndex As Variant, _
+    ByVal ModuleName As String)
     
     Debug.Assert Initializing
 
     Const RoutineName As String = Module_Name & "Remove"
+    Debug.Assert InScope(ModuleList, ModuleName, RoutineName)
+    
     On Error GoTo ErrorHandler
    
     If CStr(vIndex) = "*" Then

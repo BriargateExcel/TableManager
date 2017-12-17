@@ -101,7 +101,10 @@ ErrorHandler:
 
 End Function                                     ' InScope
 
-Public Sub ShowAnyForm(ByVal FormName As String, Optional ByVal Modal As FormShowConstants = vbModal)
+Public Sub ShowAnyForm( _
+    ByVal FormName As String, _
+    Optional ByVal Modal As FormShowConstants = vbModal)
+    
     ' http://www.cpearson.com/Excel/showanyform.htm
 
     Const RoutineName As String = Module_Name & "ShowAnyForm"
@@ -169,10 +172,10 @@ ErrorHandler:
 End Sub                                          ' ShowAnyForm
 
 Public Sub RaiseError( _
-       ByVal errorno As Long, _
-       ByVal src As String, _
-       ByVal proc As String, _
-       ByVal desc As String)
+       ByVal ErrorNo As Long, _
+       ByVal Src As String, _
+       ByVal Proc As String, _
+       ByVal Desc As String)
 
     ' https://excelmacromastery.com/vba-error-handling/
     ' Reraises an error and adds line number and current procedure name
@@ -180,23 +183,23 @@ Public Sub RaiseError( _
     Dim SourceOfError As String
     
     ' Check if procedure where error occurs the line no and proc details
-    If src = ThisWorkbook.VBProject.Name Then
+    If Src = ThisWorkbook.VBProject.Name Then
         ' Add error line number if present
         If Erl <> 0 Then
             SourceOfError = vbCrLf & "Line no: " & Erl & " "
         End If
    
         ' Add procedure to source
-        SourceOfError = SourceOfError & vbCrLf & proc
+        SourceOfError = SourceOfError & vbCrLf & Proc
         
     Else
         ' If error has already been raised then just add on procedure name
-        SourceOfError = src & vbCrLf & proc
+        SourceOfError = Src & vbCrLf & Proc
     End If
     
     ' If the code stops here,
     ' make sure DisplayError is placed in the top most Sub
-    Err.Raise errorno, SourceOfError, desc
+    Err.Raise ErrorNo, SourceOfError, Desc
     
 End Sub                                          ' RaiseError
 
@@ -357,7 +360,7 @@ Public Function Contains( _
 End Function                                     ' Contains
 
 Public Function FindLastColumnNumber( _
-       ByVal RowNumber As Integer, _
+       ByVal RowNumber As Long, _
        ByVal Sht As Worksheet _
        ) As Long
     
@@ -365,7 +368,7 @@ Public Function FindLastColumnNumber( _
 End Function                                     ' FindLastColumnNumber
 
 Public Function FindLastColumnLetter( _
-       ByVal RowNumber As Integer, _
+       ByVal RowNumber As Long, _
        ByVal Sht As Worksheet _
        ) As String
     

@@ -31,15 +31,23 @@ Private Const ButtonWidth As Long = 72
 Private Const FontSize As Single = 8.25
 Private Const WidthMultiplier As Long = 6
 Private Const TextMultiplier As Long = 5
+Private Const ScrollBarWidth As Long = 15
+
+Private Function ModuleList() As Variant
+    ModuleList = Array("TableRoutines.")
+End Function                                     ' ModuleList
 
 Public Function BuildForm( _
-       ByVal Tbl As TableManager.TableClass _
+       ByVal Tbl As TableManager.TableClass, _
+       ByVal ModuleName As String _
        ) As MSForms.UserForm
        
     Dim TempForm As VBComponent
     Debug.Assert Initializing
 
     Const RoutineName As Variant = Module_Name & "BuildForm"
+    Debug.Assert InScope(ModuleList, ModuleName, RoutineName)
+    
     On Error GoTo ErrorHandler
     
     Set pTable = Tbl
@@ -60,7 +68,7 @@ Public Function BuildForm( _
     Set Evt.TableObj = Tbl
     Set Evt.FormObj = pFormObj
     Evt.Name = pFormName
-    pEvents.Add Evt
+    pEvents.Add Evt, Module_Name
     
     ' Add the texture
     TableManager.Texture Tbl
@@ -85,10 +93,12 @@ Public Function BuildForm( _
     ' Set Properties for TempForm now that we know all the heights and widths
     pFormObj.Width = Application.WorksheetFunction.Max( _
                      MaxLabelWidth + MaxFieldWidth + NumCols * StandardGap, _
-                     MaxButtonWidth)
+                     MaxButtonWidth) + ScrollBarWidth
         
     Top = Top + ButtonHeight + StandardGap
     pFormObj.Height = Top + NumRows * StandardGap
+    
+    pFormObj.ScrollBars = fmScrollBarsVertical
         
     Set BuildForm = pFormObj
         
@@ -112,7 +122,7 @@ Private Sub BuildControls( _
     Dim Lbl As Control
     
     For I = 0 To Tbl.CellCount - 1
-        Set Field = Tbl.TableCells.Item(I)
+        Set Field = Tbl.TableCells.Item(I, Module_Name)
             
         ' Build the field label
         BuildLabel Top, Field, MaxLabelWidth, Lbl
@@ -204,7 +214,7 @@ Private Sub BuildLogo( _
     End If
 End Sub
 
-Public Function Logo( _
+Private Function Logo( _
        ByRef Tbl As TableManager.TableClass, _
        ByRef LogoHeight As Single, _
        ByRef LogoWidth As Single _
@@ -409,14 +419,14 @@ Private Sub BuildOneButton( _
         .ControlTipText = Tip
     End With
     
-    pControls.Add Ctl
+    pControls.Add Ctl, Module_Name
     
     Set Evt = New TableManager.EventClass
     Set Evt.ButtonObj = Ctl
     Set Evt.TableObj = Tbl
     Set Evt.FormObj = pFormObj
     Evt.Name = Cption
-    pEvents.Add Evt
+    pEvents.Add Evt, Module_Name
     
     '@Ignore LineLabelNotUsed
 Done:
@@ -471,13 +481,13 @@ Private Sub BuildCombo( _
         .ControlTipText = BuildCaption(Field.InputTitle, Field.InputMessage)
     End With
     Set Field.FormControl = Ctl
-    pControls.Add Ctl
+    pControls.Add Ctl, Module_Name
     Set Evt = New TableManager.EventClass
     Set Evt.ComboObj = Ctl
     Set Evt.TableObj = Tbl
     Set Evt.FormObj = pFormObj
     Evt.Name = Field.Name
-    pEvents.Add Evt
+    pEvents.Add Evt, Module_Name
     
     '@Ignore LineLabelNotUsed
 Done:
@@ -524,13 +534,13 @@ Private Sub BuildText( _
         .TextAlign = 1
     End With
     Set Field.FormControl = Ctl
-    pControls.Add Ctl
+    pControls.Add Ctl, Module_Name
     Set Evt = New TableManager.EventClass
     Set Evt.TextObj = Ctl
     Set Evt.TableObj = Tbl
     Set Evt.FormObj = pFormObj
     Evt.Name = Field.Name
-    pEvents.Add Evt
+    pEvents.Add Evt, Module_Name
     
     '@Ignore LineLabelNotUsed
 Done:
@@ -599,13 +609,13 @@ Private Sub BuildDate( _
         .ControlTipText = BuildCaption(Field.InputTitle, Field.InputMessage)
     End With
     Set Field.FormControl = Ctl
-    pControls.Add Ctl
+    pControls.Add Ctl, Module_Name
     Set Evt = New TableManager.EventClass
     Set Evt.TextObj = Ctl
     Set Evt.TableObj = Tbl
     Set Evt.FormObj = pFormObj
     Evt.Name = Field.Name
-    pEvents.Add Evt
+    pEvents.Add Evt, Module_Name
     
     '@Ignore LineLabelNotUsed
 Done:
@@ -671,13 +681,13 @@ Private Sub BuildWholeNumber( _
         .ControlTipText = BuildCaption(Field.InputTitle, Field.InputMessage)
     End With
     Set Field.FormControl = Ctl
-    pControls.Add Ctl
+    pControls.Add Ctl, Module_Name
     Set Evt = New TableManager.EventClass
     Set Evt.TextObj = Ctl
     Set Evt.TableObj = Tbl
     Set Evt.FormObj = pFormObj
     Evt.Name = Field.Name
-    pEvents.Add Evt
+    pEvents.Add Evt, Module_Name
     
     '@Ignore LineLabelNotUsed
 Done:

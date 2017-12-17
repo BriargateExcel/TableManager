@@ -19,19 +19,27 @@ Private Sub Class_Initialize()
     Set pAllControls = New Scripting.Dictionary:
 End Sub                                          ' Class_Initialize
 
+Private Function ModuleList() As Variant
+    ModuleList = Array("FormClass.")
+End Function                                     ' ModuleList
+
 Public Property Get Count() As Long: Count = pAllControls.Count: End Property
 
 '@DefaultMember
-Public Property Get Item(ByVal vIndex As Variant) As Control
+Public Property Get Item( _
+    ByVal vIndex As Variant, _
+    ByVal ModuleName As String _
+    ) As Control
     'Attribute Item.VB_UserMemId = 0
 
     Const RoutineName As String = Module_Name & "Get Item"
+    Debug.Assert InScope(ModuleList, ModuleName, RoutineName)
     
     On Error Resume Next
     Set Item = pAllControls.Items()(vIndex)
     If Err.Number = 0 Then
         On Error GoTo 0
-        Exit Function
+        Exit Property
     End If
     
     On Error Resume Next
@@ -49,11 +57,15 @@ End Property
 
 Public Property Get ListControls(): ListControls = pAllControls.Keys: End Property
 
-Public Sub Add(ByVal Ctl As Control)
+Public Sub Add( _
+    ByVal Ctl As Control, _
+    ByVal ModuleName As String)
     
     Debug.Assert Initializing
 
     Const RoutineName As String = Module_Name & "Add"
+    Debug.Assert InScope(ModuleList, ModuleName, RoutineName)
+    
     On Error GoTo ErrorHandler
     
     If Ctl.Name <> vbNullString Then pAllControls.Add Ctl.Name, Ctl
@@ -66,11 +78,15 @@ ErrorHandler:
     
 End Sub                                          ' Add
 
-Public Sub Remove(ByVal vIndex As Variant)
+Public Sub Remove( _
+    ByVal vIndex As Variant, _
+    ByVal ModuleName As String)
     
     Debug.Assert Initializing
 
     Const RoutineName As String = Module_Name & "Remove"
+    Debug.Assert InScope(ModuleList, ModuleName, RoutineName)
+    
     On Error GoTo ErrorHandler
    
     If CStr(vIndex) = "*" Then

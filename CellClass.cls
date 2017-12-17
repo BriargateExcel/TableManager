@@ -46,15 +46,22 @@ Private pShowError As Boolean
 Private pErrorTitle As String
 Private pErrorMessage As String
 
+Private Function ModuleList() As Variant
+    ModuleList = Array("TableClass.")
+End Function                                     ' ModuleList
+
 Public Sub CollectCellData( _
        ByVal Tbl As TableManager.TableClass, _
-       ByVal CellID As Range)
+       ByVal CellID As Range, _
+       ByVal ModuleName As String)
 
     Dim DataCell As Range
     
     Debug.Assert Initializing
 
     Const RoutineName As String = Module_Name & "CollectCellData"
+    Debug.Assert InScope(ModuleList, ModuleName, RoutineName)
+    
     On Error GoTo ErrorHandler
     
     Debug.Assert CellID.Count = 1
