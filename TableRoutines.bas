@@ -19,26 +19,48 @@ Private Const ListOfTruefFalse As String = "True,False"
 
 Private Const ListOfYesNo As String = "Yes,No"
 
+Public Function GetCellValue( _
+       ByVal TableName As String, _
+       ByVal KeyColumnName As String, _
+       ByVal KeyValue As String, _
+       ByVal DataColumnName As String _
+       ) As Variant
+
+    Dim Tbl As TableManager.TableClass
+    Set Tbl = TableManager.Table(TableName, Module_Name)
+    
+    Dim TableRow As Long
+    TableRow = Tbl.DBRowNumber(KeyColumnName, KeyValue)
+    
+    Dim TableColumn As Long
+    TableColumn = Tbl.DBColNumber(DataColumnName)
+    
+    GetCellValue = Tbl.DBRange(TableRow, TableColumn)
+    
+End Function
+
+' GetCellValue("ColorTable", "Darkest Color", "Decimal Color Value")
+
 Private Function ParameterDescriptionArray() As Variant
     
     Dim PDA As Variant                           ' Parameter Description Array
-        PDA = Array( _
-                Array("Table Name", "xlValidateInputOnly"), _
-                Array("Cell Name", "xlValidateInputOnly"), _
-                Array("Key", "xlValidateList", ListOfYesNo), _
-                Array("Cell Header Text", "xlValidateInputOnly"), _
-                Array("Cell Type", "xlValidateList", ListOfTypes, "WrapText"), _
-                Array("Operator", "xlValidateList", ListOfOperators, "WrapText"), _
-                Array("Alert Style", "xlValidateList", ListOfAlertStyles, "WrapText"), _
-                Array("Formula 1", "xlValidateInputOnly", , "WrapText"), _
-                Array("Formula 2", "xlValidateInputOnly", , "WrapText"), _
-                Array("Ignore Blanks", "xlValidateList", ListOfTruefFalse), _
-                Array("Show Input Message", "xlValidateList", ListOfTruefFalse), _
-                Array("Input Title", "xlValidateInputOnly"), _
-                Array("Input Message", "xlValidateInputOnly", , "WrapText"), _
-                Array("Show Error Message", "xlValidateList", ListOfTruefFalse), _
-                Array("Error Title", "xlValidateInputOnly"), _
-                Array("Error Message", "xlValidateInputOnly", , "WrapText"))
+    PDA = Array( _
+            Array("Table Name", "xlValidateInputOnly"), _
+            Array("Cell Name", "xlValidateInputOnly"), _
+            Array("Key", "xlValidateList", ListOfYesNo), _
+            Array("Cell Header Text", "xlValidateInputOnly"), _
+            Array("Cell Type", "xlValidateList", ListOfTypes, "WrapText"), _
+            Array("Operator", "xlValidateList", ListOfOperators, "WrapText"), _
+            Array("Alert Style", "xlValidateList", ListOfAlertStyles, "WrapText"), _
+            Array("Formula 1", "xlValidateInputOnly", , "WrapText"), _
+            Array("Formula 2", "xlValidateInputOnly", , "WrapText"), _
+            Array("Ignore Blanks", "xlValidateList", ListOfTruefFalse), _
+            Array("Show Input Message", "xlValidateList", ListOfTruefFalse), _
+            Array("Input Title", "xlValidateInputOnly"), _
+            Array("Input Message", "xlValidateInputOnly", , "WrapText"), _
+            Array("Show Error Message", "xlValidateList", ListOfTruefFalse), _
+            Array("Error Title", "xlValidateInputOnly"), _
+            Array("Error Message", "xlValidateInputOnly", , "WrapText"))
     
     ParameterDescriptionArray = PDA
     
@@ -378,7 +400,7 @@ Public Sub TurnOnCellDescriptions( _
     For I = 0 To Tbl.CellCount - 1
         Set Field = Tbl.TableCells.Item(I, Module_Name)
         Field.ShowInput = True
-        DBCol = Tbl.DBCol(Field.HeaderText)
+        DBCol = Tbl.SelectedDBCol(Field.HeaderText)
         On Error Resume Next
         ' If a cell has no validation, it will raise a 1004 error
         ' Therefore, there is no Validation object to set
@@ -412,7 +434,7 @@ Public Sub TurnOffCellDescriptions( _
     For I = 0 To Tbl.CellCount - 1
         Set Field = Tbl.TableCells.Item(I, Module_Name)
         Field.ShowInput = False
-        DBCol = Tbl.DBCol(Field.HeaderText)
+        DBCol = Tbl.SelectedDBCol(Field.HeaderText)
         On Error Resume Next
         ' If a cell has no validation, it will raise a 1004 error
         ' Therefore, there is no Validation object to set
@@ -445,7 +467,7 @@ Public Sub PopulateTable( _
 
     For I = 0 To Tbl.CellCount - 1
         Set Field = Tbl.TableCells.Item(I, Module_Name)
-        DBCol = Tbl.DBCol(Field.HeaderText)
+        DBCol = Tbl.SelectedDBCol(Field.HeaderText)
 
         Field.ControlValue = DBRange(DBRow, DBCol)
         

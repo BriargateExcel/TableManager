@@ -242,7 +242,7 @@ Private Function ValidateWholeNumber( _
     If Err.Number <> 0 Then Whole2 = 0
     On Error GoTo ErrorHandler
     
-    Dim TableVal As Long: TableVal = Tbl.DBRange(Tbl.DBRow, Tbl.DBCol(Field.HeaderText))
+    Dim TableVal As Long: TableVal = Tbl.DBRange(Tbl.DBRow, Tbl.SelectedDBCol(Field.HeaderText))
     
     On Error Resume Next
     Dim FormVal As Long: FormVal = Field.FormControl
@@ -282,7 +282,7 @@ Private Function ValidateDecimal( _
     If Err.Number <> 0 Then Dec2 = 0
     On Error GoTo ErrorHandler
     
-    Dim TableVal As Double: TableVal = Tbl.DBRange(Tbl.DBRow, Tbl.DBCol(Field.HeaderText))
+    Dim TableVal As Double: TableVal = Tbl.DBRange(Tbl.DBRow, Tbl.SelectedDBCol(Field.HeaderText))
     
     On Error Resume Next
     Dim FormVal As Double: FormVal = Field.FormControl
@@ -365,7 +365,7 @@ Private Function ValidateDate( _
     If Err.Number <> 0 Then Date2 = Empty
     On Error GoTo ErrorHandler
     
-    Dim TableVal As Date: TableVal = Tbl.DBRange(Tbl.DBRow, Tbl.DBCol(Field.HeaderText))
+    Dim TableVal As Date: TableVal = Tbl.DBRange(Tbl.DBRow, Tbl.SelectedDBCol(Field.HeaderText))
     If TableVal = 0 Then TableVal = Empty
     
     On Error Resume Next
@@ -411,7 +411,7 @@ Private Function ValidateTime( _
     On Error GoTo ErrorHandler
     
     Dim FormVal As Date
-    Dim TableVal As Date: TableVal = Tbl.DBRange(Tbl.DBRow, Tbl.DBCol(Field.HeaderText))
+    Dim TableVal As Date: TableVal = Tbl.DBRange(Tbl.DBRow, Tbl.SelectedDBCol(Field.HeaderText))
     
     On Error Resume Next
     FormVal = Field.FormControl
@@ -462,7 +462,7 @@ Private Function ValidateTextLength( _
                vbOKOnly Or vbExclamation, _
                "String Length Error"
         Dim TableVal As String
-        TableVal = Tbl.DBRange(Tbl.DBRow, Tbl.DBCol(Field.HeaderText))
+        TableVal = Tbl.DBRange(Tbl.DBRow, Tbl.SelectedDBCol(Field.HeaderText))
         Field.FormControl = TimeFormat(TableVal)
         ValidateTextLength = False
     End If
@@ -486,7 +486,7 @@ Private Function ValidateCustom( _
     On Error GoTo ErrorHandler
     
     '    Dim FormVal As Variant: FormVal = Field.FormControl
-    Dim TableVal As Variant: TableVal = Tbl.DBRange(Tbl.DBRow, Tbl.DBCol(Field.HeaderText))
+    Dim TableVal As Variant: TableVal = Tbl.DBRange(Tbl.DBRow, Tbl.SelectedDBCol(Field.HeaderText))
     
     On Error Resume Next
     Dim ValForm1 As Variant: ValForm1 = Evaluate(Field.ValidationFormula1)
@@ -525,7 +525,7 @@ Public Sub PopulateForm( _
 
     For I = 0 To Tbl.CellCount - 1
         Set Field = Tbl.TableCells.Item(I, Module_Name)
-        DBCol = Tbl.DBCol(Field.HeaderText)
+        DBCol = Tbl.SelectedDBCol(Field.HeaderText)
 
         Field.ControlValue = DBRange(DBRow, DBCol)
         

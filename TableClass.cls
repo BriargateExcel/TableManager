@@ -49,6 +49,36 @@ Public Property Get DBRange() As Range
     Set DBRange = MainWorkbook.Worksheets(pWkShtName).ListObjects(pTableName).DataBodyRange
 End Property
 
+Public Property Get DBColRange( _
+    ByVal Tbl As TableManager.TableClass, _
+    ByVal ColumnName As String _
+    ) As Range
+    
+    Dim ColNum As Long
+    ColNum = Tbl.DBColNumber(ColumnName)
+    
+    Set DBColRange = Tbl.Table.ListColumns(ColNum).DataBodyRange
+End Property
+
+Public Property Get DBColNumber(ByVal ColumnName As String) As Long
+    On Error Resume Next
+    DBColNumber = Application.Match(ColumnName, Me.Table.HeaderRowRange, 0)
+    If Err.Number <> 0 Then DBColNumber = 0
+End Property
+
+Public Property Get DBRowNumber( _
+       ByVal ColumnName As String, _
+       ByVal Key As String _
+       ) As Long
+    
+    Dim KeyRange As Range
+    Set KeyRange = Me.DBColRange(Me, ColumnName)
+    
+    On Error Resume Next
+    DBRowNumber = Application.Match(Key, KeyRange, 0)
+    If Err.Number <> 0 Then DBRowNumber = 0
+    
+End Property
 Public Property Get Form() As TableManager.FormClass: Set Form = pForm: End Property
 Public Property Set Form(ByVal Frm As TableManager.FormClass): Set pForm = Frm: End Property
 
@@ -178,14 +208,14 @@ Public Function DBRow() As Long
     DBRow = TRow - THRow
 End Function                                     ' DBRow
 
-Public Function DBCol(ByVal ColumnName As String) As Long
+Public Function SelectedDBCol(ByVal ColumnName As String) As Long
     Dim Rng As Range
     Dim v As Variant
     
     Set Rng = Me.ActiveTarget.ListObject.HeaderRowRange
     v = Application.WorksheetFunction.Match(ColumnName, Rng, 0)
-    DBCol = v
-End Function                                     ' DBCol
+    SelectedDBCol = v
+End Function                                     ' SelectedDBCol
 
 Public Function ColumnRange(ByVal ColNum As Long) As Range
     Set ColumnRange = MainWorkbook.Worksheets(pWkShtName).Range( _

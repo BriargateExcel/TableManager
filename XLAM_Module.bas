@@ -1,8 +1,6 @@
 Attribute VB_Name = "XLAM_Module"
 Option Explicit
 
-' TODO Develop my own VBA error handling technique
-
 Private Const Module_Name As String = "XLAM_Module."
 
 Private Init As Boolean

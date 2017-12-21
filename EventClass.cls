@@ -90,12 +90,10 @@ Private Sub pFormEvent_MouseMove( _
     Dim Ctl As Variant
 
     For Each Ctl In pFormObj.Controls
-        If Ctl.Enabled Then
-            If Left$(Ctl.Name, 5) <> "Image" Then
-                If Left$(Ctl.Name, 3) = "Com" Then
-                    LowLightControl Ctl
-                End If
-            End If
+        If Ctl.Enabled And _
+           Left$(Ctl.Name, 3) = "Com" _
+           Then
+            LowLightControl Ctl
         End If
     Next Ctl
 
@@ -352,19 +350,25 @@ Private Sub PaintButtons()
     Dim Ctl As Variant
     
     For Each Ctl In pFormObj.Controls
-        With Ctl
-            If Left$(.Name, 7) = "Command" Then
-                EnableButton Ctl
-                LowLightControl Ctl
-                If .Caption = "Previous Row" And pTableObj.ActiveRow = 1 Then
-                    DisableButton Ctl
-                End If
-                If .Caption = "Next Row" And pTableObj.ActiveRow = pTableObj.LastRow _
-                   Then
-                    DisableButton Ctl
-                End If
+        '        With Ctl
+        If Left$(Ctl.Name, 7) = "Command" Then
+            EnableButton Ctl
+            LowLightControl Ctl
+                
+            If Ctl.Caption = "Previous Row" And _
+               pTableObj.ActiveRow = 1 _
+               Then
+                DisableButton Ctl
             End If
-        End With                                 ' Ctl
+                
+            If Ctl.Caption = "Next Row" And _
+               pTableObj.ActiveRow = pTableObj.LastRow _
+               Then
+                DisableButton Ctl
+            End If
+                
+        End If
+        '        End With                                 ' Ctl
     Next Ctl
     
     '@Ignore LineLabelNotUsed
