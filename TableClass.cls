@@ -56,14 +56,18 @@ Public Property Get DBColRange( _
     
     Dim ColNum As Long
     ColNum = Tbl.DBColNumber(ColumnName)
+    If ColNum = 0 Then
+        Stop
+    End If
     
     Set DBColRange = Tbl.Table.ListColumns(ColNum).DataBodyRange
 End Property
 
 Public Property Get DBColNumber(ByVal ColumnName As String) As Long
     On Error Resume Next
-    DBColNumber = Application.Match(ColumnName, Me.Table.HeaderRowRange, 0)
+    DBColNumber = Application.WorksheetFunction.Match(ColumnName, Me.Table.HeaderRowRange, 0)
     If Err.Number <> 0 Then DBColNumber = 0
+    On Error GoTo 0
 End Property
 
 Public Property Get DBRowNumber( _
@@ -75,9 +79,9 @@ Public Property Get DBRowNumber( _
     Set KeyRange = Me.DBColRange(Me, ColumnName)
     
     On Error Resume Next
-    DBRowNumber = Application.Match(Key, KeyRange, 0)
+    DBRowNumber = Application.WorksheetFunction.Match(Key, KeyRange, 0)
     If Err.Number <> 0 Then DBRowNumber = 0
-    
+    On Error GoTo 0
 End Property
 Public Property Get Form() As TableManager.FormClass: Set Form = pForm: End Property
 Public Property Set Form(ByVal Frm As TableManager.FormClass): Set pForm = Frm: End Property
@@ -213,7 +217,13 @@ Public Function SelectedDBCol(ByVal ColumnName As String) As Long
     Dim v As Variant
     
     Set Rng = Me.ActiveTarget.ListObject.HeaderRowRange
+    On Error Resume Next
     v = Application.WorksheetFunction.Match(ColumnName, Rng, 0)
+    If Err.Number <> 0 Then
+        SelectedDBCol = 0
+        Exit Function
+    End If
+    On Error GoTo 0
     SelectedDBCol = v
 End Function                                     ' SelectedDBCol
 

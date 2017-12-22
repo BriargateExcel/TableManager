@@ -72,7 +72,14 @@ Public Sub CollectCellData( _
     
     Set DataCell = CellID.Offset(1, 0)
     pColumnWidth = CellID.ColumnWidth
+    On Error Resume Next
     pDBColNum = Application.WorksheetFunction.Match(CellID, CellID.ListObject.HeaderRowRange, 0)
+    If Err.Number <> 0 Then
+        pDBColNum = 0
+        Exit Sub
+    End If
+    On Error GoTo ErrorHandler
+    
     pLocked = DataCell.Locked
     pNumberFormat = DataCell.NumberFormat
     pWrap = DataCell.WrapText

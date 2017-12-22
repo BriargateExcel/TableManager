@@ -31,9 +31,15 @@ Public Function GetCellValue( _
     
     Dim TableRow As Long
     TableRow = Tbl.DBRowNumber(KeyColumnName, KeyValue)
+    If TableRow = 0 Then
+        Stop
+    End If
     
     Dim TableColumn As Long
     TableColumn = Tbl.DBColNumber(DataColumnName)
+    If TableColumn = 0 Then
+        Stop
+    End If
     
     GetCellValue = Tbl.DBRange(TableRow, TableColumn)
     
@@ -379,7 +385,7 @@ Private Sub PopulateValidationData( _
 End Sub                                          ' PopulateValidationData
 
 Private Function ModuleList() As Variant
-    ModuleList = Array("XLAM_Module.", "TablesClass.", "EventClass.", "TableClass.", "TableRoutines.")
+    ModuleList = Array("XLAM_Module.", "TablesClass.", "EventClass.", "TableClass.", "TableRoutines.", "ParameterRoutines.")
 End Function                                     ' ModuleList
 
 Public Sub TurnOnCellDescriptions( _
@@ -468,6 +474,9 @@ Public Sub PopulateTable( _
     For I = 0 To Tbl.CellCount - 1
         Set Field = Tbl.TableCells.Item(I, Module_Name)
         DBCol = Tbl.SelectedDBCol(Field.HeaderText)
+        If DBCol = 0 Then
+            Stop
+        End If
 
         Field.ControlValue = DBRange(DBRow, DBCol)
         

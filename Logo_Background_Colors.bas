@@ -18,33 +18,33 @@ Public Sub EnableButton(ByVal Btn As MSForms.CommandButton)
 End Sub                                          ' EnableButton
 
 Public Sub HighLightButton(ByVal Btn As MSForms.CommandButton)
-'    Btn.ForeColor = TableManager.DarkestColorValue
-'    Btn.BackColor = TableManager.LightestColorValue
-    Btn.ForeColor = DarkestColor
-    Btn.BackColor = LightestColor
+    Btn.ForeColor = TableManager.DarkestColorValue
+    Btn.BackColor = TableManager.LightestColorValue
+'    Btn.ForeColor = DarkestColor
+'    Btn.BackColor = LightestColor
     Btn.Enabled = True
 End Sub                                          ' HighLightButton
 
 Public Sub HighLightControl(ByVal Ctl As Control)
-'    Ctl.ForeColor = TableManager.DarkestColorValue
-'    Ctl.BackColor = TableManager.LightestColorValue
-    Ctl.ForeColor = DarkestColor
-    Ctl.BackColor = LightestColor
+    Ctl.ForeColor = TableManager.DarkestColorValue
+    Ctl.BackColor = TableManager.LightestColorValue
+'    Ctl.ForeColor = DarkestColor
+'    Ctl.BackColor = LightestColor
 End Sub                                          ' HighLightControl
 
 Public Sub LowLightButton(ByVal Btn As MSForms.CommandButton)
-'    Btn.ForeColor = TableManager.LightestColorValue
-'    Btn.BackColor = TableManager.DarkestColorValue
-    Btn.ForeColor = LightestColor
-    Btn.BackColor = DarkestColor
+    Btn.ForeColor = TableManager.LightestColorValue
+    Btn.BackColor = TableManager.DarkestColorValue
+'    Btn.ForeColor = LightestColor
+'    Btn.BackColor = DarkestColor
     Btn.Enabled = True
 End Sub                                          ' LowLightButton
 
 Public Sub LowLightControl(ByVal Ctl As Control)
-'    Ctl.ForeColor = TableManager.LightestColorValue
-'    Ctl.BackColor = TableManager.DarkestColorValue
-    Ctl.ForeColor = LightestColor
-    Ctl.BackColor = DarkestColor
+    Ctl.ForeColor = TableManager.LightestColorValue
+    Ctl.BackColor = TableManager.DarkestColorValue
+'    Ctl.ForeColor = LightestColor
+'    Ctl.BackColor = DarkestColor
 End Sub                                          ' LowLightControl
 
 Public Sub Texture(ByRef Tbl As TableManager.TableClass)

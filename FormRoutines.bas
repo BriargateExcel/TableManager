@@ -526,6 +526,9 @@ Public Sub PopulateForm( _
     For I = 0 To Tbl.CellCount - 1
         Set Field = Tbl.TableCells.Item(I, Module_Name)
         DBCol = Tbl.SelectedDBCol(Field.HeaderText)
+        If DBCol = 0 Then
+            Stop
+        End If
 
         Field.ControlValue = DBRange(DBRow, DBCol)
         
