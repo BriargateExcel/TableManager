@@ -313,16 +313,29 @@ Private Function ValidateList( _
     
     Dim FormVal As Variant: FormVal = Field.FormControl
     
-    If InScope(Field.ValidationList, FormVal, RoutineName) Then
-        ValidateList = True
+    If VarType(Field.ValidationList) = 8 Then
+        ' VarType = 8 is a string
+        If FormVal = Field.ValidationList Then
+            ValidateList = True
+        Else
+            MsgBox "The value in " & _
+                   Field.HeaderText & _
+                   " is not found in the validation list." & vbCrLf _
+                 & "Correct the value and try again.", _
+                   vbOKOnly Or vbCritical, _
+                   "Validation List Error"
+        End If
     Else
-        MsgBox "The value in " & _
-               Field.HeaderText & _
-               " is not found in the validation list." & vbCrLf _
-             & "Correct the value and try again.", _
-               vbOKOnly Or vbCritical, _
-               "Validation List Error"
-    
+        If InScope(Field.ValidationList, FormVal, RoutineName) Then
+            ValidateList = True
+        Else
+            MsgBox "The value in " & _
+                   Field.HeaderText & _
+                   " is not found in the validation list." & vbCrLf _
+                 & "Correct the value and try again.", _
+                   vbOKOnly Or vbCritical, _
+                   "Validation List Error"
+        End If
     End If
     
     '@Ignore LineLabelNotUsed
@@ -332,7 +345,6 @@ ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
 End Function                                     ' ValidateList
-
 Private Function ValidateDate( _
         ByVal Tbl As TableManager.TableClass, _
         ByVal Field As Variant _

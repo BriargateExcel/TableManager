@@ -474,9 +474,15 @@ Private Sub BuildCombo( _
 
     Set Ctl = pFormObj.Controls.Add("Forms.ComboBox.1", "cmb" & Field.Name, True)
     With Ctl
-        For Each ValListItem In Field.ValidationList
-            .AddItem CStr(ValListItem)
-        Next ValListItem
+        If VarType(Field.ValidationList) = 8 Then
+            ' If there is only one entry in the ValidaionList the For Each fails
+            ' VarType = 8 is a String
+            .AddItem CStr(Field.ValidationList)
+        Else
+            For Each ValListItem In Field.ValidationList
+                .AddItem CStr(ValListItem)
+            Next ValListItem
+        End If
         .Top = Top
         Top = Top + ComboHeight
         .Height = ComboHeight
@@ -502,6 +508,7 @@ ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
 End Sub
+
 Private Sub BuildText( _
         ByRef Top As Single, _
         ByVal Field As Variant, _
