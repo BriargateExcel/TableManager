@@ -53,14 +53,14 @@ End Function                                     ' ModuleList
 Public Sub CollectCellData( _
        ByVal Tbl As TableManager.TableClass, _
        ByVal CellID As Range, _
-       ByVal ModuleName As String)
+       ByVal Modulename As String)
 
     Dim DataCell As Range
     
     Debug.Assert Initializing
 
     Const RoutineName As String = Module_Name & "CollectCellData"
-    Debug.Assert InScope(ModuleList, ModuleName, RoutineName)
+    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
     
     On Error GoTo ErrorHandler
     

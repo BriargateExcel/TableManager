@@ -93,7 +93,7 @@ Private Sub pFormEvent_MouseMove( _
         If Ctl.Enabled And _
            Left$(Ctl.Name, 3) = "Com" _
            Then
-            LowLightControl Ctl
+            LowLightControl Ctl, Module_Name
         End If
     Next Ctl
 
@@ -118,7 +118,7 @@ Private Sub pButtonEvent_MouseMove( _
     
     PaintButtons
     
-    HighLightButton pButtonObj
+    HighLightButton pButtonObj, Module_Name
         
     '@Ignore LineLabelNotUsed
 Done:
@@ -142,7 +142,7 @@ Private Sub pTextEvent_MouseMove( _
     For Each Ctl In pFormObj.Controls
         If Left$(Ctl.Name, 5) <> "Image" Then
             If Left$(Ctl.Name, 3) = "Com" And Ctl.ForeColor = vbWhite Then
-                LowLightButton Ctl
+                LowLightButton Ctl, Module_Name
             End If
         End If
     Next Ctl
@@ -171,7 +171,7 @@ Private Sub pComboEvent_MouseMove( _
     For Each Ctl In pFormObj.Controls
         If Left$(Ctl.Name, 5) <> "Image" Then
             If Left$(Ctl.Name, 3) = "Com" And Ctl.ForeColor = vbWhite Then
-                LowLightButton Ctl
+                LowLightButton Ctl, Module_Name
             End If
         End If
     Next Ctl
@@ -245,7 +245,7 @@ Private Sub pButtonEvent_Click()
     Select Case pButtonEvent.Caption
     Case "Validate Form"
         If TableManager.ValidateForm(Tbl, Module_Name) Then
-            MsgBox "There are no validation errors in this form", _
+            MsgBox "There are no validation errors", _
                    vbOKOnly, "Successful Copy"
         Else
             MsgBox "There is/are a validation error(s)", _
@@ -256,11 +256,11 @@ Private Sub pButtonEvent_Click()
     Case "Copy To Table"
         If TableManager.ValidateForm(Tbl, Module_Name) Then
             TableManager.PopulateTable Tbl, Module_Name
-            MsgBox "Form data successfully copied to Table", _
+            MsgBox "Form data successfully copied to Table row", _
                    vbOKOnly, "Successful Copy"
         Else
             MsgBox "There is/are a validation error(s). " & _
-                   "Correct the error then copy the Form to the Table.", _
+                   "Correct the error then copy the Form to the Table row.", _
                    vbOKOnly Or vbExclamation, _
                    "Data Validation Error"
         End If
@@ -352,19 +352,19 @@ Private Sub PaintButtons()
     For Each Ctl In pFormObj.Controls
         '        With Ctl
         If Left$(Ctl.Name, 7) = "Command" Then
-            EnableButton Ctl
-            LowLightControl Ctl
+            EnableButton Ctl, Module_Name
+            LowLightControl Ctl, Module_Name
                 
             If Ctl.Caption = "Previous Row" And _
                pTableObj.ActiveRow = 1 _
                Then
-                DisableButton Ctl
+                DisableButton Ctl, Module_Name
             End If
                 
             If Ctl.Caption = "Next Row" And _
                pTableObj.ActiveRow = pTableObj.LastRow _
                Then
-                DisableButton Ctl
+                DisableButton Ctl, Module_Name
             End If
                 
         End If

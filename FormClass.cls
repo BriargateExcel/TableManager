@@ -39,14 +39,14 @@ End Function                                     ' ModuleList
 
 Public Function BuildForm( _
        ByVal Tbl As TableManager.TableClass, _
-       ByVal ModuleName As String _
+       ByVal Modulename As String _
        ) As MSForms.UserForm
        
     Dim TempForm As VBComponent
     Debug.Assert Initializing
 
     Const RoutineName As Variant = Module_Name & "BuildForm"
-    Debug.Assert InScope(ModuleList, ModuleName, RoutineName)
+    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
     
     On Error GoTo ErrorHandler
     
@@ -71,7 +71,7 @@ Public Function BuildForm( _
     pEvents.Add Evt, Module_Name
     
     ' Add the texture
-    TableManager.Texture Tbl
+    Texture Tbl
     
     ' Add the logo
     Dim LogoHeight As Single
@@ -176,9 +176,6 @@ Private Sub BuildUnLockedFields( _
     Case xlValidateCustom
         ' Set this up as a text field
         BuildCustom Top, Field, MaxFieldWidth, Lbl, Tbl
-'        MsgBox "Custom validation is not yet implemented", _
-'               vbOKOnly Or vbExclamation, "Custom Validation"
-        'TODO Implement Custom validation
                 
     Case xlValidateDate
         ' Set this up as a textbox
@@ -193,9 +190,8 @@ Private Sub BuildUnLockedFields( _
         BuildText Top, Field, MaxFieldWidth, Lbl, Tbl
 
     Case xlValidateTime
-        MsgBox "Time validation is not yet implemented", _
-               vbOKOnly Or vbExclamation, "Time Validation"
-        'TODO Implement Time validation
+        ' Set this up as a text field
+        BuildText Top, Field, MaxFieldWidth, Lbl, Tbl
 
     Case xlValidateWholeNumber:
         ' Set this up as a textbox
@@ -425,7 +421,7 @@ Private Sub BuildOneButton( _
         Lft = Lft + ButtonWidth + StandardGap
         .Height = ButtonHeight
         .Width = ButtonWidth
-        LowLightButton Ctl
+        LowLightButton Ctl, Module_Name
         .ControlTipText = Tip
     End With
     
@@ -633,7 +629,7 @@ Private Sub BuildDataLabel( _
         Top = Top + TextHeight + ThinGap
         .Font.Size = FontSize
         .WordWrap = False
-        LowLightControl Ctl
+        LowLightControl Ctl, Module_Name
         .ControlTipText = BuildCaption(Field.InputTitle, Field.InputMessage)
         .Width = Field.ColumnWidth * WidthMultiplier
         If .Width > MaxFieldWidth Then MaxFieldWidth = .Width
@@ -706,7 +702,7 @@ Private Sub BuildLabel( _
         .Caption = Field.HeaderText
         .TextAlign = fmTextAlignRight
         .WordWrap = False
-        LowLightControl Lbl
+        LowLightControl Lbl, Module_Name
         .Width = Len(Field.HeaderText) * TextMultiplier
         If .Width > MaxLabelWidth Then MaxLabelWidth = .Width
     End With
@@ -785,4 +781,22 @@ Private Sub Class_Initialize()
     Set pControls = New TableManager.ControlsClass
     Set pEvents = New TableManager.EventsClass
 End Sub                                          ' Class_Initialize
+
+Private Sub Texture(ByRef Tbl As TableManager.TableClass)
+    Const RoutineName As String = Module_Name & "Texture"
+    On Error GoTo ErrorHandler
+    
+    If Dir(MainWorkbook.Path & "\texture.jpg") <> vbNullString Then
+        Set Tbl.Form.FormObj.Picture = LoadPicture(MainWorkbook.Path & "\texture.jpg")
+    End If
+    
+    '@Ignore LineLabelNotUsed
+Done:
+    Exit Sub
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
+End Sub
+
+
+
 

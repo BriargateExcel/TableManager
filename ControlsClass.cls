@@ -28,12 +28,12 @@ Public Property Get Count() As Long: Count = pAllControls.Count: End Property
 '@DefaultMember
 Public Property Get Item( _
     ByVal vIndex As Variant, _
-    ByVal ModuleName As String _
+    ByVal Modulename As String _
     ) As Control
     'Attribute Item.VB_UserMemId = 0
 
     Const RoutineName As String = Module_Name & "Get Item"
-    Debug.Assert InScope(ModuleList, ModuleName, RoutineName)
+    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
     
     On Error Resume Next
     Set Item = pAllControls.Items()(vIndex)
@@ -59,12 +59,12 @@ Public Property Get ListControls(): ListControls = pAllControls.Keys: End Proper
 
 Public Sub Add( _
     ByVal Ctl As Control, _
-    ByVal ModuleName As String)
+    ByVal Modulename As String)
     
     Debug.Assert Initializing
 
     Const RoutineName As String = Module_Name & "Add"
-    Debug.Assert InScope(ModuleList, ModuleName, RoutineName)
+    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
     
     On Error GoTo ErrorHandler
     
@@ -80,12 +80,12 @@ End Sub                                          ' Add
 
 Public Sub Remove( _
     ByVal vIndex As Variant, _
-    ByVal ModuleName As String)
+    ByVal Modulename As String)
     
     Debug.Assert Initializing
 
     Const RoutineName As String = Module_Name & "Remove"
-    Debug.Assert InScope(ModuleList, ModuleName, RoutineName)
+    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
     
     On Error GoTo ErrorHandler
    

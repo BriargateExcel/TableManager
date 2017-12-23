@@ -3,64 +3,73 @@ Option Explicit
 
 Private Const Module_Name As String = "Logo_Background_Colors."
 
-'TODO Use a parameter table to set the highlight and lowlight colors
-'TODO Add ModuleName Debug check to these routines
+Private Function ModuleList() As Variant
+    ModuleList = Array("EventClass.", "FormClass.")
+End Function                                     ' ModuleList
 
-Private Const DarkestColor As Long = &H763232    ' AF Dark Blue
-Private Const LightestColor  As Long = &HE7E2E2  ' AF Light Gray
-
-Public Sub DisableButton(ByVal Btn As MSForms.CommandButton)
+Public Sub DisableButton( _
+    ByVal Btn As MSForms.CommandButton, _
+    ByVal Modulename As String)
+    
+    Const RoutineName As String = Module_Name & "ValidateForm"
+    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
+    
     Btn.Enabled = False
 End Sub                                          ' DisableButton
 
-Public Sub EnableButton(ByVal Btn As MSForms.CommandButton)
+Public Sub EnableButton( _
+    ByVal Btn As MSForms.CommandButton, _
+    ByVal Modulename As String)
+    
+    Const RoutineName As String = Module_Name & "ValidateForm"
+    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
+    
     Btn.Enabled = True
 End Sub                                          ' EnableButton
 
-Public Sub HighLightButton(ByVal Btn As MSForms.CommandButton)
+Public Sub HighLightButton( _
+    ByVal Btn As MSForms.CommandButton, _
+    ByVal Modulename As String)
+    
+    Const RoutineName As String = Module_Name & "ValidateForm"
+    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
+    
     Btn.ForeColor = TableManager.DarkestColorValue
     Btn.BackColor = TableManager.LightestColorValue
-'    Btn.ForeColor = DarkestColor
-'    Btn.BackColor = LightestColor
     Btn.Enabled = True
 End Sub                                          ' HighLightButton
 
-Public Sub HighLightControl(ByVal Ctl As Control)
+Public Sub HighLightControl( _
+    ByVal Ctl As Control, _
+    ByVal Modulename As String)
+    
+    Const RoutineName As String = Module_Name & "ValidateForm"
+    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
+    
     Ctl.ForeColor = TableManager.DarkestColorValue
     Ctl.BackColor = TableManager.LightestColorValue
-'    Ctl.ForeColor = DarkestColor
-'    Ctl.BackColor = LightestColor
 End Sub                                          ' HighLightControl
 
-Public Sub LowLightButton(ByVal Btn As MSForms.CommandButton)
+Public Sub LowLightButton( _
+    ByVal Btn As MSForms.CommandButton, _
+    ByVal Modulename As String)
+    
+    Const RoutineName As String = Module_Name & "ValidateForm"
+    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
+    
     Btn.ForeColor = TableManager.LightestColorValue
     Btn.BackColor = TableManager.DarkestColorValue
-'    Btn.ForeColor = LightestColor
-'    Btn.BackColor = DarkestColor
     Btn.Enabled = True
 End Sub                                          ' LowLightButton
 
-Public Sub LowLightControl(ByVal Ctl As Control)
+Public Sub LowLightControl( _
+    ByVal Ctl As Control, _
+    ByVal Modulename As String)
+    
+    Const RoutineName As String = Module_Name & "ValidateForm"
+    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
+    
     Ctl.ForeColor = TableManager.LightestColorValue
     Ctl.BackColor = TableManager.DarkestColorValue
-'    Ctl.ForeColor = LightestColor
-'    Ctl.BackColor = DarkestColor
 End Sub                                          ' LowLightControl
-
-Public Sub Texture(ByRef Tbl As TableManager.TableClass)
-    Const RoutineName As String = Module_Name & "Texture"
-    On Error GoTo ErrorHandler
-    
-    If Dir(MainWorkbook.Path & "\texture.jpg") <> vbNullString Then
-        Set Tbl.Form.FormObj.Picture = LoadPicture(MainWorkbook.Path & "\texture.jpg")
-    End If
-    
-    '@Ignore LineLabelNotUsed
-Done:
-    Exit Sub
-ErrorHandler:
-    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
-End Sub
-
-
 

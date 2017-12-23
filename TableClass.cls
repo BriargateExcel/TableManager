@@ -50,19 +50,18 @@ Public Property Get DBRange() As Range
 End Property
 
 Public Property Get DBColRange( _
-    ByVal Tbl As TableManager.TableClass, _
-    ByVal ColumnName As String _
-    ) As Range
+       ByVal Tbl As TableManager.TableClass, _
+       ByVal ColumnName As String _
+       ) As Range
     
     Dim ColNum As Long
     ColNum = Tbl.DBColNumber(ColumnName)
     If ColNum = 0 Then
-        Stop
+        Err.Raise 1, "TableClass.DBColRange", "Fatal error. ColumnName not found."
     End If
     
     Set DBColRange = Tbl.Table.ListColumns(ColNum).DataBodyRange
 End Property
-
 Public Property Get DBColNumber(ByVal ColumnName As String) As Long
     On Error Resume Next
     DBColNumber = Application.WorksheetFunction.Match(ColumnName, Me.Table.HeaderRowRange, 0)
@@ -117,7 +116,7 @@ Public Property Set Table(ByVal Tbl As ListObject): Set pTable = Tbl: End Proper
 Public Function CollectTableData( _
        ByVal WS As TableManager.WorksheetClass, _
        ByVal Tbl As TableManager.TableClass, _
-       ByVal ModuleName As String _
+       ByVal Modulename As String _
        ) As Boolean
 
     Dim Element As Range
@@ -126,7 +125,7 @@ Public Function CollectTableData( _
     Debug.Assert Initializing
 
     Const RoutineName As String = Module_Name & "CollectTableData"
-    Debug.Assert InScope(ModuleList, ModuleName, RoutineName)
+    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
     
     On Error GoTo ErrorHandler
     

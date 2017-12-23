@@ -28,12 +28,12 @@ Public Property Get Count() As Long: Count = pAllTables.Count: End Property
 '@DefaultMember
 Public Property Get Item( _
     ByVal vIndex As Variant, _
-    ByVal ModuleName As String _
+    ByVal Modulename As String _
     ) As TableManager.TableClass
     'Attribute Item.VB_UserMemId = 0
 
     Const RoutineName As String = Module_Name & "Get Item"
-    Debug.Assert InScope(ModuleList, ModuleName, RoutineName)
+    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
         
     On Error Resume Next
     Set Item = pAllTables.Items()(vIndex)
@@ -61,12 +61,12 @@ ErrorHandler:
 End Property
 Public Sub Add( _
     ByVal Tbl As TableManager.TableClass, _
-    ByVal ModuleName As String)
+    ByVal Modulename As String)
     
     Debug.Assert Initializing
 
     Const RoutineName As String = Module_Name & "Add"
-    Debug.Assert InScope(ModuleList, ModuleName, RoutineName)
+    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
     
     On Error GoTo ErrorHandler
            
@@ -82,23 +82,23 @@ End Sub                                          ' Add
 
 Public Function Exists( _
     ByVal vIndex As Variant, _
-    ByVal ModuleName As String _
+    ByVal Modulename As String _
     ) As Boolean
     
     Const RoutineName As String = Module_Name & "Remove"
-    Debug.Assert InScope(ModuleList, ModuleName, RoutineName)
+    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
     
     Exists = pAllTables.Exists(vIndex)
 End Function                                     ' Exists
 
 Public Sub Remove( _
     ByVal vIndex As Variant, _
-    ByVal ModuleName As String)
+    ByVal Modulename As String)
     
     Debug.Assert Initializing
 
     Const RoutineName As String = Module_Name & "Remove"
-    Debug.Assert InScope(ModuleList, ModuleName, RoutineName)
+    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
     
     On Error GoTo ErrorHandler
    

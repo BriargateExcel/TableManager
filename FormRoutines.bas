@@ -9,7 +9,7 @@ End Function                                     ' ModuleList
 
 Public Function ValidateForm( _
        ByVal Tbl As TableManager.TableClass, _
-       ByVal ModuleName As String _
+       ByVal Modulename As String _
        ) As Boolean
     
     Dim Field As TableManager.CellClass
@@ -18,7 +18,7 @@ Public Function ValidateForm( _
     Dim I As Long
     
     Const RoutineName As String = Module_Name & "ValidateForm"
-    Debug.Assert InScope(ModuleList, ModuleName, RoutineName)
+    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
     
     On Error GoTo ErrorHandler
     
@@ -510,10 +510,10 @@ End Function                                     ' ValidateList
 
 Public Sub PopulateForm( _
        ByVal Tbl As TableManager.TableClass, _
-       ByVal ModuleName As String)
+       ByVal Modulename As String)
 
     Const RoutineName As String = Module_Name & "PopulateForm"
-    Debug.Assert InScope(ModuleList, ModuleName, RoutineName)
+    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
 
     On Error GoTo ErrorHandler
 
@@ -527,7 +527,7 @@ Public Sub PopulateForm( _
         Set Field = Tbl.TableCells.Item(I, Module_Name)
         DBCol = Tbl.SelectedDBCol(Field.HeaderText)
         If DBCol = 0 Then
-            Stop
+            Err.Raise 1, "FormClass.PopulateForm", "Fatal error. HeaderText not found."
         End If
 
         Field.ControlValue = DBRange(DBRow, DBCol)
@@ -540,15 +540,15 @@ Public Sub PopulateForm( _
         Case "whl": Field.FormControl.Text = DBRange(DBRow, DBCol)
         Case "dat": Field.FormControl.Text = DBRange(DBRow, DBCol)
         Case Else
-            MsgBox _
-        "This is an illegal field type: " & Left$(Field.FormControl.Name, 3), _
-                                            vbOKOnly Or vbExclamation, "Illegal Field Type"
+            MsgBox "This is an illegal field type: " & _
+                   Left$(Field.FormControl.Name, 3), _
+                   vbOKOnly Or vbExclamation, "Illegal Field Type"
 
         End Select
         
     Next I
     
-    TableManager.TurnOffCellDescriptions Tbl, ModuleName
+    TableManager.TurnOffCellDescriptions Tbl, Modulename
     
     '@Ignore LineLabelNotUsed
 Done:
@@ -560,10 +560,10 @@ End Sub                                          ' PopulateForm
 
 Public Sub ClearForm( _
        ByVal Tbl As TableManager.TableClass, _
-       ByVal ModuleName As String)
+       ByVal Modulename As String)
 
     Const RoutineName As String = Module_Name & "ClearForm"
-    Debug.Assert InScope(ModuleList, ModuleName, RoutineName)
+    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
 
     On Error GoTo ErrorHandler
 
@@ -589,7 +589,7 @@ Public Sub ClearForm( _
         
     Next I
     
-    TableManager.TurnOffCellDescriptions Tbl, ModuleName
+    TableManager.TurnOffCellDescriptions Tbl, Modulename
     
     '@Ignore LineLabelNotUsed
 Done:

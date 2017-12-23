@@ -17,7 +17,13 @@ Private pAllCells As Scripting.Dictionary
 ' All the plural classes are built on a Dictionary
 ' The plural classes: Cells, Controls, Events, Tables, Worksheets
 ' They all have these and only these routines:
-'     Count, Item, Exists, Add, Remove, Init, and List
+'     Count, Item, Add, Remove, and Class_Initialize
+' Challenge:
+'   Item returns the singular of the class
+'   Add takes the singular of the class as input
+' Straightforward:
+'   Count takes no parameters
+'   Remove takes the same parameters in all plural classes
 ' Is there any advantage in building them as Interface/Implements classes?
 ' CellsClass      is only used in TableClass
 ' ControlsClass   is only used in FormClass
@@ -39,12 +45,12 @@ Public Property Get Count() As Long: Count = pAllCells.Count: End Property
 '@DefaultMember
 Public Property Get Item( _
     ByVal vIndex As Variant, _
-    ByVal ModuleName As String _
+    ByVal Modulename As String _
     ) As TableManager.CellClass
     'Attribute Item.VB_UserMemId = 0
     
     Const RoutineName As String = Module_Name & "Get Item"
-    Debug.Assert InScope(ModuleList, ModuleName, RoutineName)
+    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
     
     On Error Resume Next
     Set Item = pAllCells.Items()(vIndex)
@@ -68,12 +74,12 @@ End Property
 
 Public Sub Add( _
     ByVal Cll As TableManager.CellClass, _
-    ByVal ModuleName As String)
+    ByVal Modulename As String)
 
     Debug.Assert Initializing
 
     Const RoutineName As String = Module_Name & "Add"
-    Debug.Assert InScope(ModuleList, ModuleName, RoutineName)
+    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
     
     On Error GoTo ErrorHandler
     
@@ -89,12 +95,12 @@ End Sub                                          ' Add
 
 Public Sub Remove( _
     ByVal vIndex As Variant, _
-    ByVal ModuleName As String)
+    ByVal Modulename As String)
     
     Debug.Assert Initializing
 
     Const RoutineName As String = Module_Name & "Remove"
-    Debug.Assert InScope(ModuleList, ModuleName, RoutineName)
+    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
     
     On Error GoTo ErrorHandler
    

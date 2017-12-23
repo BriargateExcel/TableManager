@@ -42,7 +42,7 @@ End Function                                     ' CheckForVBAProjectAccessEnabl
 
 Public Function InScope( _
        ByVal ModuleList As Variant, _
-       ByVal ModuleName As String, _
+       ByVal Modulename As String, _
        ByVal RoutineName As String _
        ) As Boolean
 
@@ -78,7 +78,7 @@ Public Function InScope( _
         InScope = _
                 (UBound( _
                  Filter(OneDimArray, _
-                        ModuleName, _
+                        Modulename, _
                         True, _
                         CompareMethod.BinaryCompare) _
                  ) > -1)
@@ -88,7 +88,7 @@ Public Function InScope( _
     InScope = _
             (UBound( _
              Filter(ModuleList, _
-                    ModuleName, _
+                    Modulename, _
                     True, _
                     CompareMethod.BinaryCompare) _
              ) > -1)
