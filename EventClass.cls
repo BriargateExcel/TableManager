@@ -90,15 +90,17 @@ Private Sub pFormEvent_MouseMove( _
     Dim Ctl As Variant
 
     For Each Ctl In pFormObj.Controls
+        If Left$(Ctl.Name, 3) = "fld" Or Left$(Ctl.Name, 3) = "cmb" Then
+            ' All text field names start with "fld"
+            LowLightControl Ctl, Module_Name
+        End If
         If Ctl.Enabled And _
            Left$(Ctl.Name, 3) = "Com" _
            Then
             LowLightControl Ctl, Module_Name
         End If
     Next Ctl
-
-    PaintButtons
-   
+    
     '@Ignore LineLabelNotUsed
 Done:
     Exit Sub
@@ -118,7 +120,16 @@ Private Sub pButtonEvent_MouseMove( _
     
     PaintButtons
     
-    HighLightButton pButtonObj, Module_Name
+    Dim Ctl As Variant
+    
+    For Each Ctl In pFormObj.Controls
+        If Left$(Ctl.Name, 7) = "Command" Then
+            ' All button names start with "CommandButton"
+            LowLightControl Ctl, Module_Name
+        End If
+    Next Ctl
+    
+    HighLightControl pButtonObj, Module_Name
         
     '@Ignore LineLabelNotUsed
 Done:
@@ -138,17 +149,22 @@ Private Sub pTextEvent_MouseMove( _
     Const RoutineName As String = Module_Name & "TextEvent_MouseMove"
     
     Dim Ctl As Object
-
+    
+    ' Immediately exit if text box already properly set
+    ' Reduces the flickering of the user form
+    If pTextObj.BackColor = LightestColorValue Then Exit Sub
+    
+    ' Set all text and combo boxes to lowlighted
     For Each Ctl In pFormObj.Controls
-        If Left$(Ctl.Name, 5) <> "Image" Then
-            If Left$(Ctl.Name, 3) = "Com" And Ctl.ForeColor = vbWhite Then
-                LowLightButton Ctl, Module_Name
-            End If
+        If Left$(Ctl.Name, 3) = "fld" Or Left$(Ctl.Name, 3) = "cmb" Then
+            ' All text field names start with "fld"
+            LowLightControl Ctl, Module_Name
         End If
     Next Ctl
-
-    PaintButtons
     
+    ' Highlight the selected Text Box
+    HighLightControl pTextObj, Module_Name
+
     '@Ignore LineLabelNotUsed
 Done:
     Exit Sub
@@ -168,15 +184,18 @@ Private Sub pComboEvent_MouseMove( _
     
     Dim Ctl As Object
 
+    ' Immediately exit if combo box already properly set
+    ' Reduces the flickering of the user form
+    If pComboObj.BackColor = LightestColorValue Then Exit Sub
+    
     For Each Ctl In pFormObj.Controls
-        If Left$(Ctl.Name, 5) <> "Image" Then
-            If Left$(Ctl.Name, 3) = "Com" And Ctl.ForeColor = vbWhite Then
-                LowLightButton Ctl, Module_Name
+            If Left$(Ctl.Name, 3) = "cmb" Or Left$(Ctl.Name, 3) = "fld" Then
+            ' All combo filed names start with "Cmb"
+            LowLightControl Ctl, Module_Name
             End If
-        End If
     Next Ctl
-
-    PaintButtons
+    
+    HighLightControl pComboObj, Module_Name
 
     '@Ignore LineLabelNotUsed
 Done:
@@ -347,11 +366,12 @@ Private Sub PaintButtons()
     On Error GoTo ErrorHandler
     Const RoutineName As String = Module_Name & "PaintButtons"
     
+    Debug.Assert Not Initializing
+    
     Dim Ctl As Variant
     
     For Each Ctl In pFormObj.Controls
-        '        With Ctl
-        If Left$(Ctl.Name, 7) = "Command" Then
+        If Left$(Ctl.Name, 7) = "Command" Then ' All buttons names start with "CommandButton"
             EnableButton Ctl, Module_Name
             LowLightControl Ctl, Module_Name
                 
@@ -368,7 +388,6 @@ Private Sub PaintButtons()
             End If
                 
         End If
-        '        End With                                 ' Ctl
     Next Ctl
     
     '@Ignore LineLabelNotUsed

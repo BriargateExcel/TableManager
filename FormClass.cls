@@ -46,7 +46,7 @@ Public Function BuildForm( _
     Debug.Assert Initializing
 
     Const RoutineName As Variant = Module_Name & "BuildForm"
-    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
+    Debug.Assert InScope(ModuleList, Modulename)
     
     On Error GoTo ErrorHandler
     
@@ -205,57 +205,6 @@ Private Sub BuildUnLockedFields( _
     End Select
 
 End Sub
-Private Sub BuildLogo( _
-        ByRef LogoHeight As Single, _
-        ByRef Tbl As TableManager.TableClass)
-    
-    Dim LogoImage As Control
-    Dim LogoWidth As Single
-    Set LogoImage = Logo(Tbl, LogoHeight, LogoWidth)
-    If Not LogoImage Is Nothing Then
-        LogoImage.Left = pFormObj.Width - LogoWidth
-        LogoImage.Left = 0
-        LogoImage.Left = pFormObj.InsideWidth - LogoImage.Width - StandardGap
-        LogoImage.Top = StandardGap
-    End If
-End Sub
-
-Private Function Logo( _
-       ByRef Tbl As TableManager.TableClass, _
-       ByRef LogoHeight As Single, _
-       ByRef LogoWidth As Single _
-       ) As Control
-    
-    Dim LogoImage As Control
-    
-    Const RoutineName As String = Module_Name & "Logo"
-    On Error GoTo ErrorHandler
-    
-    If Dir(MainWorkbook.Path & "\logo.jpg") <> vbNullString Then
-        Set LogoImage = Tbl.Form.FormObj.Controls.Add("Forms.Image.1")
-        Set LogoImage.Picture = LoadPicture(MainWorkbook.Path & "\logo.jpg")
-        With LogoImage
-            .PictureAlignment = fmPictureAlignmentTopRight
-            .PictureSizeMode = fmPictureSizeModeZoom
-            .BorderStyle = fmBorderStyleNone
-            .BackStyle = fmBackStyleTransparent
-            .AutoSize = True
-            LogoHeight = .Height
-            LogoWidth = .Width
-        End With
-        Set Logo = LogoImage
-    Else
-        LogoHeight = 0
-        Set Logo = Nothing
-    End If
-    
-    '@Ignore LineLabelNotUsed
-Done:
-    Exit Function
-ErrorHandler:
-    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
-End Function
-
 Private Sub BuildAllButtons( _
         ByRef Top As Single, _
         ByVal MaxLabelWidth As Single, _
@@ -483,6 +432,8 @@ Private Sub BuildCombo( _
                 .AddItem CStr(ValListItem)
             Next ValListItem
         End If
+        .BackColor = DarkestColorValue
+        .ForeColor = LightestColorValue
         .Top = Top
         Top = Top + ComboHeight
         .Height = ComboHeight
@@ -540,6 +491,8 @@ Private Sub BuildText( _
             .MultiLine = False
             .ScrollBars = fmScrollBarsNone
         End If
+        .BackColor = DarkestColorValue
+        .ForeColor = LightestColorValue
         .Width = Field.ColumnWidth * WidthMultiplier
         If .Width > MaxFieldWidth Then MaxFieldWidth = .Width
         .Font.Size = FontSize
@@ -795,6 +748,8 @@ Private Sub Texture(ByRef Tbl As TableManager.TableClass)
     
     If Dir(MainWorkbook.Path & "\texture.jpg") <> vbNullString Then
         Set Tbl.Form.FormObj.Picture = LoadPicture(MainWorkbook.Path & "\texture.jpg")
+    Else
+        Tbl.Form.FormObj.BackColor = DarkestColorValue
     End If
     
     '@Ignore LineLabelNotUsed
@@ -804,6 +759,56 @@ ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Sub
 
+Private Sub BuildLogo( _
+        ByRef LogoHeight As Single, _
+        ByRef Tbl As TableManager.TableClass)
+    
+    Dim LogoImage As Control
+    Dim LogoWidth As Single
+    Set LogoImage = Logo(Tbl, LogoHeight, LogoWidth)
+    If Not LogoImage Is Nothing Then
+        LogoImage.Left = pFormObj.Width - LogoWidth
+        LogoImage.Left = 0
+        LogoImage.Left = pFormObj.InsideWidth - LogoImage.Width - StandardGap
+        LogoImage.Top = StandardGap
+    End If
+End Sub
+
+Private Function Logo( _
+       ByRef Tbl As TableManager.TableClass, _
+       ByRef LogoHeight As Single, _
+       ByRef LogoWidth As Single _
+       ) As Control
+    
+    Dim LogoImage As Control
+    
+    Const RoutineName As String = Module_Name & "Logo"
+    On Error GoTo ErrorHandler
+    
+    If Dir(MainWorkbook.Path & "\logo.jpg") <> vbNullString Then
+        Set LogoImage = Tbl.Form.FormObj.Controls.Add("Forms.Image.1")
+        Set LogoImage.Picture = LoadPicture(MainWorkbook.Path & "\logo.jpg")
+        With LogoImage
+            .PictureAlignment = fmPictureAlignmentTopRight
+            .PictureSizeMode = fmPictureSizeModeZoom
+            .BorderStyle = fmBorderStyleNone
+            .BackStyle = fmBackStyleTransparent
+            .AutoSize = True
+            LogoHeight = .Height
+            LogoWidth = .Width
+        End With
+        Set Logo = LogoImage
+    Else
+        LogoHeight = 0
+        Set Logo = Nothing
+    End If
+    
+    '@Ignore LineLabelNotUsed
+Done:
+    Exit Function
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
+End Function
 
 
 

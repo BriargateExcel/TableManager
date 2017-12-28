@@ -36,7 +36,7 @@ Private Sub Class_Initialize()
 End Sub                                          ' Class_Initialize
 
 Private Function ModuleList() As Variant
-    ModuleList = Array("FormClass.", "FormRoutines.", "TableRoutines.", "CellsClass.", "TableClass.")
+    ModuleList = Array("FormClass.", "FormRoutines.", "TableRoutines.", "CellsClass.", "TableClass.", "ParameterRoutines.")
 End Function                                     ' ModuleList
 
 Public Property Get Count() As Long: Count = pAllCells.Count: End Property
@@ -50,7 +50,7 @@ Public Property Get Item( _
     'Attribute Item.VB_UserMemId = 0
     
     Const RoutineName As String = Module_Name & "Get Item"
-    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
+    Debug.Assert InScope(ModuleList, Modulename)
     
     On Error Resume Next
     Set Item = pAllCells.Items()(vIndex)
@@ -79,7 +79,7 @@ Public Sub Add( _
     Debug.Assert Initializing
 
     Const RoutineName As String = Module_Name & "Add"
-    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
+    Debug.Assert InScope(ModuleList, Modulename)
     
     On Error GoTo ErrorHandler
     
@@ -100,7 +100,7 @@ Public Sub Remove( _
     Debug.Assert Initializing
 
     Const RoutineName As String = Module_Name & "Remove"
-    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
+    Debug.Assert InScope(ModuleList, Modulename)
     
     On Error GoTo ErrorHandler
    
@@ -119,4 +119,17 @@ ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
     
 End Sub                                          ' Remove
+
+Public Function Exists( _
+    ByVal vIndex As Variant, _
+    ByVal Modulename As String _
+    ) As Boolean
+    
+    Const RoutineName As String = Module_Name & "Exists"
+    Debug.Assert InScope(ModuleList, Modulename)
+    
+    Exists = pAllCells.Exists(vIndex)
+End Function                                     ' Exists
+
+
 

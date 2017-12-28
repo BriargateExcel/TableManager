@@ -344,7 +344,7 @@ Public Sub BuildTable( _
     Dim Frm As TableManager.FormClass
     
     Const RoutineName As String = Module_Name & "Buildtable"
-    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
+    Debug.Assert InScope(ModuleList, Modulename)
     
     On Error GoTo ErrorHandler
     
@@ -410,7 +410,7 @@ Public Sub TurnOnCellDescriptions( _
     Dim I As Long
     
     Const RoutineName As String = Module_Name & "TurnOnCellDescriptions"
-    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
+    Debug.Assert InScope(ModuleList, Modulename)
 
     On Error GoTo ErrorHandler
 
@@ -444,7 +444,7 @@ Public Sub TurnOffCellDescriptions( _
     Dim I As Long
     
     Const RoutineName As String = Module_Name & "TurnOffCellDescriptions"
-    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
+    Debug.Assert InScope(ModuleList, Modulename)
 
     On Error GoTo ErrorHandler
 
@@ -472,7 +472,7 @@ Public Sub PopulateTable( _
        ByVal Modulename As String)
 
     Const RoutineName As String = Module_Name & "PopulateTable"
-    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
+    Debug.Assert InScope(ModuleList, Modulename)
 
     On Error GoTo ErrorHandler
 
@@ -520,7 +520,7 @@ Public Function Table( _
        ) As TableManager.TableClass
 
     Const RoutineName As String = Module_Name & "Table"
-    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
+    Debug.Assert InScope(ModuleList, Modulename)
 
     Set Table = pAllTbls.Item(TableName, Module_Name)
 
@@ -532,7 +532,7 @@ Public Sub TableAdd( _
 
     Const RoutineName As String = Module_Name & "TableAdd"
     On Error GoTo ErrorHandler
-    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
+    Debug.Assert InScope(ModuleList, Modulename)
     pAllTbls.Add Tbl, Module_Name
     
     '@Ignore LineLabelNotUsed
@@ -545,7 +545,7 @@ End Sub                                          ' TableAdd
 
 Public Function TableCount(ByVal Modulename As String) As Long
     Const RoutineName As String = Module_Name & "TableCount"
-    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
+    Debug.Assert InScope(ModuleList, Modulename)
     TableCount = pAllTbls.Count
 End Function                                     ' TableCount
 
@@ -555,7 +555,7 @@ Public Function TableExists( _
        ) As Boolean
 
     Const RoutineName As String = Module_Name & "TableExists"
-    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
+    Debug.Assert InScope(ModuleList, Modulename)
     TableExists = pAllTbls.Exists(Tbl, Module_Name)
 End Function                                     ' TableExists
 
@@ -565,7 +565,7 @@ Public Function TableItem( _
        ) As Variant
 
     Const RoutineName As String = Module_Name & "TableItem"
-    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
+    Debug.Assert InScope(ModuleList, Modulename)
     Set TableItem = pAllTbls.Item(Tbl, Module_Name)
 End Function                                     ' TableItem
 
@@ -574,25 +574,25 @@ Public Sub TableRemove( _
        ByVal Modulename As String)
 
     Const RoutineName As String = Module_Name & "TableRemove"
-    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
+    Debug.Assert InScope(ModuleList, Modulename)
     pAllTbls.Remove Val, Module_Name
 End Sub                                          ' TableRemove
 
 Public Sub TableSetNewClass(ByVal Modulename As String)
     Const RoutineName As String = Module_Name & "TableSetNewClass"
-    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
+    Debug.Assert InScope(ModuleList, Modulename)
     Set pAllTbls = New TableManager.TablesClass
 End Sub                                          ' TableSetNewClass
 
 Public Sub TableSetNewDict(ByVal Modulename As String)
     Const RoutineName As String = Module_Name & "TableSetNewDict"
-    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
+    Debug.Assert InScope(ModuleList, Modulename)
     Set pAllTbls = New Scripting.Dictionary
 End Sub                                          ' TableSetNewDict
 
 Public Sub TableSetNothing(ByVal Modulename As String)
     Const RoutineName As String = Module_Name & "TableSetNothing"
-    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
+    Debug.Assert InScope(ModuleList, Modulename)
     Set pAllTbls = Nothing
 End Sub                                          ' TableSetNothing
 

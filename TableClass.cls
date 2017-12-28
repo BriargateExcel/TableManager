@@ -125,7 +125,7 @@ Public Function CollectTableData( _
     Debug.Assert Initializing
 
     Const RoutineName As String = Module_Name & "CollectTableData"
-    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
+    Debug.Assert InScope(ModuleList, Modulename)
     
     On Error GoTo ErrorHandler
     

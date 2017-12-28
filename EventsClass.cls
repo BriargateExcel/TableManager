@@ -33,7 +33,7 @@ Public Property Get Item( _
     'Attribute Item.VB_UserMemId = 0
     
     Const RoutineName As String = Module_Name & "Get Item"
-     Debug.Assert InScope(ModuleList, Modulename, RoutineName)
+     Debug.Assert InScope(ModuleList, Modulename)
        
     On Error Resume Next
     Set Item = pAllEvents.Items()(vIndex)
@@ -62,7 +62,7 @@ Public Sub Add( _
     Debug.Assert Initializing
 
     Const RoutineName As String = Module_Name & "Add"
-    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
+    Debug.Assert InScope(ModuleList, Modulename)
     
     On Error GoTo ErrorHandler
            
@@ -83,7 +83,7 @@ Public Sub Remove( _
     Debug.Assert Initializing
     
     Const RoutineName As String = Module_Name & "Remove"
-    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
+    Debug.Assert InScope(ModuleList, Modulename)
     
     On Error GoTo ErrorHandler
    

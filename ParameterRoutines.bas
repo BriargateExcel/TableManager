@@ -48,14 +48,14 @@ Public Function DarkestColorValue() As Long
     If ColorNameFieldExistsInXLAM Then
         DarkestColorValue = TableManager.GetCellValue("ColorTable", "Color Name", "Darkest Color", "Decimal Color Value")
     Else
-        If ColorTableExistsOnWorksheet Then
+        If ColorFieldExistsOnWorksheet Then
             Dim Tbl As ListObject
             Set Tbl = MainWorkbook.Worksheets("Parameters").ListObjects("ColorTable")
             
             DarkestColorValue = SearchTable(Tbl, "Color Name", "Darkest Color", "Decimal Color Value")
-            If DarkestColorValue = 0 Then DarkestColorValue = &H80000007 ' Black
+            If DarkestColorValue = 0 Then DarkestColorValue = &H8000000E ' White; Default is Black text on white
         Else
-            DarkestColorValue = &H80000007       ' Black
+            DarkestColorValue = &H8000000E ' White; Default is Black text on white
         End If
     End If
 End Function
@@ -64,43 +64,60 @@ Public Function LightestColorValue() As Long
     If ColorNameFieldExistsInXLAM Then
         LightestColorValue = TableManager.GetCellValue("ColorTable", "Color Name", "Lightest Color", "Decimal Color Value")
     Else
-        If ColorTableExistsOnWorksheet Then
+        If ColorFieldExistsOnWorksheet Then
             Dim Tbl As ListObject
             Set Tbl = MainWorkbook.Worksheets("Parameters").ListObjects("ColorTable")
             
             LightestColorValue = SearchTable(Tbl, "Color Name", "Lightest Color", "Decimal Color Value")
-            If LightestColorValue = 0 Then LightestColorValue = &H8000000F ' Light gray
+            If LightestColorValue = 0 Then LightestColorValue = &H80000007 ' Black; Default is Black text on white
         Else
-            LightestColorValue = &H8000000F      ' Light gray
+            LightestColorValue = &H80000007 ' Black; Default is Black text on white
         End If
     End If
 End Function
-
-Private Function ColorNameFieldExistsInXLAM() As Boolean
-    If ColorTableExistsOnWorksheet Then
-        Dim Tbl As ListObject
-        Set Tbl = MainWorkbook.Worksheets("Parameters").ListObjects("ColorTable")
-        
-        ColorNameFieldExistsInXLAM = Contains(Tbl.HeaderRowRange, "Color Name")
-    Else
-        ColorNameFieldExistsInXLAM = False
-    End If
-End Function
-
-Private Function ColorTableExistsOnWorksheet() As Boolean
-    If ParameterSheetExists Then
-        ColorTableExistsOnWorksheet = Contains(MainWorkbook.Worksheets("Parameters").ListObjects, "ColorTable")
-    Else
-        ColorTableExistsOnWorksheet = False
-    End If
-End Function
-
 Private Function ParameterSheetExists() As Boolean
     ParameterSheetExists = Contains(MainWorkbook.Worksheets, "Parameters")
 End Function
 
-Private Function ColorTableExistsInXLAM() As Boolean
-    ColorTableExistsInXLAM = TableManager.TableExists("ColorTable", Module_Name)
+Private Function ColorTableExistsOnWorksheet() As Boolean
+        ColorTableExistsOnWorksheet = False
+    If ParameterSheetExists Then
+        ColorTableExistsOnWorksheet = Contains(MainWorkbook.Worksheets("Parameters").ListObjects, "ColorTable")
+    End If
 End Function
 
+Private Function ColorFieldExistsOnWorksheet() As Boolean
+    If ColorTableExistsOnWorksheet Then
+        Dim Tbl As ListObject
+        Set Tbl = MainWorkbook.Worksheets("Parameters").ListObjects("ColorTable")
+        
+        On Error Resume Next
+        ColorFieldExistsOnWorksheet = (Application.WorksheetFunction.Match("Color Name", Tbl.HeaderRowRange, 0) <> 0)
+        ColorFieldExistsOnWorksheet = (Err.Number = 0)
+    End If
+End Function
+
+Private Function ColorNameFieldExistsInXLAM() As Boolean
+    ColorNameFieldExistsInXLAM = False
+    
+    If TableManager.TableExists("ColorTable", Module_Name) Then
+        Dim Tbl As TableManager.TableClass
+        Set Tbl = TableManager.Table("ColorTable", Module_Name)
+        
+        ColorNameFieldExistsInXLAM = Tbl.TableCells.Exists("Color Name", Module_Name)
+    End If
+' TODO This is checking for the field on the sheet not the filed in the XLAM table
+'    If ColorTableExistsOnWorksheet Then
+'        Dim Tbl As ListObject
+'        Set Tbl = MainWorkbook.Worksheets("Parameters").ListObjects("ColorTable")
+'
+'        ColorNameFieldExistsInXLAM = Contains(Tbl.HeaderRowRange, "Color Name")
+'    Else
+'        ColorNameFieldExistsInXLAM = False
+'    End If
+End Function
+
+'Private Function ColorTableExistsInXLAM() As Boolean
+'    ColorTableExistsInXLAM = TableManager.TableExists("ColorTable", Module_Name)
+'End Function
 

@@ -18,7 +18,7 @@ Public Function ValidateForm( _
     Dim I As Long
     
     Const RoutineName As String = Module_Name & "ValidateForm"
-    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
+    Debug.Assert InScope(ModuleList, Modulename)
     
     On Error GoTo ErrorHandler
     
@@ -326,7 +326,7 @@ Private Function ValidateList( _
                    "Validation List Error"
         End If
     Else
-        If InScope(Field.ValidationList, FormVal, RoutineName) Then
+        If InScope(Field.ValidationList, FormVal) Then
             ValidateList = True
         Else
             MsgBox "The value in " & _
@@ -525,7 +525,7 @@ Public Sub PopulateForm( _
        ByVal Modulename As String)
 
     Const RoutineName As String = Module_Name & "PopulateForm"
-    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
+    Debug.Assert InScope(ModuleList, Modulename)
 
     On Error GoTo ErrorHandler
 
@@ -575,7 +575,7 @@ Public Sub ClearForm( _
        ByVal Modulename As String)
 
     Const RoutineName As String = Module_Name & "ClearForm"
-    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
+    Debug.Assert InScope(ModuleList, Modulename)
 
     On Error GoTo ErrorHandler
 

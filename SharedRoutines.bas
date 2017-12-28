@@ -42,14 +42,15 @@ End Function                                     ' CheckForVBAProjectAccessEnabl
 
 Public Function InScope( _
        ByVal ModuleList As Variant, _
-       ByVal Modulename As String, _
-       ByVal RoutineName As String _
+       ByVal Modulename As String _
        ) As Boolean
 
     '   Uses the name of the module where InScope is called
     '   Filters the name against the list of valid module names
     '   Returns true if the Filter result has any entries
     '   In other words, returns True if ModuleName is found in ModuleList
+    
+    Const RoutineName As String = "InScope"
 
     '     Log RoutineName & ":    " & ModuleName
 

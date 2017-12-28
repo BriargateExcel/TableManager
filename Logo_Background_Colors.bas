@@ -12,7 +12,7 @@ Public Sub DisableButton( _
     ByVal Modulename As String)
     
     Const RoutineName As String = Module_Name & "ValidateForm"
-    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
+    Debug.Assert InScope(ModuleList, Modulename)
     
     Btn.Enabled = False
 End Sub                                          ' DisableButton
@@ -22,7 +22,7 @@ Public Sub EnableButton( _
     ByVal Modulename As String)
     
     Const RoutineName As String = Module_Name & "ValidateForm"
-    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
+    Debug.Assert InScope(ModuleList, Modulename)
     
     Btn.Enabled = True
 End Sub                                          ' EnableButton
@@ -32,7 +32,7 @@ Public Sub HighLightButton( _
     ByVal Modulename As String)
     
     Const RoutineName As String = Module_Name & "ValidateForm"
-    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
+    Debug.Assert InScope(ModuleList, Modulename)
     
     Btn.ForeColor = TableManager.DarkestColorValue
     Btn.BackColor = TableManager.LightestColorValue
@@ -44,7 +44,7 @@ Public Sub HighLightControl( _
     ByVal Modulename As String)
     
     Const RoutineName As String = Module_Name & "ValidateForm"
-    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
+    Debug.Assert InScope(ModuleList, Modulename)
     
     Ctl.ForeColor = TableManager.DarkestColorValue
     Ctl.BackColor = TableManager.LightestColorValue
@@ -55,7 +55,7 @@ Public Sub LowLightButton( _
     ByVal Modulename As String)
     
     Const RoutineName As String = Module_Name & "ValidateForm"
-    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
+    Debug.Assert InScope(ModuleList, Modulename)
     
     Btn.ForeColor = TableManager.LightestColorValue
     Btn.BackColor = TableManager.DarkestColorValue
@@ -67,7 +67,7 @@ Public Sub LowLightControl( _
     ByVal Modulename As String)
     
     Const RoutineName As String = Module_Name & "ValidateForm"
-    Debug.Assert InScope(ModuleList, Modulename, RoutineName)
+    Debug.Assert InScope(ModuleList, Modulename)
     
     Ctl.ForeColor = TableManager.LightestColorValue
     Ctl.BackColor = TableManager.DarkestColorValue
