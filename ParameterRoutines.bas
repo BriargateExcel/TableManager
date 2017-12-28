@@ -106,15 +106,6 @@ Private Function ColorNameFieldExistsInXLAM() As Boolean
         
         ColorNameFieldExistsInXLAM = Tbl.TableCells.Exists("Color Name", Module_Name)
     End If
-' TODO This is checking for the field on the sheet not the filed in the XLAM table
-'    If ColorTableExistsOnWorksheet Then
-'        Dim Tbl As ListObject
-'        Set Tbl = MainWorkbook.Worksheets("Parameters").ListObjects("ColorTable")
-'
-'        ColorNameFieldExistsInXLAM = Contains(Tbl.HeaderRowRange, "Color Name")
-'    Else
-'        ColorNameFieldExistsInXLAM = False
-'    End If
 End Function
 
 'Private Function ColorTableExistsInXLAM() As Boolean

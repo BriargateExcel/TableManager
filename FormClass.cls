@@ -74,10 +74,11 @@ Public Function BuildForm( _
     Texture Tbl
     
     ' Add the logo
-    Dim LogoHeight As Single
+    Dim LogoImage As Control
     Dim Top As Single
-    BuildLogo LogoHeight, Tbl
-    Top = LogoHeight + 2 * StandardGap
+    Set LogoImage = Logo(Tbl)
+    Top = LogoImage.Height + 2 * StandardGap
+    LogoImage.Top = StandardGap
     
     ' Build the Controls
     Dim MaxLabelWidth As Single
@@ -93,10 +94,13 @@ Public Function BuildForm( _
     ' Set Properties for TempForm now that we know all the heights and widths
     pFormObj.Width = Application.WorksheetFunction.Max( _
                      MaxLabelWidth + MaxFieldWidth + NumCols * StandardGap, _
-                     MaxButtonWidth) + ScrollBarWidth
+                     MaxButtonWidth, _
+                     LogoImage.Width + 2 * StandardGap) + ScrollBarWidth
         
     Top = Top + ButtonHeight + StandardGap
     pFormObj.Height = Top + NumRows * StandardGap
+    LogoImage.Left = pFormObj.Width - LogoImage.Width
+'    LogoImage.Left = 0
     
     pFormObj.ScrollBars = fmScrollBarsVertical
         
@@ -145,7 +149,7 @@ Private Sub BuildControls( _
     
     Dim Ctl As Control
     For Each Ctl In pFormObj.Controls
-        If Ctl.Name <> "Filler" Then
+        If Ctl.Name <> "Filler" And Left$(Ctl.Name, 5) <> "Image" Then
             Ctl.Width = MaxFieldWidth
             Ctl.Left = DataLeft
         End If
@@ -765,47 +769,31 @@ ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Sub
 
-Private Sub BuildLogo( _
-        ByRef LogoHeight As Single, _
-        ByRef Tbl As TableManager.TableClass)
+Private Function Logo(ByRef Tbl As TableManager.TableClass) As Control
     
     Dim LogoImage As Control
-    Dim LogoWidth As Single
-    Set LogoImage = Logo(Tbl, LogoHeight, LogoWidth)
-    If Not LogoImage Is Nothing Then
-        LogoImage.Left = pFormObj.Width - LogoWidth
-        LogoImage.Left = 0
-        LogoImage.Left = pFormObj.InsideWidth - LogoImage.Width - StandardGap
-        LogoImage.Top = StandardGap
-    End If
-End Sub
-
-Private Function Logo( _
-       ByRef Tbl As TableManager.TableClass, _
-       ByRef LogoHeight As Single, _
-       ByRef LogoWidth As Single _
-       ) As Control
-    
-    Dim LogoImage As Control
+    Dim Pic As StdPicture
     
     Const RoutineName As String = Module_Name & "Logo"
     On Error GoTo ErrorHandler
     
     If Dir(MainWorkbook.Path & "\logo.jpg") <> vbNullString Then
         Set LogoImage = Tbl.Form.FormObj.Controls.Add("Forms.Image.1")
-        Set LogoImage.Picture = LoadPicture(MainWorkbook.Path & "\logo.jpg")
+        Set Pic = LoadPicture(MainWorkbook.Path & "\logo.jpg")
+        Set LogoImage.Picture = Pic
         With LogoImage
-            .PictureAlignment = fmPictureAlignmentTopRight
-            .PictureSizeMode = fmPictureSizeModeZoom
+            .PictureAlignment = fmPictureAlignmentTopLeft
+'            .PictureSizeMode = fmPictureSizeModeZoom
             .BorderStyle = fmBorderStyleNone
             .BackStyle = fmBackStyleTransparent
-            .AutoSize = True
-            LogoHeight = .Height
-            LogoWidth = .Width
+'            .AutoSize = True
+' http://microsoft.public.vb.winapi.narkive.com/L9KXT0cV/ole-xsize-himetric-and-ole-ysize-himetric-to-pixel
+' TODO The divisors of 35 and 32 work on my computer. I don't know if they will work on other computers.
+            .Height = Pic.Height / 35
+            .Width = Pic.Width / 32 '35
         End With
         Set Logo = LogoImage
     Else
-        LogoHeight = 0
         Set Logo = Nothing
     End If
     
