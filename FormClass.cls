@@ -547,6 +547,8 @@ Private Sub BuildCustom( _
             .MultiLine = False
             .ScrollBars = fmScrollBarsNone
         End If
+        .BackColor = DarkestColorValue
+        .ForeColor = LightestColorValue
         .Width = Field.ColumnWidth * WidthMultiplier
         If .Width > MaxFieldWidth Then MaxFieldWidth = .Width
         .Font.Size = FontSize
@@ -619,6 +621,8 @@ Private Sub BuildDate( _
 
     Set Ctl = pFormObj.Controls.Add("Forms.TextBox.1", "dat" & Field.Name, True)
     With Ctl
+        .BackColor = DarkestColorValue
+        .ForeColor = LightestColorValue
         .Top = Top
         Top = Top + ComboHeight
         .Height = ComboHeight
@@ -690,6 +694,8 @@ Private Sub BuildWholeNumber( _
 
     Set Ctl = pFormObj.Controls.Add("Forms.TextBox.1", "whl" & Field.Name, True)
     With Ctl
+        .BackColor = DarkestColorValue
+        .ForeColor = LightestColorValue
         .Top = Top
         .Width = Field.ColumnWidth * WidthMultiplier
         Top = Top + ComboHeight

@@ -88,12 +88,10 @@ Private Sub pFormEvent_MouseMove( _
     Const RoutineName As String = Module_Name & "FormEvent_MouseMove"
         
     Dim Ctl As Variant
+    
+    LowLightAllBoxes
 
     For Each Ctl In pFormObj.Controls
-        If Left$(Ctl.Name, 3) = "fld" Or Left$(Ctl.Name, 3) = "cmb" Then
-            ' All text field names start with "fld"
-            LowLightControl Ctl, Module_Name
-        End If
         If Ctl.Enabled And _
            Left$(Ctl.Name, 3) = "Com" _
            Then
@@ -154,13 +152,7 @@ Private Sub pTextEvent_MouseMove( _
     ' Reduces the flickering of the user form
     If pTextObj.BackColor = LightestColorValue Then Exit Sub
     
-    ' Set all text and combo boxes to lowlighted
-    For Each Ctl In pFormObj.Controls
-        If Left$(Ctl.Name, 3) = "fld" Or Left$(Ctl.Name, 3) = "cmb" Then
-            ' All text field names start with "fld"
-            LowLightControl Ctl, Module_Name
-        End If
-    Next Ctl
+    LowLightAllBoxes
     
     ' Highlight the selected Text Box
     HighLightControl pTextObj, Module_Name
@@ -188,12 +180,7 @@ Private Sub pComboEvent_MouseMove( _
     ' Reduces the flickering of the user form
     If pComboObj.BackColor = LightestColorValue Then Exit Sub
     
-    For Each Ctl In pFormObj.Controls
-            If Left$(Ctl.Name, 3) = "cmb" Or Left$(Ctl.Name, 3) = "fld" Then
-            ' All combo filed names start with "Cmb"
-            LowLightControl Ctl, Module_Name
-            End If
-    Next Ctl
+    LowLightAllBoxes
     
     HighLightControl pComboObj, Module_Name
 
@@ -205,6 +192,21 @@ ErrorHandler:
 
 End Sub                                          ' ComboEvent_MouseMove
 
+Private Sub LowLightAllBoxes()
+    Dim Ctl As Variant
+    
+    For Each Ctl In pFormObj.Controls
+        If Left$(Ctl.Name, 3) = "fld" Or _
+           Left$(Ctl.Name, 3) = "cmb" Or _
+           Left$(Ctl.Name, 3) = "whl" Or _
+           Left$(Ctl.Name, 3) = "dat" _
+           Then
+            ' All text field names start with "fld"
+            LowLightControl Ctl, Module_Name
+        End If
+    Next Ctl
+
+End Sub
 Private Sub pSheetEvent_BeforeDoubleClick( _
         ByVal Target As Range, _
         Cancel As Boolean)
