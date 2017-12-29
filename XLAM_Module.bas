@@ -6,6 +6,16 @@ Private Const Module_Name As String = "XLAM_Module."
 Private Init As Boolean
 Private pMainWorkbook As Workbook
 
+Private LastControl As Control
+
+Public Sub SetLastControl(ByVal Ctl As Control)
+    Set LastControl = Ctl
+End Sub
+
+Public Function GetLastControl() As Control
+    Set GetLastControl = LastControl
+End Function
+
 Public Function MainWorkbook() As Workbook
     Set MainWorkbook = pMainWorkbook
 End Function

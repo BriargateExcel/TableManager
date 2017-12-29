@@ -18,10 +18,10 @@ End Function                                     ' ActiveCellTableName
 
 Public Function CheckForVBAProjectAccessEnabled(ByVal Wkbk As Workbook) As Boolean
 
-    Dim VBP As Object                            ' as VBProject
-
     Const RoutineName As String = Module_Name & "CheckForVBAProjectAccessEnabled"
     On Error GoTo ErrorHandler
+    
+    Dim VBP As VBProject
     
     If Val(Application.VERSION) >= 10 Then
         Set VBP = Wkbk.VBProject
@@ -306,11 +306,11 @@ Public Function HasVal(ByVal Target As Range) As Boolean
     Const RoutineName As String = Module_Name & "HasVal"
     On Error GoTo ErrorHandler
     
-    Dim v As Variant
+    Dim Vbl As Variant
     
     On Error Resume Next
     
-    v = Target.Validation.Type
+    Vbl = Target.Validation.Type
     HasVal = (Err.Number = 0)
 
     '@Ignore LineLabelNotUsed
@@ -367,12 +367,4 @@ Public Function FindLastColumnNumber( _
     
     FindLastColumnNumber = Sht.Cells(RowNumber, Sht.Columns.Count).End(xlToLeft).Column
 End Function                                     ' FindLastColumnNumber
-
-Public Function FindLastColumnLetter( _
-       ByVal RowNumber As Long, _
-       ByVal Sht As Worksheet _
-       ) As String
-    
-    FindLastColumnLetter = ConvertToLetter(FindLastColumnNumber(RowNumber, Sht))
-End Function                                     ' FindLastColumnLetter
 

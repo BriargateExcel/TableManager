@@ -147,64 +147,64 @@ Public Property Get Length() As Long: Length = Len(pHeaderText): End Property
 
 Public Property Get Control() As Control: Set Control = pControl: End Property
 
-Public Property Set Control(ByVal Ctl As Control): Set pControl = Ctl: End Property
+Public Property Set Control(ByVal Vbl As Control): Set pControl = Vbl: End Property
 
 Public Property Get TableName() As String: TableName = pTableName: End Property
 
 ' Attributes for cells with validation
 Public Property Get CellType() As XlDVType: CellType = pCellValidationType: End Property
 
-Public Property Let CellType(ByVal CT As XlDVType): pCellValidationType = CT: End Property
+Public Property Let CellType(ByVal Vbl As XlDVType): pCellValidationType = Vbl: End Property
 
 Public Property Get Operator() As XlFormatConditionOperator: Operator = pOperator: End Property
 
-Public Property Let Operator(ByVal Op As XlFormatConditionOperator): pOperator = Op: End Property
+Public Property Let Operator(ByVal Vbl As XlFormatConditionOperator): pOperator = Vbl: End Property
 
 Public Property Get ValidAlertStyle() As XlDVAlertStyle: ValidAlertStyle = pValidAlertStyle: End Property
 
-Public Property Let ValidAlertStyle(ByVal VAS As XlDVAlertStyle): pValidAlertStyle = VAS: End Property
+Public Property Let ValidAlertStyle(ByVal Vbl As XlDVAlertStyle): pValidAlertStyle = Vbl: End Property
 
 Public Property Get ValidationFormula1() As String: ValidationFormula1 = pValidationFormula1: End Property
 
-Public Property Let ValidationFormula1(ByVal VF1 As String): pValidationFormula1 = VF1: End Property
+Public Property Let ValidationFormula1(ByVal Vbl As String): pValidationFormula1 = Vbl: End Property
 
 Public Property Get ValidationFormula2() As String: ValidationFormula2 = pValidationFormula2: End Property
 
-Public Property Let ValidationFormula2(ByVal VF2 As String): pValidationFormula2 = VF2: End Property
+Public Property Let ValidationFormula2(ByVal Vbl As String): pValidationFormula2 = Vbl: End Property
 
 Public Property Get IgnoreBlank() As Boolean: IgnoreBlank = pIgnoreBlank: End Property
 
-Public Property Let IgnoreBlank(ByVal IB As Boolean): pIgnoreBlank = IB: End Property
+Public Property Let IgnoreBlank(ByVal Vbl As Boolean): pIgnoreBlank = Vbl: End Property
 
 Public Property Get ValidationList() As Variant: ValidationList = pValidationList: End Property
 
-Public Property Let ValidationList(ByVal VL As Variant): pValidationList = VL: End Property
+Public Property Let ValidationList(ByVal Vbl As Variant): pValidationList = Vbl: End Property
 
 ' Attributes for cells with validation inputs messages
 Public Property Get ShowInput() As Boolean: ShowInput = pShowInput: End Property
 
-Public Property Let ShowInput(ByVal SI As Boolean): pShowInput = SI: End Property
+Public Property Let ShowInput(ByVal Vbl As Boolean): pShowInput = Vbl: End Property
 
 Public Property Get InputTitle() As String: InputTitle = pInputTitle: End Property
 
-Public Property Let InputTitle(ByVal IT As String): pInputTitle = IT: End Property
+Public Property Let InputTitle(ByVal Vbl As String): pInputTitle = Vbl: End Property
 
 Public Property Get InputMessage() As String: InputMessage = pInputMessage: End Property
 
-Public Property Let InputMessage(ByVal IM As String): pInputMessage = IM: End Property
+Public Property Let InputMessage(ByVal Vbl As String): pInputMessage = Vbl: End Property
 
 ' Attributes for cells with error messages
 Public Property Get ShowError() As Boolean: ShowError = pShowError: End Property
 
-Public Property Let ShowError(ByVal SE As Boolean): pShowError = SE: End Property
+Public Property Let ShowError(ByVal Vbl As Boolean): pShowError = Vbl: End Property
 
 Public Property Get ErrorTitle() As String: ErrorTitle = pErrorTitle: End Property
 
-Public Property Let ErrorTitle(ByVal ET As String): pErrorTitle = ET: End Property
+Public Property Let ErrorTitle(ByVal Vbl As String): pErrorTitle = Vbl: End Property
 
 Public Property Get ErrorMessage() As String: ErrorMessage = pErrorMessage: End Property
 
-Public Property Let ErrorMessage(ByVal EM As String): pErrorMessage = EM: End Property
+Public Property Let ErrorMessage(ByVal Vbl As String): pErrorMessage = Vbl: End Property
 
 
 

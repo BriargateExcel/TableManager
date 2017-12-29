@@ -31,7 +31,7 @@ Private Const ButtonWidth As Long = 72
 Private Const FontSize As Single = 8.25
 Private Const WidthMultiplier As Long = 6
 Private Const TextMultiplier As Long = 5
-Private Const ScrollBarWidth As Long = 15
+Private Const ScrollBarWidth As Long = 24.75
 
 Private Function ModuleList() As Variant
     ModuleList = Array("TableRoutines.")
@@ -77,30 +77,67 @@ Public Function BuildForm( _
     Dim LogoImage As Control
     Dim Top As Single
     Set LogoImage = Logo(Tbl)
-    Top = LogoImage.Height + 2 * StandardGap
-    LogoImage.Top = StandardGap
+    Dim LogoHeight As Single
+    Dim LogoWidth As Single
+    If LogoImage Is Nothing Then
+        LogoWidth = 0
+        LogoHeight = 0
+    Else
+        LogoWidth = LogoImage.Width
+        LogoHeight = LogoImage.Height
+        LogoImage.Top = StandardGap
+    End If
+    Top = LogoHeight + 2 * StandardGap
     
     ' Build the Controls
     Dim MaxLabelWidth As Single
     Dim MaxFieldWidth As Single
-    Dim MaxButtonWidth As Single
     BuildControls Tbl, Top, MaxLabelWidth, MaxFieldWidth
     
     ' Build the Buttons
     Dim NumRows As Long
     Dim NumCols As Long
-    BuildAllButtons Top, MaxLabelWidth, MaxFieldWidth, MaxButtonWidth, Tbl, NumRows, NumCols
+    Dim ButtonSetWidth As Single
+    ButtonSetWidth = BuildAllButtons(Top, MaxLabelWidth, MaxFieldWidth, Tbl, NumRows, NumCols)
         
     ' Set Properties for TempForm now that we know all the heights and widths
+    Dim FieldWidth As Single
+    FieldWidth = MaxLabelWidth + MaxFieldWidth + 3 * StandardGap
+    Dim LogoTotalWidth As Single
+    LogoWidth = LogoWidth + 2 * StandardGap
     pFormObj.Width = Application.WorksheetFunction.Max( _
-                     MaxLabelWidth + MaxFieldWidth + NumCols * StandardGap, _
-                     MaxButtonWidth, _
-                     LogoImage.Width + 2 * StandardGap) + ScrollBarWidth
+                     FieldWidth, ButtonSetWidth, LogoTotalWidth) + ScrollBarWidth + 2 * StandardGap
         
     Top = Top + ButtonHeight + StandardGap
     pFormObj.Height = Top + NumRows * StandardGap
-    LogoImage.Left = pFormObj.Width - LogoImage.Width
-'    LogoImage.Left = 0
+    
+    ' Right justify the Logo
+    If Not LogoImage Is Nothing Then
+        LogoImage.Left = pFormObj.Width - LogoWidth - StandardGap - ScrollBarWidth
+    End If
+    
+    ' Center the fields
+    Dim LeftFieldMargin As Single
+    LeftFieldMargin = (pFormObj.Width - ScrollBarWidth - FieldWidth) / 2
+    Dim LeftButtonMargin As Single
+    LeftButtonMargin = (pFormObj.Width - ScrollBarWidth - ButtonSetWidth) / 2
+    Dim Ctl As Variant
+    
+    For Each Ctl In pFormObj.Controls
+        If Left$(Ctl.Name, 3) = "lbl" Or _
+           Left$(Ctl.Name, 3) = "fld" Or _
+           Left$(Ctl.Name, 3) = "dat" Or _
+           Left$(Ctl.Name, 3) = "cmb" Or _
+           Left$(Ctl.Name, 3) = "whl" Or _
+           Left$(Ctl.Name, 3) = "val" Then
+            Ctl.Left = Ctl.Left + LeftFieldMargin
+        End If
+        
+        If Left$(Ctl.Name, 7) = "Command" Then
+            Ctl.Left = Ctl.Left + LeftButtonMargin
+        End If
+                
+    Next Ctl
     
     pFormObj.ScrollBars = fmScrollBarsVertical
         
@@ -209,16 +246,16 @@ Private Sub BuildUnLockedFields( _
     End Select
 
 End Sub
-Private Sub BuildAllButtons( _
+Private Function BuildAllButtons( _
         ByRef Top As Single, _
         ByVal MaxLabelWidth As Single, _
         ByVal MaxFieldWidth As Single, _
-        ByRef MaxButtonWidth As Single, _
         ByVal Tbl As TableManager.TableClass, _
         ByRef NumRows As Long, _
-        ByRef NumCols As Long)
+        ByRef NumCols As Long _
+        ) As Single
     
-    Dim DataLeft As Single
+'    Dim DataLeft As Single
     Dim Arrangement As String
     
     Const RoutineName As String = Module_Name & "BuildAllButtons"
@@ -243,74 +280,64 @@ Private Sub BuildAllButtons( _
         NumCols = 6
     End If
     
-    MaxButtonWidth = NumCols * ButtonWidth + (NumCols + 2) * StandardGap
+    BuildAllButtons = NumCols * ButtonWidth + (NumCols - 1) * StandardGap
     
     Arrangement = Format$(NumRows, "0") & " Rows of " & Format$(NumCols, "0")
     
     Select Case Arrangement
     Case "2 Rows of 6"
         ' Add First Row of Buttons
-        DataLeft = StandardGap
         ' First row of buttons
-        BuildButtonRow 0, 5, Top, DataLeft, Tbl
+        BuildButtonRow 0, 5, Top, Tbl
         
         ' Second row of buttons
         Top = Top + ButtonHeight + StandardGap
-        DataLeft = StandardGap
-        BuildButtonRow 6, 11, Top, DataLeft, Tbl
+        BuildButtonRow 6, 11, Top, Tbl
 
     Case "3 Rows of 4"
         ' Add First Row of Buttons
-        DataLeft = StandardGap
         ' First row of buttons
-        BuildButtonRow 0, 3, Top, DataLeft, Tbl
+        BuildButtonRow 0, 3, Top, Tbl
         
         ' Second row of buttons
         Top = Top + ButtonHeight + StandardGap
-        DataLeft = StandardGap
-        BuildButtonRow 4, 7, Top, DataLeft, Tbl
+        BuildButtonRow 4, 7, Top, Tbl
 
         ' Third row of buttons
         Top = Top + ButtonHeight + StandardGap
-        DataLeft = StandardGap
-        BuildButtonRow 8, 11, Top, DataLeft, Tbl
+        BuildButtonRow 8, 11, Top, Tbl
         
     Case "4 Rows of 3"
         ' Add First Row of Buttons
-        DataLeft = StandardGap
         ' First row of buttons
-        BuildButtonRow 0, 2, Top, DataLeft, Tbl
+        BuildButtonRow 0, 2, Top, Tbl
         
         ' Second row of buttons
         Top = Top + ButtonHeight + StandardGap
-        DataLeft = StandardGap
-        BuildButtonRow 3, 5, Top, DataLeft, Tbl
+        BuildButtonRow 3, 5, Top, Tbl
 
         ' Third row of buttons
         Top = Top + ButtonHeight + StandardGap
-        DataLeft = StandardGap
-        BuildButtonRow 6, 8, Top, DataLeft, Tbl
+        BuildButtonRow 6, 8, Top, Tbl
 
         ' Fourth row of buttons
         Top = Top + ButtonHeight + StandardGap
-        DataLeft = StandardGap
-        BuildButtonRow 9, 11, Top, DataLeft, Tbl
+        BuildButtonRow 9, 11, Top, Tbl
     
         '    Case Else: Stop
     End Select
 
     '@Ignore LineLabelNotUsed
 Done:
-    Exit Sub
+    Exit Function
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
-End Sub                                          ' BuildAllButtons
+End Function                                     ' BuildAllButtons
 
 Private Sub BuildButtonRow( _
         ByVal LowerBound As Long, _
         ByVal UpperBound As Long, _
-        ByRef Top As Single, _
-        ByRef DataLeft As Single, _
+        ByVal Top As Single, _
         ByVal Tbl As TableManager.TableClass)
 
     Const RoutineName As String = Module_Name & "BuildButtonRow"
@@ -339,10 +366,13 @@ Private Sub BuildButtonRow( _
                    "Move to the first row of the Table", _
                    "Move to the last row of the Table", _
                    "Exit the Form without changing the Table any further")
-        
+    
+    Dim DataLeft As Single
+    DataLeft = 0
     For I = LowerBound To UpperBound
         BuildOneButton ButtonNames(I), Top, DataLeft, _
                        ButtonLabels(I), Tbl
+                       DataLeft = DataLeft + ButtonWidth + StandardGap
     Next I
     '@Ignore LineLabelNotUsed
 Done:
@@ -371,7 +401,6 @@ Private Sub BuildOneButton( _
         .Caption = Cption
         .Top = Top
         .Left = Lft
-        Lft = Lft + ButtonWidth + StandardGap
         .Height = ButtonHeight
         .Width = ButtonWidth
         LowLightButton Ctl, Module_Name
@@ -731,15 +760,15 @@ Public Property Get Controls() As TableManager.ControlsClass: Set Controls = pCo
 
 Public Property Get Enabled() As Boolean: Enabled = pEnabled: End Property
 
-Public Property Let Enabled(ByVal En As Boolean): pEnabled = En: End Property
+Public Property Let Enabled(ByVal Vbl As Boolean): pEnabled = Vbl: End Property
 
 Public Property Get FormObj() As MSForms.UserForm: Set FormObj = pFormObj: End Property
 
-Public Property Set FormObj(ByVal FO As MSForms.UserForm): Set pFormObj = FO: End Property
+Public Property Set FormObj(ByVal Vbl As MSForms.UserForm): Set pFormObj = Vbl: End Property
 
 Public Property Get Name() As String: Name = pFormName: End Property
 
-Public Property Let Name(ByVal FN As String): pFormName = FN: End Property
+Public Property Let Name(ByVal Vbl As String): pFormName = Vbl: End Property
 
 Public Property Get Table() As TableManager.TableClass: Set Table = pTable: End Property
 
@@ -783,14 +812,27 @@ Private Function Logo(ByRef Tbl As TableManager.TableClass) As Control
         Set LogoImage.Picture = Pic
         With LogoImage
             .PictureAlignment = fmPictureAlignmentTopLeft
-'            .PictureSizeMode = fmPictureSizeModeZoom
+            .PictureSizeMode = fmPictureSizeModeZoom
             .BorderStyle = fmBorderStyleNone
             .BackStyle = fmBackStyleTransparent
-'            .AutoSize = True
-' http://microsoft.public.vb.winapi.narkive.com/L9KXT0cV/ole-xsize-himetric-and-ole-ysize-himetric-to-pixel
-' TODO The divisors of 35 and 32 work on my computer. I don't know if they will work on other computers.
-            .Height = Pic.Height / 35
-            .Width = Pic.Width / 32 '35
+            '            .AutoSize = True
+
+            Dim PicHeightToWidth As Single
+            PicHeightToWidth = Pic.Height / Pic.Width
+            
+            Dim Factor As Single
+            Factor = Application.WorksheetFunction.Max(Pic.Height, Pic.Width) / 35
+            Factor = Application.WorksheetFunction.Min(Factor, 200)
+
+            If PicHeightToWidth > 1 Then
+                ' Height > Width
+                .Height = Factor
+                .Width = Factor / PicHeightToWidth
+            Else
+                ' Width > Height
+                .Width = Factor
+                .Height = Factor * PicHeightToWidth
+            End If
         End With
         Set Logo = LogoImage
     Else
@@ -803,6 +845,3 @@ Done:
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Function
-
-
-

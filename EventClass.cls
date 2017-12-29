@@ -34,15 +34,17 @@ Private pComboObj As MSForms.ComboBox
 
 Private pName As String
 
-Public Property Set SheetEvent(ByVal WS As Worksheet): Set pSheetEvent = WS: End Property
+Private LastEvent As String
 
-Public Property Set FormEvent(ByVal UF As MSForms.UserForm): Set pFormEvent = UF: End Property
+Public Property Set SheetEvent(ByVal Vbl As Worksheet): Set pSheetEvent = Vbl: End Property
 
-Public Property Set ButtonEvent(ByVal CB As MSForms.CommandButton): Set pButtonEvent = CB: End Property
+Public Property Set FormEvent(ByVal Vbl As MSForms.UserForm): Set pFormEvent = Vbl: End Property
 
-Public Property Set TextEvent(ByVal TB As MSForms.TextBox): Set pTextEvent = TB: End Property
+Public Property Set ButtonEvent(ByVal Vbl As MSForms.CommandButton): Set pButtonEvent = Vbl: End Property
 
-Public Property Set ComboEvent(ByVal CB As MSForms.ComboBox): Set pComboEvent = CB: End Property
+Public Property Set TextEvent(ByVal Vbl As MSForms.TextBox): Set pTextEvent = Vbl: End Property
+
+Public Property Set ComboEvent(ByVal Vbl As MSForms.ComboBox): Set pComboEvent = Vbl: End Property
 
 Public Property Set TableObj(ByVal Tbl As TableManager.TableClass)
     Debug.Assert Initializing
@@ -86,19 +88,12 @@ Private Sub pFormEvent_MouseMove( _
 
     On Error GoTo ErrorHandler
     Const RoutineName As String = Module_Name & "FormEvent_MouseMove"
-        
-    Dim Ctl As Variant
     
-    LowLightAllBoxes
+    If LastEvent = "Form Event" Then Exit Sub
+    LastEvent = "Form Event"
+    
+    LowLightControl GetLastControl, Module_Name
 
-    For Each Ctl In pFormObj.Controls
-        If Ctl.Enabled And _
-           Left$(Ctl.Name, 3) = "Com" _
-           Then
-            LowLightControl Ctl, Module_Name
-        End If
-    Next Ctl
-    
     '@Ignore LineLabelNotUsed
 Done:
     Exit Sub
@@ -116,18 +111,18 @@ Private Sub pButtonEvent_MouseMove( _
     On Error GoTo ErrorHandler
     Const RoutineName As String = Module_Name & "ButtonEvent_MouseMove"
     
+    If LastEvent = "Button Event" Then Exit Sub
+    LastEvent = "Button Event"
+    
+    ' Exit if button already properly set
+    ' Reduces the flickering of the user form
+    If pButtonObj.BackColor = LightestColorValue Then Exit Sub
+    
     PaintButtons
     
-    Dim Ctl As Variant
-    
-    For Each Ctl In pFormObj.Controls
-        If Left$(Ctl.Name, 7) = "Command" Then
-            ' All button names start with "CommandButton"
-            LowLightControl Ctl, Module_Name
-        End If
-    Next Ctl
-    
     HighLightControl pButtonObj, Module_Name
+    
+    SetLastControl pButtonObj
         
     '@Ignore LineLabelNotUsed
 Done:
@@ -146,13 +141,15 @@ Private Sub pTextEvent_MouseMove( _
     On Error GoTo ErrorHandler
     Const RoutineName As String = Module_Name & "TextEvent_MouseMove"
     
-    Dim Ctl As Object
+    If LastEvent = "Text Event" Then Exit Sub
+    LastEvent = "Text Event"
     
-    ' Immediately exit if text box already properly set
+    ' Exit if text box already properly set
     ' Reduces the flickering of the user form
     If pTextObj.BackColor = LightestColorValue Then Exit Sub
     
-    LowLightAllBoxes
+    LowLightControl GetLastControl, Module_Name
+    SetLastControl pTextObj
     
     ' Highlight the selected Text Box
     HighLightControl pTextObj, Module_Name
@@ -174,13 +171,15 @@ Private Sub pComboEvent_MouseMove( _
     On Error GoTo ErrorHandler
     Const RoutineName As String = Module_Name & "ComboEvent_MouseMove"
     
-    Dim Ctl As Object
-
-    ' Immediately exit if combo box already properly set
+    If LastEvent = "Combo Event" Then Exit Sub
+    LastEvent = "Combo Event"
+    
+    ' Exit if combo box already properly set
     ' Reduces the flickering of the user form
     If pComboObj.BackColor = LightestColorValue Then Exit Sub
     
-    LowLightAllBoxes
+    LowLightControl GetLastControl, Module_Name
+    SetLastControl pComboObj
     
     HighLightControl pComboObj, Module_Name
 
@@ -192,16 +191,16 @@ ErrorHandler:
 
 End Sub                                          ' ComboEvent_MouseMove
 
-Private Sub LowLightAllBoxes()
+Private Sub LowLightAllControls()
     Dim Ctl As Variant
     
     For Each Ctl In pFormObj.Controls
         If Left$(Ctl.Name, 3) = "fld" Or _
            Left$(Ctl.Name, 3) = "cmb" Or _
            Left$(Ctl.Name, 3) = "whl" Or _
-           Left$(Ctl.Name, 3) = "dat" _
+           Left$(Ctl.Name, 3) = "dat" Or _
+           Left$(Ctl.Name, 7) = "Command" _
            Then
-            ' All text field names start with "fld"
             LowLightControl Ctl, Module_Name
         End If
     Next Ctl
@@ -364,6 +363,7 @@ End Sub                                          ' ButtonEvent_Click
 
 Private Sub PaintButtons()
     '   Sets all the button colors to reflect the current state of the form
+    ' Assumes that Next and Previous buttons are named properly
 
     On Error GoTo ErrorHandler
     Const RoutineName As String = Module_Name & "PaintButtons"
@@ -377,15 +377,11 @@ Private Sub PaintButtons()
             EnableButton Ctl, Module_Name
             LowLightControl Ctl, Module_Name
                 
-            If Ctl.Caption = "Previous Row" And _
-               pTableObj.ActiveRow = 1 _
-               Then
+            If Ctl.Caption = "Previous Row" And pTableObj.ActiveRow = 1 Then
                 DisableButton Ctl, Module_Name
             End If
                 
-            If Ctl.Caption = "Next Row" And _
-               pTableObj.ActiveRow = pTableObj.LastRow _
-               Then
+            If Ctl.Caption = "Next Row" And pTableObj.ActiveRow = pTableObj.LastRow Then
                 DisableButton Ctl, Module_Name
             End If
                 
@@ -401,6 +397,6 @@ ErrorHandler:
 End Sub                                          ' PaintButtons
 
 Public Property Get Name() As String: Name = pName: End Property
-Public Property Let Name(ByVal NM As String): pName = NM: End Property
+Public Property Let Name(ByVal Vbl As String): pName = Vbl: End Property
 
 

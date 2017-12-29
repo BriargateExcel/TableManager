@@ -66,6 +66,8 @@ Public Sub LowLightControl( _
     ByVal Ctl As Control, _
     ByVal Modulename As String)
     
+    If Ctl Is Nothing Then Exit Sub
+    
     Const RoutineName As String = Module_Name & "ValidateForm"
     Debug.Assert InScope(ModuleList, Modulename)
     

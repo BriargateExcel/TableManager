@@ -93,7 +93,7 @@ Public Property Get MaxHeaderLength() As Single: MaxHeaderLength = pMaxHeader: E
 
 Public Property Get Name() As String: Name = pTableName: End Property
 
-Public Property Let Name(ByVal TN As String): pTableName = TN: End Property
+Public Property Let Name(ByVal Vbl As String): pTableName = Vbl: End Property
 
 Public Property Get NumColumns() As Long: NumColumns = pCells.Count: End Property
 
@@ -213,17 +213,17 @@ End Function                                     ' DBRow
 
 Public Function SelectedDBCol(ByVal ColumnName As String) As Long
     Dim Rng As Range
-    Dim v As Variant
+    Dim Vbl As Variant
     
     Set Rng = Me.ActiveTarget.ListObject.HeaderRowRange
     On Error Resume Next
-    v = Application.WorksheetFunction.Match(ColumnName, Rng, 0)
+    Vbl = Application.WorksheetFunction.Match(ColumnName, Rng, 0)
     If Err.Number <> 0 Then
         SelectedDBCol = 0
         Exit Function
     End If
     On Error GoTo 0
-    SelectedDBCol = v
+    SelectedDBCol = Vbl
 End Function                                     ' SelectedDBCol
 
 Public Function ColumnRange(ByVal ColNum As Long) As Range

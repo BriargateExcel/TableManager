@@ -3,6 +3,86 @@ Option Explicit
 
 Private Const Module_Name As String = "ParameterRoutines."
 
+Public Function DarkestColorValue() As Long
+    DarkestColorValue = FieldValue("ColorTable", _
+                                   "Color Name", _
+                                   "Darkest Color", _
+                                   "Decimal Color Value", _
+                                   &H8000000E)
+End Function
+
+Public Function LightestColorValue() As Long
+    LightestColorValue = FieldValue("ColorTable", _
+                                    "Color Name", _
+                                    "Lightest Color", _
+                                    "Decimal Color Value", _
+                                    &H80000007)
+End Function
+
+Public Function FieldValue( _
+       ByVal TableName As String, _
+       ByVal SearchFieldName As String, _
+       ByVal SearchFieldValue As String, _
+       ByVal TargetFieldName As String, _
+       ByVal DefaultValue As Variant _
+       ) As Variant
+    
+    If FieldExistsInXLAM(TableName, SearchFieldName) Then
+        FieldValue = TableManager.GetCellValue(TableName, SearchFieldName, SearchFieldValue, TargetFieldName)
+    Else
+        If FieldExistsOnWorksheet(TableName, SearchFieldName) Then
+            Dim Tbl As ListObject
+            Set Tbl = MainWorkbook.Worksheets("Parameters").ListObjects(TableName)
+            
+            FieldValue = SearchTable(Tbl, SearchFieldName, SearchFieldValue, TargetFieldName)
+            If FieldValue = 0 Then FieldValue = DefaultValue
+        Else
+            FieldValue = DefaultValue
+        End If
+    End If
+End Function
+
+Private Function FieldExistsInXLAM( _
+        ByVal TableName As String, _
+        ByVal FieldName As String _
+        ) As Boolean
+ 
+    FieldExistsInXLAM = False
+    
+    If TableManager.TableExists(TableName, Module_Name) Then
+        Dim Tbl As TableManager.TableClass
+        Set Tbl = TableManager.Table(TableName, Module_Name)
+        
+        FieldExistsInXLAM = Tbl.TableCells.Exists(FieldName, Module_Name)
+    End If
+End Function
+
+Private Function FieldExistsOnWorksheet( _
+        ByVal TableName As String, _
+        ByVal FieldName As String _
+        ) As Boolean
+    
+    If TableExistsOnWorksheet(TableName) Then
+        Dim Tbl As ListObject
+        Set Tbl = MainWorkbook.Worksheets("Parameters").ListObjects(TableName)
+        
+        On Error Resume Next
+        FieldExistsOnWorksheet = (Application.WorksheetFunction.Match(FieldName, Tbl.HeaderRowRange, 0) <> 0)
+        FieldExistsOnWorksheet = (Err.Number = 0)
+    End If
+End Function
+
+Private Function TableExistsOnWorksheet(ByVal TableName As String) As Boolean
+    TableExistsOnWorksheet = False
+    If ParameterSheetExists Then
+        TableExistsOnWorksheet = Contains(MainWorkbook.Worksheets("Parameters").ListObjects, TableName)
+    End If
+End Function
+
+Private Function ParameterSheetExists() As Boolean
+    ParameterSheetExists = Contains(MainWorkbook.Worksheets, "Parameters")
+End Function
+
 Private Function SearchTable( _
         ByVal Tbl As ListObject, _
         ByVal KeyColumnName As String, _
@@ -43,72 +123,4 @@ Private Function SearchTable( _
             
     SearchTable = Tbl.DataBodyRange(KeyRow, DataColumn)
 End Function
-
-Public Function DarkestColorValue() As Long
-    If ColorNameFieldExistsInXLAM Then
-        DarkestColorValue = TableManager.GetCellValue("ColorTable", "Color Name", "Darkest Color", "Decimal Color Value")
-    Else
-        If ColorFieldExistsOnWorksheet Then
-            Dim Tbl As ListObject
-            Set Tbl = MainWorkbook.Worksheets("Parameters").ListObjects("ColorTable")
-            
-            DarkestColorValue = SearchTable(Tbl, "Color Name", "Darkest Color", "Decimal Color Value")
-            If DarkestColorValue = 0 Then DarkestColorValue = &H8000000E ' White; Default is Black text on white
-        Else
-            DarkestColorValue = &H8000000E ' White; Default is Black text on white
-        End If
-    End If
-End Function
-
-Public Function LightestColorValue() As Long
-    If ColorNameFieldExistsInXLAM Then
-        LightestColorValue = TableManager.GetCellValue("ColorTable", "Color Name", "Lightest Color", "Decimal Color Value")
-    Else
-        If ColorFieldExistsOnWorksheet Then
-            Dim Tbl As ListObject
-            Set Tbl = MainWorkbook.Worksheets("Parameters").ListObjects("ColorTable")
-            
-            LightestColorValue = SearchTable(Tbl, "Color Name", "Lightest Color", "Decimal Color Value")
-            If LightestColorValue = 0 Then LightestColorValue = &H80000007 ' Black; Default is Black text on white
-        Else
-            LightestColorValue = &H80000007 ' Black; Default is Black text on white
-        End If
-    End If
-End Function
-Private Function ParameterSheetExists() As Boolean
-    ParameterSheetExists = Contains(MainWorkbook.Worksheets, "Parameters")
-End Function
-
-Private Function ColorTableExistsOnWorksheet() As Boolean
-        ColorTableExistsOnWorksheet = False
-    If ParameterSheetExists Then
-        ColorTableExistsOnWorksheet = Contains(MainWorkbook.Worksheets("Parameters").ListObjects, "ColorTable")
-    End If
-End Function
-
-Private Function ColorFieldExistsOnWorksheet() As Boolean
-    If ColorTableExistsOnWorksheet Then
-        Dim Tbl As ListObject
-        Set Tbl = MainWorkbook.Worksheets("Parameters").ListObjects("ColorTable")
-        
-        On Error Resume Next
-        ColorFieldExistsOnWorksheet = (Application.WorksheetFunction.Match("Color Name", Tbl.HeaderRowRange, 0) <> 0)
-        ColorFieldExistsOnWorksheet = (Err.Number = 0)
-    End If
-End Function
-
-Private Function ColorNameFieldExistsInXLAM() As Boolean
-    ColorNameFieldExistsInXLAM = False
-    
-    If TableManager.TableExists("ColorTable", Module_Name) Then
-        Dim Tbl As TableManager.TableClass
-        Set Tbl = TableManager.Table("ColorTable", Module_Name)
-        
-        ColorNameFieldExistsInXLAM = Tbl.TableCells.Exists("Color Name", Module_Name)
-    End If
-End Function
-
-'Private Function ColorTableExistsInXLAM() As Boolean
-'    ColorTableExistsInXLAM = TableManager.TableExists("ColorTable", Module_Name)
-'End Function
 
