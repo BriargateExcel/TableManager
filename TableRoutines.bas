@@ -249,7 +249,7 @@ Public Sub BuildParameterTableOnWorksheet(ByVal Wkbk As Workbook)
             If Contains(.ListObjects, "ParameterTable") Then
                 .ListObjects("ParameterTable").Delete
             End If
-            .Range(UpperLeftCorner).Resize(RowCount, ColumnCount + 1).Value = Tary
+            .Range(UpperLeftCorner).Resize(RowCount + 1, ColumnCount + 1).Value = Tary
     
             Rng = UpperLeftCorner & ":" & ConvertToLetter(ColumnNumber + ColumnCount) & RowCount
             .ListObjects.Add(xlSrcRange, .Range(Rng), , xlYes).Name = "ParameterTable"
@@ -309,7 +309,12 @@ Private Sub SetCommonValidationParameters( _
     End If
     
 End Sub
+
 Public Sub ExtendDataValidationThroughAllTables(ByVal Wkbk As Workbook)
+
+    Const RoutineName As String = Module_Name & "ExtendDataValidationThroughAllTables"
+
+    On Error GoTo ErrorHandler
 
     Application.ScreenUpdating = False
     
@@ -333,7 +338,14 @@ Public Sub ExtendDataValidationThroughAllTables(ByVal Wkbk As Workbook)
     
     Application.ScreenUpdating = True
 
+    '@Ignore LineLabelNotUsed
+Done:
+    Exit Sub
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
+
 End Sub
+
 
 Public Sub BuildTable( _
        ByVal WS As TableManager.WorksheetClass, _
@@ -383,7 +395,7 @@ Private Sub PopulateValidationData( _
     
     If Cll.CellType <> xlValidateInputOnly Then
         If Cll.CellType <> xlValidateList Then
-            Tary(RowCount, 5) = Operators(Cll.Operator + 1)
+            Tary(RowCount, 5) = Operators(Cll.Operator)
         End If
         Tary(RowCount, 6) = AlertStyle(Cll.ValidAlertStyle + 1)
         If Left$(Cll.ValidationFormula1, 1) = "=" Then
@@ -595,5 +607,4 @@ Public Sub TableSetNothing(ByVal Modulename As String)
     Debug.Assert InScope(ModuleList, Modulename)
     Set pAllTbls = Nothing
 End Sub                                          ' TableSetNothing
-
 
