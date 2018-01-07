@@ -155,11 +155,31 @@ ErrorHandler:
 End Function                                     ' CollectTableData
 
 Public Function FirstCell() As Range
+    Const RoutineName As String = Module_Name & "FirstCell"
+    On Error GoTo ErrorHandler
+    
     Set FirstCell = pTable.DataBodyRange(1, 1)
+    
+    '@Ignore LineLabelNotUsed
+Done:
+    Exit Function
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
+
 End Function                                     ' FirstCell
 
 Public Function LastCell() As Range
+    Const RoutineName As String = Module_Name & "LastCell"
+    On Error GoTo ErrorHandler
+    
     Set LastCell = pTable.DataBodyRange(pTable.ListRows.Count, 1)
+    
+    '@Ignore LineLabelNotUsed
+Done:
+    Exit Function
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
+
 End Function                                     ' LastCell
 
 Public Function LastRow() As Long

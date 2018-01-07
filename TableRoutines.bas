@@ -49,22 +49,22 @@ Private Function ParameterDescriptionArray() As Variant
     
     Dim PDA As Variant                           ' Parameter Description Array
     PDA = Array( _
-            Array("Table Name", "xlValidateInputOnly"), _
-            Array("Cell Header Text", "xlValidateInputOnly"), _
-            Array("Key", "xlValidateList", ListOfYesNo), _
-            Array("Cell Name", "xlValidateInputOnly"), _
-            Array("Cell Type", "xlValidateList", ListOfTypes, "WrapText"), _
-            Array("Operator", "xlValidateList", ListOfOperators, "WrapText"), _
-            Array("Alert Style", "xlValidateList", ListOfAlertStyles, "WrapText"), _
-            Array("Formula 1", "xlValidateInputOnly", , "WrapText"), _
-            Array("Formula 2", "xlValidateInputOnly", , "WrapText"), _
-            Array("Ignore Blanks", "xlValidateList", ListOfTruefFalse), _
-            Array("Show Input Message", "xlValidateList", ListOfTruefFalse), _
-            Array("Input Title", "xlValidateInputOnly"), _
-            Array("Input Message", "xlValidateInputOnly", , "WrapText"), _
-            Array("Show Error Message", "xlValidateList", ListOfTruefFalse), _
-            Array("Error Title", "xlValidateInputOnly"), _
-            Array("Error Message", "xlValidateInputOnly", , "WrapText"))
+          Array("Table Name", "xlValidateInputOnly"), _
+                Array("Cell Header Text", "xlValidateInputOnly"), _
+                      Array("Key", "xlValidateList", ListOfYesNo), _
+                      Array("Cell Name", "xlValidateInputOnly"), _
+                            Array("Cell Type", "xlValidateList", ListOfTypes, "WrapText"), _
+                            Array("Operator", "xlValidateList", ListOfOperators, "WrapText"), _
+                            Array("Alert Style", "xlValidateList", ListOfAlertStyles, "WrapText"), _
+                            Array("Formula 1", "xlValidateInputOnly", , "WrapText"), _
+                            Array("Formula 2", "xlValidateInputOnly", , "WrapText"), _
+                            Array("Ignore Blanks", "xlValidateList", ListOfTruefFalse), _
+                            Array("Show Input Message", "xlValidateList", ListOfTruefFalse), _
+                            Array("Input Title", "xlValidateInputOnly"), _
+                                  Array("Input Message", "xlValidateInputOnly", , "WrapText"), _
+                                  Array("Show Error Message", "xlValidateList", ListOfTruefFalse), _
+                                  Array("Error Title", "xlValidateInputOnly"), _
+                                        Array("Error Message", "xlValidateInputOnly", , "WrapText"))
     
     ParameterDescriptionArray = PDA
     
@@ -189,6 +189,9 @@ End Sub
 
 Private Sub ExtendDataValidationDownTable(ByVal Tbl As TableManager.TableClass)
     
+    Const RoutineName As String = Module_Name & "ExtendDataValidationDownTable"
+    On Error GoTo ErrorHandler
+    
     Dim I As Long
     Dim CopyRange As Range
     
@@ -200,10 +203,19 @@ Private Sub ExtendDataValidationDownTable(ByVal Tbl As TableManager.TableClass)
     
     Application.CutCopyMode = False
 
+    '@Ignore LineLabelNotUsed
+Done:
+    Exit Sub
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
+
 End Sub
 
 Public Sub BuildParameterTableOnWorksheet(ByVal Wkbk As Workbook)
     ' Assumes that all tables start in Row 1
+    
+    Const RoutineName As String = Module_Name & "BuildParameterTableOnWorksheet"
+    On Error GoTo ErrorHandler
     
     Application.ScreenUpdating = False
 
@@ -248,6 +260,9 @@ Public Sub BuildParameterTableOnWorksheet(ByVal Wkbk As Workbook)
             Dim Rng As String
             If Contains(.ListObjects, "ParameterTable") Then
                 .ListObjects("ParameterTable").Delete
+                SetInitializing
+                TableRemove "ParameterTable", Module_Name
+                ReSetInitializing
             End If
             .Range(UpperLeftCorner).Resize(RowCount + 1, ColumnCount + 1).Value = Tary
     
@@ -260,8 +275,24 @@ Public Sub BuildParameterTableOnWorksheet(ByVal Wkbk As Workbook)
             AddValidationToParameterTable .ListObjects("ParameterTable")
             
         End With                                 ' .Worksheets("Parameters")
-    End With                                     ' Wkbk
+        ' Gather the table data
+        Dim Tbl As Variant
+        Set Tbl = New TableManager.TableClass
+        Tbl.Name = "ParameterTable"
+        Set Tbl.Table = .Worksheets("Parameters").ListObjects("ParameterTable")
         
+        SetInitializing
+        If Tbl.CollectTableData(TableManager.WkSht("Parameters", Module_Name), Tbl, Module_Name) Then
+            Dim Frm As TableManager.FormClass
+            Set Frm = New TableManager.FormClass
+            TableManager.TableAdd Tbl, Module_Name
+            
+            Set Frm.FormObj = Frm.BuildForm(Tbl, Module_Name)
+            Set Tbl.Form = Frm
+        End If
+        ReSetInitializing
+    End With                                     ' Wkbk
+     
     ActiveWindow.FreezePanes = True
     Application.ScreenUpdating = False
         
@@ -269,6 +300,12 @@ Public Sub BuildParameterTableOnWorksheet(ByVal Wkbk As Workbook)
     'TODO Use a Parameter table to help in adding an "Add New Element" option to the dropdown menus
     ' This will be a challenge because the Parameter table is the last to be built
     ' and all the forms are already built
+
+    '@Ignore LineLabelNotUsed
+Done:
+    Exit Sub
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
 End Sub
 
@@ -313,6 +350,7 @@ End Sub
 Public Sub ExtendDataValidationThroughAllTables(ByVal Wkbk As Workbook)
 
     Const RoutineName As String = Module_Name & "ExtendDataValidationThroughAllTables"
+    On Error GoTo ErrorHandler
 
     On Error GoTo ErrorHandler
 
@@ -346,14 +384,11 @@ ErrorHandler:
 
 End Sub
 
-
 Public Sub BuildTable( _
        ByVal WS As TableManager.WorksheetClass, _
        ByVal TblObj As ListObject, _
        ByVal Modulename As String)
     
-    Dim Tbl As Variant
-    Dim Frm As TableManager.FormClass
     
     Const RoutineName As String = Module_Name & "Buildtable"
     Debug.Assert InScope(ModuleList, Modulename)
@@ -361,10 +396,12 @@ Public Sub BuildTable( _
     On Error GoTo ErrorHandler
     
     ' Gather the table data
+    Dim Tbl As Variant
     Set Tbl = New TableManager.TableClass
     Tbl.Name = TblObj.Name
     Set Tbl.Table = TblObj
     If Tbl.CollectTableData(WS, Tbl, Module_Name) Then
+        Dim Frm As TableManager.FormClass
         Set Frm = New TableManager.FormClass
         TableManager.TableAdd Tbl, Module_Name
         
@@ -526,15 +563,23 @@ ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
 End Sub                                          ' PopulateTable
+
 Public Function Table( _
        ByVal TableName As String, _
        ByVal Modulename As String _
        ) As TableManager.TableClass
 
     Const RoutineName As String = Module_Name & "Table"
+    On Error GoTo ErrorHandler
     Debug.Assert InScope(ModuleList, Modulename)
 
     Set Table = pAllTbls.Item(TableName, Module_Name)
+
+    '@Ignore LineLabelNotUsed
+Done:
+    Exit Function
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
 End Function                                     ' Table
 
@@ -607,4 +652,5 @@ Public Sub TableSetNothing(ByVal Modulename As String)
     Debug.Assert InScope(ModuleList, Modulename)
     Set pAllTbls = Nothing
 End Sub                                          ' TableSetNothing
+
 

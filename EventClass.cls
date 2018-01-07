@@ -120,10 +120,11 @@ Private Sub pButtonEvent_MouseMove( _
     
     PaintButtons
     
+    LowLightControl GetLastControl, Module_Name
+    SetLastControl pButtonObj
+    
     HighLightControl pButtonObj, Module_Name
     
-    SetLastControl pButtonObj
-        
     '@Ignore LineLabelNotUsed
 Done:
     Exit Sub
@@ -141,15 +142,9 @@ Private Sub pTextEvent_MouseMove( _
     On Error GoTo ErrorHandler
     Const RoutineName As String = Module_Name & "TextEvent_MouseMove"
     
-    If LastEvent = "Text Event" Then Exit Sub
-    LastEvent = "Text Event"
-    
-    ' Exit if text box already properly set
-    ' Reduces the flickering of the user form
-    If pTextObj.BackColor = LightestColorValue Then Exit Sub
-    
     LowLightControl GetLastControl, Module_Name
     SetLastControl pTextObj
+    Debug.Print "Text"
     
     ' Highlight the selected Text Box
     HighLightControl pTextObj, Module_Name
@@ -171,15 +166,9 @@ Private Sub pComboEvent_MouseMove( _
     On Error GoTo ErrorHandler
     Const RoutineName As String = Module_Name & "ComboEvent_MouseMove"
     
-    If LastEvent = "Combo Event" Then Exit Sub
-    LastEvent = "Combo Event"
-    
-    ' Exit if combo box already properly set
-    ' Reduces the flickering of the user form
-    If pComboObj.BackColor = LightestColorValue Then Exit Sub
-    
     LowLightControl GetLastControl, Module_Name
     SetLastControl pComboObj
+    Debug.Print "Combo"
     
     HighLightControl pComboObj, Module_Name
 
@@ -191,21 +180,7 @@ ErrorHandler:
 
 End Sub                                          ' ComboEvent_MouseMove
 
-Private Sub LowLightAllControls()
-    Dim Ctl As Variant
-    
-    For Each Ctl In pFormObj.Controls
-        If Left$(Ctl.Name, 3) = "fld" Or _
-           Left$(Ctl.Name, 3) = "cmb" Or _
-           Left$(Ctl.Name, 3) = "whl" Or _
-           Left$(Ctl.Name, 3) = "dat" Or _
-           Left$(Ctl.Name, 7) = "Command" _
-           Then
-            LowLightControl Ctl, Module_Name
-        End If
-    Next Ctl
 
-End Sub
 Private Sub pSheetEvent_BeforeDoubleClick( _
         ByVal Target As Range, _
         Cancel As Boolean)

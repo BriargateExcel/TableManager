@@ -8,6 +8,30 @@ Private pMainWorkbook As Workbook
 
 Private LastControl As Control
 
+' TODO Implement more specific error messages
+Public Enum CustomError
+
+    Success = 0
+
+    [_First] = vbObjectError - 10000
+
+    CustomErrorOne ' description
+
+    CustomErrorTwo ' description
+
+    ' ... more error names
+
+    [_Last]
+
+End Enum
+
+Public Function IsValidErrNum(ByVal ErrNum As CustomError) As Boolean
+
+    IsValidErrNum = (ErrNum = CustomError.Success) Or _
+                    ((ErrNum > CustomError.[_First]) And (ErrNum < CustomError.[_Last]))
+
+End Function
+
 Public Sub SetLastControl(ByVal Ctl As Control)
     Set LastControl = Ctl
 End Sub
@@ -75,8 +99,17 @@ ErrorHandler:
     DisplayError RoutineName
 
 End Sub                                          ' AutoOpen
+
 Public Function Initializing() As Boolean
     Initializing = Init
 End Function                                     ' Initializing
+
+Public Sub SetInitializing()
+    Init = True
+End Sub
+
+Public Sub ReSetInitializing()
+    Init = False
+End Sub
 
 

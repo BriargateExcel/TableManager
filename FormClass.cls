@@ -169,6 +169,8 @@ Private Sub BuildControls( _
         BuildLabel Top, Field, MaxLabelWidth, Lbl
             
         ' Build the data field
+        ' TODO Set the format of the text field to match the format of the table element
+        '   Example: Locked numerical cells take on a General format
         If Field.Locked Then
             ' Set this up as a constant (label)
             BuildDataLabel Top, Field, MaxFieldWidth, Lbl
@@ -284,6 +286,9 @@ Private Function BuildAllButtons( _
     
     Arrangement = Format$(NumRows, "0") & " Rows of " & Format$(NumCols, "0")
     
+    ' TODO Can I rearrange the buttons so they more logically fall into
+    '   2x6, 3x4, and 4x3 arrangements? In other words, is there a better,
+    '   more logical way to arrange the buttons for the 3 configurations?
     Select Case Arrangement
     Case "2 Rows of 6"
         ' Add First Row of Buttons
@@ -384,7 +389,7 @@ End Sub
 Private Sub BuildOneButton( _
         ByVal Cption As String, _
         ByVal Top As Single, _
-        ByRef Lft As Single, _
+        ByVal Lft As Single, _
         ByVal Tip As String, _
         ByVal Tbl As TableManager.TableClass)
     
