@@ -33,9 +33,10 @@ Public Property Get Item( _
     'Attribute Item.VB_UserMemId = 0
 
     Const RoutineName As String = Module_Name & "Get Item"
+    On Error Resume Next
+    
     Debug.Assert InScope(ModuleList, Modulename)
         
-    On Error Resume Next
     Set Item = pAllTables.Items()(vIndex)
     If Err.Number = 0 Then
         On Error GoTo 0
@@ -66,10 +67,10 @@ Public Sub Add( _
     Debug.Assert Initializing
 
     Const RoutineName As String = Module_Name & "Add"
-    Debug.Assert InScope(ModuleList, Modulename)
-    
     On Error GoTo ErrorHandler
            
+    Debug.Assert InScope(ModuleList, Modulename)
+    
     If Tbl.Name <> vbNullString Then pAllTables.Add Tbl.Name, Tbl
         
     '@Ignore LineLabelNotUsed
@@ -86,9 +87,17 @@ Public Function Exists( _
     ) As Boolean
     
     Const RoutineName As String = Module_Name & "Exists"
+    On Error GoTo ErrorHandler
+    
     Debug.Assert InScope(ModuleList, Modulename)
     
     Exists = pAllTables.Exists(vIndex)
+
+    '@Ignore LineLabelNotUsed
+Done:
+    Exit Function
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Function                                     ' Exists
 
 Public Sub Remove( _
@@ -98,10 +107,10 @@ Public Sub Remove( _
     Debug.Assert Initializing
 
     Const RoutineName As String = Module_Name & "Remove"
-    Debug.Assert InScope(ModuleList, Modulename)
-    
     On Error GoTo ErrorHandler
    
+    Debug.Assert InScope(ModuleList, Modulename)
+    
     If CStr(vIndex) = "*" Then
         Set pAllTables = Nothing
         Set pAllTables = New Scripting.Dictionary

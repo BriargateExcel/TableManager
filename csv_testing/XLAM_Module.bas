@@ -10,12 +10,13 @@ Private LastControl As Control
 
 ' TODO Implement more specific error messages
 Public Enum CustomError
+' https://www.linkedin.com/pulse/interesting-technique-error-handling-enumeration-vba-chip-pearson/
 
     Success = 0
 
     [_First] = vbObjectError - 10000
 
-    CustomErrorOne ' description
+    ArrayMustBe1or2Dimensions ' description
 
     CustomErrorTwo ' description
 

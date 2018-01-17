@@ -46,9 +46,9 @@ Public Function BuildForm( _
     Debug.Assert Initializing
 
     Const RoutineName As Variant = Module_Name & "BuildForm"
-    Debug.Assert InScope(ModuleList, Modulename)
-    
     On Error GoTo ErrorHandler
+    
+    Debug.Assert InScope(ModuleList, Modulename)
     
     Set pTable = Tbl
     pWorksheetName = Tbl.WorksheetName

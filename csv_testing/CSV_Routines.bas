@@ -24,7 +24,7 @@ Sub TestInput()
         FullFileName = FullFileName & ".csv"
     Else
         While (Len(FullFileName) - InStr(FullFileName, ".csv")) > 3
-            FullFileName = Left(FullFileName, Len(FullFileName) - 1)
+            FullFileName = Left$(FullFileName, Len(FullFileName) - 1)
         Wend
     End If
 
@@ -46,7 +46,7 @@ End Sub
 Public Function ArrayFromCSVfile( _
        ByVal FullFileName As String, _
        Optional ByVal RowDelimiter As String = vbCr, _
-       Optional ByVal FieldDelimiter = ",", _
+       Optional ByVal FieldDelimiter As String = ",", _
        Optional ByVal RemoveQuotes As Boolean = True _
        ) As Variant
     ' https://stackoverflow.com/questions/12259595/load-csv-file-into-a-vba-array-rather-than-excel-sheet
@@ -64,8 +64,7 @@ Public Function ArrayFromCSVfile( _
     On Error GoTo ErrorHandler
     
     Dim FSO As Scripting.FileSystemObject
-    Dim arrData As Variant
-    Dim Folder As String
+    Dim DataArray As Variant
 
     Set FSO = New Scripting.FileSystemObject
     
@@ -76,7 +75,7 @@ Public Function ArrayFromCSVfile( _
     Application.StatusBar = "Reading the file... (" & FullFileName & ")"
 
     If Not RemoveQuotes Then
-        arrData = Join2d(FSO.OpenTextFile(FullFileName, ForReading).ReadAll, RowDelimiter, FieldDelimiter)
+        DataArray = Join2d(FSO.OpenTextFile(FullFileName, ForReading).ReadAll, RowDelimiter, FieldDelimiter)
         Application.StatusBar = "Reading the file... Done"
     Else
         ' we have to do some allocation here...
@@ -87,29 +86,29 @@ Public Function ArrayFromCSVfile( _
 
         Application.StatusBar = "Parsing the file..."
 
-        OneLine = Replace$(OneLine, Chr(34) & RowDelimiter, RowDelimiter)
-        OneLine = Replace$(OneLine, RowDelimiter & Chr(34), RowDelimiter)
-        OneLine = Replace$(OneLine, Chr(34) & FieldDelimiter, FieldDelimiter)
-        OneLine = Replace$(OneLine, FieldDelimiter & Chr(34), FieldDelimiter)
+        OneLine = Replace$(OneLine, Chr$(34) & RowDelimiter, RowDelimiter)
+        OneLine = Replace$(OneLine, RowDelimiter & Chr$(34), RowDelimiter)
+        OneLine = Replace$(OneLine, Chr$(34) & FieldDelimiter, FieldDelimiter)
+        OneLine = Replace$(OneLine, FieldDelimiter & Chr$(34), FieldDelimiter)
 
-        If Right$(OneLine, Len(OneLine)) = Chr(34) Then
+        If Right$(OneLine, Len(OneLine)) = Chr$(34) Then
             OneLine = Left$(OneLine, Len(OneLine) - 1)
         End If
 
-        If Left$(OneLine, 1) = Chr(34) Then
+        If Left$(OneLine, 1) = Chr$(34) Then
             OneLine = Right$(OneLine, Len(OneLine) - 1)
         End If
 
         Application.StatusBar = "Parsing the file... Done"
-        arrData = Split2d(OneLine, RowDelimiter, FieldDelimiter)
-        OneLine = ""
+        DataArray = Split2d(OneLine, RowDelimiter, FieldDelimiter)
+        OneLine = vbNullString
     End If
 
     Application.StatusBar = False
 
     Set FSO = Nothing
-    ArrayFromCSVfile = arrData
-    Erase arrData
+    ArrayFromCSVfile = DataArray
+    Erase DataArray
 
     '@Ignore LineLabelNotUsed
 Done:
@@ -120,7 +119,7 @@ End Function
 
 Public Function Split2d(ByVal InputString As String, _
                         Optional ByVal RowDelimiter As String = vbCrLf, _
-                        Optional ByVal FieldDelimiter = vbTab, _
+                        Optional ByVal FieldDelimiter As String = vbTab, _
                         Optional ByVal CoerceLowerBound As Long = 1 _
                         ) As Variant
     ' https://stackoverflow.com/questions/12259595/load-csv-file-into-a-vba-array-rather-than-excel-sheet
@@ -151,8 +150,8 @@ Public Function Split2d(ByVal InputString As String, _
     Dim I   As Long
     Dim J   As Long
 
-    Dim i_n As Long
-    Dim j_n As Long
+    Dim I_Lower As Long
+    Dim J_Lower As Long
 
     Dim FirstRow As Long
     Dim LastRow As Long
@@ -184,24 +183,25 @@ Public Function Split2d(ByVal InputString As String, _
         LastColumn = LastColumn - 1
     End If
 
-    i_n = CoerceLowerBound - FirstRow
-    j_n = CoerceLowerBound - FirstColumn
+    I_Lower = CoerceLowerBound - FirstRow
+    J_Lower = CoerceLowerBound - FirstColumn
 
-    ReDim arrData(FirstRow + i_n To LastRow + i_n, FirstColumn + j_n To LastColumn + j_n)
+    Dim DataArray() As Variant
+    ReDim DataArray(FirstRow + I_Lower To LastRow + I_Lower, FirstColumn + J_Lower To LastColumn + J_Lower)
 
     ' As we've got the first row already... populate it
     ' here, and start the main loop from lbound+1
 
     For J = FirstColumn To LastColumn
-        arrData(FirstRow + i_n, J + j_n) = OneRow(J)
+        DataArray(FirstRow + I_Lower, J + J_Lower) = OneRow(J)
     Next J
 
-    For I = FirstRow + 1 + i_n To LastRow + i_n Step 1
+    For I = FirstRow + 1 + I_Lower To LastRow + I_Lower Step 1
 
         OneRow = Split(ArrayOfRows(I), FieldDelimiter)
 
         For J = FirstColumn To LastColumn Step 1
-            arrData(I + i_n, J + j_n) = OneRow(J)
+            DataArray(I + I_Lower, J + J_Lower) = OneRow(J)
         Next J
 
         Erase OneRow
@@ -212,7 +212,7 @@ Public Function Split2d(ByVal InputString As String, _
 
     Application.StatusBar = False
 
-    Split2d = arrData
+    Split2d = DataArray
 
     '@Ignore LineLabelNotUsed
 Done:
@@ -221,11 +221,12 @@ ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Function
 
-Public Function Join2d(ByRef InputArray As Variant, _
-                       Optional RowDelimiter As String = vbCr, _
-                       Optional FieldDelimiter = vbTab, _
-                       Optional SkipBlankRows As Boolean = False _
-                       ) As String
+Public Function Join2d( _
+       ByVal InputArray As Variant, _
+       Optional ByVal RowDelimiter As String = vbCr, _
+       Optional ByVal FieldDelimiter As String = vbTab, _
+       Optional ByVal SkipBlankRows As Boolean = False _
+       ) As String
     ' https://stackoverflow.com/questions/12259595/load-csv-file-into-a-vba-array-rather-than-excel-sheet
     ' Join up a 2-dimensional array into a string. Works like the standard
     '  VBA.Strings.Join, for a 2-dimensional array.
@@ -249,59 +250,59 @@ Public Function Join2d(ByRef InputArray As Variant, _
     Dim I As Long
     Dim J As Long
 
-    Dim i_lBound As Long
-    Dim i_uBound As Long
-    Dim j_lBound As Long
-    Dim j_uBound As Long
+    Dim I_LBound As Long
+    Dim I_UBound As Long
+    Dim J_LBound As Long
+    Dim J_UBound As Long
 
-    Dim arrTemp1() As String
-    Dim arrTemp2() As String
+    Dim ArrayOfRows() As String
+    Dim ArrayOfColumns() As String
 
-    Dim strBlankRow As String
+    Dim BlankRow As String
 
-    i_lBound = LBound(InputArray, 1)
-    i_uBound = UBound(InputArray, 1)
+    I_LBound = LBound(InputArray, 1)
+    I_UBound = UBound(InputArray, 1)
 
-    j_lBound = LBound(InputArray, 2)
-    j_uBound = UBound(InputArray, 2)
+    J_LBound = LBound(InputArray, 2)
+    J_UBound = UBound(InputArray, 2)
 
-    ReDim arrTemp1(i_lBound To i_uBound)
-    ReDim arrTemp2(j_lBound To j_uBound)
+    ReDim ArrayOfRows(I_LBound To I_UBound)
+    ReDim ArrayOfColumns(J_LBound To J_UBound)
 
-    For I = i_lBound To i_uBound
+    For I = I_LBound To I_UBound
 
-        For J = j_lBound To j_uBound
-            arrTemp2(J) = InputArray(I, J)
+        For J = J_LBound To J_UBound
+            ArrayOfColumns(J) = InputArray(I, J)
         Next J
 
-        arrTemp1(I) = Join(arrTemp2, FieldDelimiter)
+        ArrayOfRows(I) = Join(ArrayOfColumns, FieldDelimiter)
 
     Next I
 
     If SkipBlankRows Then
 
         If Len(FieldDelimiter) = 1 Then
-            strBlankRow = String(j_uBound - j_lBound, FieldDelimiter)
+            BlankRow = String(J_UBound - J_LBound, FieldDelimiter)
         Else
-            For J = j_lBound To j_uBound
-                strBlankRow = strBlankRow & FieldDelimiter
+            For J = J_LBound To J_UBound
+                BlankRow = BlankRow & FieldDelimiter
             Next J
         End If
 
-        Join2d = Replace(Join(arrTemp1, RowDelimiter), strBlankRow, RowDelimiter, "")
-        I = Len(strBlankRow & RowDelimiter)
+        Join2d = Replace(Join(ArrayOfRows, RowDelimiter), BlankRow, RowDelimiter, vbNullString)
+        I = Len(BlankRow & RowDelimiter)
 
-        If Left(Join2d, I) = strBlankRow & RowDelimiter Then
-            Mid$(Join2d, 1, I) = ""
+        If Left$(Join2d, I) = BlankRow & RowDelimiter Then
+            Mid$(Join2d, 1, I) = vbNullString
         End If
 
     Else
 
-        Join2d = Join(arrTemp1, RowDelimiter)
+        Join2d = Join(ArrayOfRows, RowDelimiter)
 
     End If
 
-    Erase arrTemp1
+    Erase ArrayOfRows
 
     '@Ignore LineLabelNotUsed
 Done:
@@ -359,9 +360,9 @@ Public Sub SaveAsCSV( _
     ' written by P. Wester
     ' wester@kpd.nl
 
-    Dim n As Long                                'counter
-    Dim M As Long                                'counter
-    Dim CSV As String                            'csv string to print
+    Dim I As Long                                'counter
+    Dim J As Long                                'counter
+    Dim OneRow As String                            'csv string to print
 
     Const RoutineName As String = Module_Name & "SaveACSV"
     On Error GoTo ErrorHandler
@@ -379,7 +380,7 @@ Public Sub SaveAsCSV( _
         FullFileName = FullFileName & ".csv"
     Else
         While (Len(FullFileName) - InStr(FullFileName, ".csv")) > 3
-            FullFileName = Left(FullFileName, Len(FullFileName) - 1)
+            FullFileName = Left$(FullFileName, Len(FullFileName) - 1)
         Wend
     End If
 
@@ -400,9 +401,9 @@ Public Sub SaveAsCSV( _
         Else
             UpperBound1 = UBound(MyArray(), 1) - 1
         End If
-        For n = LowerBound To UpperBound1
-            Print #7, Format(MyArray(n, 0), "0.000000E+00")
-        Next n
+        For I = LowerBound To UpperBound1
+            Print #7, Format$(MyArray(I, 0), "0.000000E+00")
+        Next I
         Close #7
 
     ElseIf NumberOfArrayDimensions(MyArray()) = 2 Then '2 dimensional
@@ -416,17 +417,17 @@ Public Sub SaveAsCSV( _
             UpperBound2 = UBound(MyArray(), 2) - 1
         End If
         
-        For n = LowerBound To UpperBound1
-            CSV = ""
-            For M = LowerBound To UpperBound2
-                CSV = CSV & Format(MyArray(n, M)) & Delimiter
-            Next M
-            CSV = Left(CSV, Len(CSV) - 1)        'remove last Delimiter
-            Print #7, CSV
-        Next n
+        For I = LowerBound To UpperBound1
+            OneRow = vbNullString
+            For J = LowerBound To UpperBound2
+                OneRow = OneRow & Format$(MyArray(I, J)) & Delimiter
+            Next J
+            OneRow = Left$(OneRow, Len(OneRow) - 1)       'remove last Delimiter
+            Print #7, OneRow
+        Next I
         Close #7
     Else
-        Stop
+        Error.Raise ArrayMustBe1or2Dimensions, RoutineName, "Array must be 1 or 2 dimensions"
     End If
 
     '@Ignore LineLabelNotUsed
@@ -436,5 +437,6 @@ ErrorHandler:
     Close #7
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Sub
+
 
 

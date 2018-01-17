@@ -33,6 +33,8 @@ Public Property Get Item( _
     'Attribute Item.VB_UserMemId = 0
 
     Const RoutineName As String = Module_Name & "Get Item"
+    On Error GoTo ErrorHandler
+    
     Debug.Assert InScope(ModuleList, Modulename)
     
     On Error Resume Next
@@ -64,6 +66,8 @@ Public Sub Add( _
     Debug.Assert Initializing
 
     Const RoutineName As String = Module_Name & "Add"
+    On Error GoTo ErrorHandler
+    
     Debug.Assert InScope(ModuleList, Modulename)
     
     On Error GoTo ErrorHandler
@@ -82,13 +86,13 @@ Public Sub Remove( _
     ByVal vIndex As Variant, _
     ByVal Modulename As String)
     
-    Debug.Assert Initializing
-
     Const RoutineName As String = Module_Name & "Remove"
-    Debug.Assert InScope(ModuleList, Modulename)
-    
     On Error GoTo ErrorHandler
    
+    Debug.Assert Initializing
+
+    Debug.Assert InScope(ModuleList, Modulename)
+    
     If CStr(vIndex) = "*" Then
         Set pAllControls = Nothing
         Set pAllControls = New Collection

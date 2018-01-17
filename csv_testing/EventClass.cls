@@ -86,8 +86,8 @@ Private Sub pFormEvent_MouseMove( _
         ByVal x As Single, _
         ByVal y As Single)
 
-    On Error GoTo ErrorHandler
     Const RoutineName As String = Module_Name & "FormEvent_MouseMove"
+    On Error GoTo ErrorHandler
     
     If LastEvent = "Form Event" Then Exit Sub
     LastEvent = "Form Event"
@@ -108,8 +108,8 @@ Private Sub pButtonEvent_MouseMove( _
         ByVal x As Single, _
         ByVal y As Single)
     
-    On Error GoTo ErrorHandler
     Const RoutineName As String = Module_Name & "ButtonEvent_MouseMove"
+    On Error GoTo ErrorHandler
     
     If LastEvent = "Button Event" Then Exit Sub
     LastEvent = "Button Event"
@@ -139,8 +139,8 @@ Private Sub pTextEvent_MouseMove( _
         ByVal x As Single, _
         ByVal y As Single)
 
-    On Error GoTo ErrorHandler
     Const RoutineName As String = Module_Name & "TextEvent_MouseMove"
+    On Error GoTo ErrorHandler
     
     LowLightControl GetLastControl, Module_Name
     SetLastControl pTextObj
@@ -163,8 +163,8 @@ Private Sub pComboEvent_MouseMove( _
         ByVal x As Single, _
         ByVal y As Single)
 
-    On Error GoTo ErrorHandler
     Const RoutineName As String = Module_Name & "ComboEvent_MouseMove"
+    On Error GoTo ErrorHandler
     
     LowLightControl GetLastControl, Module_Name
     SetLastControl pComboObj
@@ -180,15 +180,14 @@ ErrorHandler:
 
 End Sub                                          ' ComboEvent_MouseMove
 
-
 Private Sub pSheetEvent_BeforeDoubleClick( _
         ByVal Target As Range, _
         Cancel As Boolean)
     
     Dim Isect As Range
     
-    On Error GoTo ErrorHandler
     Const RoutineName As String = Module_Name & "SheetEvent_BeforeDoubleClick"
+    On Error GoTo ErrorHandler
     
     Dim TableName As String
     Dim Tbl As TableManager.TableClass
@@ -340,8 +339,8 @@ Private Sub PaintButtons()
     '   Sets all the button colors to reflect the current state of the form
     ' Assumes that Next and Previous buttons are named properly
 
-    On Error GoTo ErrorHandler
     Const RoutineName As String = Module_Name & "PaintButtons"
+    On Error GoTo ErrorHandler
     
     Debug.Assert Not Initializing
     

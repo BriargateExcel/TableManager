@@ -21,6 +21,8 @@ Public Function CheckForVBAProjectAccessEnabled(ByVal Wkbk As Workbook) As Boole
     Const RoutineName As String = Module_Name & "CheckForVBAProjectAccessEnabled"
     On Error GoTo ErrorHandler
     
+    On Error GoTo ErrorHandler
+    
     Dim VBP As VBProject
     
     If Val(Application.VERSION) >= 10 Then
@@ -51,7 +53,8 @@ Public Function InScope( _
     '   In other words, returns True if ModuleName is found in ModuleList
     
     Const RoutineName As String = "InScope"
-
+    On Error GoTo ErrorHandler
+    
     '     Log RoutineName & ":    " & ModuleName
 
     Dim OneDimArray() As Variant
@@ -349,14 +352,14 @@ End Sub                                          ' ClearTable
 
 Public Function Contains( _
        ByVal Coll As Object, _
-       ByVal strName As String _
+       ByVal NamePotentiallyInCollection As String _
        ) As Boolean
     
     Dim Obj As Object
 
     On Error Resume Next
     
-    Set Obj = Coll(strName)
+    Set Obj = Coll(NamePotentiallyInCollection)
     Contains = (Err.Number = 0)
 End Function                                     ' Contains
 
@@ -375,7 +378,7 @@ Public Function FindLastRow( _
        ) As Long
     Dim RegionRow As Long: RegionRow = Sheet.Range(ColLetter & RowNumber).CurrentRegion.Rows.Count
     Dim ColumnRow As Long: ColumnRow = Sheet.Range(ColLetter & Sheet.Rows.Count).End(xlUp).Row
-    Dim ColumnNumber As Integer: ColumnNumber = Sheet.Range(ColLetter & 1).Column
+    Dim ColumnNumber As Long: ColumnNumber = Sheet.Range(ColLetter & 1).Column
     Dim I As Long
     Dim CurrentCell As Range
 

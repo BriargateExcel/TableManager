@@ -18,9 +18,9 @@ Public Function ValidateForm( _
     Dim I As Long
     
     Const RoutineName As String = Module_Name & "ValidateForm"
-    Debug.Assert InScope(ModuleList, Modulename)
-    
     On Error GoTo ErrorHandler
+    
+    Debug.Assert InScope(ModuleList, Modulename)
     
     For I = 0 To Tbl.CellCount - 1
         Set Field = Tbl.TableCells.Item(I, Module_Name)
@@ -525,9 +525,9 @@ Public Sub PopulateForm( _
        ByVal Modulename As String)
 
     Const RoutineName As String = Module_Name & "PopulateForm"
-    Debug.Assert InScope(ModuleList, Modulename)
-
     On Error GoTo ErrorHandler
+
+    Debug.Assert InScope(ModuleList, Modulename)
 
     Dim Field As TableManager.CellClass
     Dim DBRange As Range: Set DBRange = Tbl.DBRange
@@ -575,9 +575,9 @@ Public Sub ClearForm( _
        ByVal Modulename As String)
 
     Const RoutineName As String = Module_Name & "ClearForm"
-    Debug.Assert InScope(ModuleList, Modulename)
-
     On Error GoTo ErrorHandler
+
+    Debug.Assert InScope(ModuleList, Modulename)
 
     Dim Field As TableManager.CellClass
     Dim I As Long

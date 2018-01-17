@@ -26,6 +26,7 @@ Public Property Get Item(ByVal vIndex As Variant) As TableManager.WorksheetClass
     'Attribute Item.VB_UserMemId = 0
     
     Const RoutineName As String = Module_Name & "Get Item"
+    On Error GoTo ErrorHandler
     
     On Error Resume Next
     Set Item = pAllSheets.Items()(vIndex)
