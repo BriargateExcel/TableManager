@@ -10,7 +10,6 @@ Private LastControl As Control
 
 ' TODO Implement more specific error messages
 Public Enum CustomError
-' https://www.linkedin.com/pulse/interesting-technique-error-handling-enumeration-vba-chip-pearson/
 
     Success = 0
 
@@ -45,14 +44,18 @@ Public Function GetMainWorkbook() As Workbook
     Set GetMainWorkbook = pMainWorkbook
 End Function
 
-Public Sub SetMainWorkbook(ByVal Wkbk As Workbook)
-    Set pMainWorkbook = Wkbk
+Public Sub SetMainWorkbook(ByVal WkBk As Workbook)
+    Set pMainWorkbook = WkBk
 End Sub
 
-Public Sub AutoOpen(ByVal Wkbk As Workbook)
+Public Function GetWorkBookPath() As String
+    GetWorkBookPath = GetMainWorkbook.Path
+End Function
+
+Public Sub AutoOpen(ByVal WkBk As Workbook)
     
     Dim Sht As Worksheet
-    Dim Tbl As ListObject
+    Dim TblObj As ListObject
     Dim UserFrm As Object
     Dim WkSht As TableManager.WorksheetClass
     
@@ -60,7 +63,7 @@ Public Sub AutoOpen(ByVal Wkbk As Workbook)
     On Error GoTo ErrorHandler
     
     Init = True
-    Set pMainWorkbook = Wkbk
+    Set pMainWorkbook = WkBk
     
     If Not CheckForVBAProjectAccessEnabled(ThisWorkbook) Then
         MsgBox "You must set the project access for the " & _
@@ -86,11 +89,12 @@ Public Sub AutoOpen(ByVal Wkbk As Workbook)
         Set WkSht.Worksheet = Sht
         WkSht.Name = Sht.Name
         
-        For Each Tbl In Sht.ListObjects
-            BuildTable WkSht, Tbl, Module_Name
-        Next Tbl
-        
         TableManager.WorksheetAdd WkSht, Module_Name
+        
+        For Each TblObj In Sht.ListObjects
+            BuildTable TblObj, Module_Name
+        Next TblObj
+        
     Next Sht
     
     DoEvents

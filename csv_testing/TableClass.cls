@@ -13,6 +13,7 @@ Private Const Module_Name As String = "TableClass."
 
 Private pTableName As String
 Private pWkShtName As String
+Private pWkSht As Worksheet
 Private pForm As TableManager.FormClass
 Private pCells As TableManager.CellsClass
 Private pTable As ListObject
@@ -46,7 +47,7 @@ Public Sub GoToHome()
 End Sub
 
 Public Property Get DBRange() As Range
-    Set DBRange = GetMainWorkbook.Worksheets(pWkShtName).ListObjects(pTableName).DataBodyRange
+    Set DBRange = pWkSht.ListObjects(pTableName).DataBodyRange
 End Property
 
 Public Property Get DBColRange( _
@@ -107,6 +108,8 @@ Public Property Set Target(ByVal Vbl As Range): Set pTarget = Vbl: End Property
 
 Public Property Get WorksheetName() As String: WorksheetName = pWkShtName: End Property
 
+Public Property Get Worksheet() As String: Worksheet = pWkSht: End Property
+
 Public Property Get WrapCount() As Long: WrapCount = pWrapCount: End Property
 
 Public Property Get Table() As ListObject: Set Table = pTable: End Property
@@ -129,10 +132,9 @@ Public Function CollectTableData( _
     
     Debug.Assert InScope(ModuleList, Modulename)
     
-    On Error GoTo ErrorHandler
-    
     pTableName = Tbl.Name
     pWkShtName = WS.Worksheet.Name
+    Set pWkSht = WS.Worksheet
     pLocked = True
     
     For Each Element In pTable.HeaderRowRange
@@ -249,8 +251,7 @@ Public Function SelectedDBCol(ByVal ColumnName As String) As Long
 End Function                                     ' SelectedDBCol
 
 Public Function ColumnRange(ByVal ColNum As Long) As Range
-    Set ColumnRange = GetMainWorkbook.Worksheets(pWkShtName).Range( _
-        DBRange(1, ColNum), DBRange(NumRows, ColNum))
+    Set ColumnRange = pWkSht.Range(DBRange(1, ColNum), DBRange(NumRows, ColNum))
 End Function
 
 Public Function CellCount() As Long: CellCount = pCells.Count: End Function

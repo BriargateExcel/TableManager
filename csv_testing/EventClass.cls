@@ -208,8 +208,7 @@ Private Sub pSheetEvent_BeforeDoubleClick( _
     
     Set Isect = Application.Intersect(Target, Tbl.Table.HeaderRowRange)
     If Not Isect Is Nothing Then
-        MsgBox "Please select a cell in the body of the table", _
-               vbOKOnly Or vbExclamation, "Selected a Header Cell"
+        HandleCopyFetch TableName
         Exit Sub
     End If
     

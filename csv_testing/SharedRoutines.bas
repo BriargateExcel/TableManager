@@ -16,7 +16,7 @@ Public Function ActiveCellTableName() As String
     On Error GoTo 0                              ' Reset the error handling
 End Function                                     ' ActiveCellTableName
 
-Public Function CheckForVBAProjectAccessEnabled(ByVal Wkbk As Workbook) As Boolean
+Public Function CheckForVBAProjectAccessEnabled(ByVal WkBk As Workbook) As Boolean
 
     Const RoutineName As String = Module_Name & "CheckForVBAProjectAccessEnabled"
     On Error GoTo ErrorHandler
@@ -26,7 +26,7 @@ Public Function CheckForVBAProjectAccessEnabled(ByVal Wkbk As Workbook) As Boole
     Dim VBP As VBProject
     
     If Val(Application.VERSION) >= 10 Then
-        Set VBP = Wkbk.VBProject
+        Set VBP = WkBk.VBProject
         CheckForVBAProjectAccessEnabled = True
     Else
         MsgBox "This application must be run on Excel 2002 or greater", _
@@ -394,5 +394,11 @@ Public Function FindLastRow( _
         Next I
     End If
 End Function                                     ' FindLastRow
+
+Public Function FileExists(ByVal FullFileName As String) As Boolean
+    Dim FSO As Scripting.FileSystemObject
+    Set FSO = New Scripting.FileSystemObject
+    FileExists = FSO.FileExists(FullFileName)
+End Function
 
 

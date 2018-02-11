@@ -39,6 +39,8 @@ Public Property Get Item(ByVal vIndex As Variant) As TableManager.WorksheetClass
     Set Item = pAllSheets(vIndex)
     On Error GoTo 0
     
+    Debug.Assert Not Item Is Nothing
+    
     '@Ignore LineLabelNotUsed
 Done:
     Exit Property

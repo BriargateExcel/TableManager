@@ -48,13 +48,14 @@ Public Property Get Item( _
     Set Item = pAllEvents(vIndex)
     On Error GoTo 0
 
+    Debug.Assert Not Item Is Nothing
+
     '@Ignore LineLabelNotUsed
 Done:
     Exit Property
     '@Ignore LineLabelNotUsed
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
-
 End Property
 
 Public Sub Add( _

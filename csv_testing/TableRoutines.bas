@@ -211,7 +211,7 @@ ErrorHandler:
 
 End Sub
 
-Public Sub BuildParameterTableOnWorksheet(ByVal Wkbk As Workbook)
+Public Sub BuildParameterTableOnWorksheet(ByVal WkBk As Workbook)
     ' Assumes that all tables start in Row 1
     
     Const RoutineName As String = Module_Name & "BuildParameterTableOnWorksheet"
@@ -228,7 +228,7 @@ Public Sub BuildParameterTableOnWorksheet(ByVal Wkbk As Workbook)
     Dim ColumnCount As Long
     ColumnCount = UBound(Tary, 2)
     
-    With Wkbk
+    With WkBk
         ' Ensure there's a sheet called "Parameters"
         If Not Contains(.Worksheets, "Parameters") Then
             .Worksheets.Add(After:=.Worksheets(.Worksheets.Count)).Name = "Parameters"
@@ -264,7 +264,7 @@ Public Sub BuildParameterTableOnWorksheet(ByVal Wkbk As Workbook)
                 TableRemove "ParameterTable", Module_Name
                 ReSetInitializing
             End If
-            .Range(UpperLeftCorner).Resize(RowCount + 1, ColumnCount + 1).Value = Tary
+            .Range(UpperLeftCorner).Resize(RowCount + 1, ColumnCount + 1).value = Tary
     
             Rng = UpperLeftCorner & ":" & ConvertToLetter(ColumnNumber + ColumnCount) & RowCount
             .ListObjects.Add(xlSrcRange, .Range(Rng), , xlYes).Name = "ParameterTable"
@@ -275,23 +275,9 @@ Public Sub BuildParameterTableOnWorksheet(ByVal Wkbk As Workbook)
             AddValidationToParameterTable .ListObjects("ParameterTable")
             
         End With                                 ' .Worksheets("Parameters")
-        ' Gather the table data
-        Dim Tbl As Variant
-        Set Tbl = New TableManager.TableClass
-        Tbl.Name = "ParameterTable"
-        Set Tbl.Table = .Worksheets("Parameters").ListObjects("ParameterTable")
-        
-        SetInitializing
-        If Tbl.CollectTableData(TableManager.WkSht("Parameters", Module_Name), Tbl, Module_Name) Then
-            Dim Frm As TableManager.FormClass
-            Set Frm = New TableManager.FormClass
-            TableManager.TableAdd Tbl, Module_Name
-            
-            Set Frm.FormObj = Frm.BuildForm(Tbl, Module_Name)
-            Set Tbl.Form = Frm
-        End If
-        ReSetInitializing
+    BuildTable .ListObjects("ParameterTable"), Module_Name
     End With                                     ' Wkbk
+        
      
     ActiveWindow.FreezePanes = True
     Application.ScreenUpdating = False
@@ -307,6 +293,18 @@ Done:
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
+End Sub
+
+Private Sub BuildTableAndForm()
+    Const RoutineName As String = Module_Name & "BuildParameterTableOnWorksheet"
+    On Error GoTo ErrorHandler
+
+    
+'@Ignore LineLabelNotUsed
+Done:
+Exit Sub
+ErrorHandler:
+RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Sub
 
 Private Sub SetCommonValidationParameters( _
@@ -347,7 +345,7 @@ Private Sub SetCommonValidationParameters( _
     
 End Sub
 
-Public Sub ExtendDataValidationThroughAllTables(ByVal Wkbk As Workbook)
+Public Sub ExtendDataValidationThroughAllTables(ByVal WkBk As Workbook)
 
     Const RoutineName As String = Module_Name & "ExtendDataValidationThroughAllTables"
     On Error GoTo ErrorHandler
@@ -357,7 +355,7 @@ Public Sub ExtendDataValidationThroughAllTables(ByVal Wkbk As Workbook)
     Application.ScreenUpdating = False
     
     Dim CurrentSheet As Worksheet
-    Set CurrentSheet = Wkbk.ActiveSheet
+    Set CurrentSheet = WkBk.ActiveSheet
     
     Dim CurrentCell As Range
     Set CurrentCell = ActiveCell
@@ -367,7 +365,7 @@ Public Sub ExtendDataValidationThroughAllTables(ByVal Wkbk As Workbook)
     For I = 0 To pAllTbls.Count - 1
         Set Tbl = Table(I, Module_Name)
         ExtendDataValidationDownTable Tbl
-        Wkbk.Worksheets(Tbl.WorksheetName).Activate
+        WkBk.Worksheets(Tbl.WorksheetName).Activate
         Tbl.FirstCell.Select
     Next I
     
@@ -385,31 +383,24 @@ ErrorHandler:
 End Sub
 
 Public Sub BuildTable( _
-       ByVal WS As TableManager.WorksheetClass, _
        ByVal TblObj As ListObject, _
        ByVal Modulename As String)
-    
-    
+       
     Const RoutineName As String = Module_Name & "Buildtable"
     On Error GoTo ErrorHandler
     
     Debug.Assert InScope(ModuleList, Modulename)
     
-    On Error GoTo ErrorHandler
-    
-    ' Gather the table data
-    Dim Tbl As Variant
-    Set Tbl = New TableManager.TableClass
-    Tbl.Name = TblObj.Name
-    Set Tbl.Table = TblObj
-    If Tbl.CollectTableData(WS, Tbl, Module_Name) Then
+    SetInitializing
+    If Tbl.CollectTableData(Tbl.Worksheet, Tbl, Module_Name) Then
         Dim Frm As TableManager.FormClass
         Set Frm = New TableManager.FormClass
         TableManager.TableAdd Tbl, Module_Name
-        
+            
         Set Frm.FormObj = Frm.BuildForm(Tbl, Module_Name)
         Set Tbl.Form = Frm
     End If
+    ReSetInitializing
     
     '@Ignore LineLabelNotUsed
 Done:
@@ -719,4 +710,34 @@ ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Sub                                          ' TableSetNothing
 
+Public Sub CopyToTable( _
+    ByVal TableName As String, _
+    ByVal Ary As Variant)
+    Const RoutineName As String = Module_Name & "CopyToTable"
+    On Error GoTo ErrorHandler
+    
+    
+    Dim Sht As Worksheet
+    Set Sht = GetMainWorkbook.Worksheets(TableManager.Table(TableName, Module_Name).WorksheetName)
+    
+    Dim UpperLeftRange As Range
+    Set UpperLeftRange = Table(TableName, Module_Name).FirstCell.Offset(-1, 0)
+    
+    TableManager.TableRemove TableName, Module_Name
+
+    UpperLeftRange.Resize(UBound(Ary, 1), UBound(Ary, 2)) = Ary
+    
+    Dim UpperLeft As String
+    Dim LowerRight As String
+    UpperLeft = Table(TableName, Module_Name).FirstCell.Address
+    LowerRight = ConvertToLetter(UBound(Ary, 2)) & UBound(Ary, 1)
+    Sht.ListObjects.Add(xlSrcRange, Range(UpperLeft & ":" & LowerRight), , xlYes).Name = TableName
+
+    '@Ignore LineLabelNotUsed
+Done:
+    Exit Sub
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
+End Sub
+    
 

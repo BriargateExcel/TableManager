@@ -1,4 +1,4 @@
-Attribute VB_Name = "CSV_Routines"
+Attribute VB_Name = "CSV_Routines1"
 Option Explicit
 
 Private Const Module_Name As String = "CSV_Routines."

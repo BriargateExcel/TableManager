@@ -51,6 +51,8 @@ Public Property Get Item( _
                "Form Does Not Exist"
     End If
     On Error GoTo 0
+    
+    Debug.Assert Not Item Is Nothing
 
     '@Ignore LineLabelNotUsed
 Done:
@@ -58,7 +60,6 @@ Done:
     '@Ignore LineLabelNotUsed
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
-
 End Property
 Public Sub Add( _
     ByVal Tbl As TableManager.TableClass, _
