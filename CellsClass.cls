@@ -50,6 +50,8 @@ Public Property Get Item( _
     'Attribute Item.VB_UserMemId = 0
     
     Const RoutineName As String = Module_Name & "Get Item"
+    On Error GoTo ErrorHandler
+    
     Debug.Assert InScope(ModuleList, Modulename)
     
     On Error Resume Next
@@ -63,22 +65,25 @@ Public Property Get Item( _
     Set Item = pAllCells(vIndex)
     On Error GoTo 0
 
+    Debug.Assert Not Item Is Nothing
+
     '@Ignore LineLabelNotUsed
 Done:
     Exit Property
     '@Ignore LineLabelNotUsed
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
-    
 End Property
 
 Public Sub Add( _
     ByVal Cll As TableManager.CellClass, _
     ByVal Modulename As String)
 
-    Debug.Assert Initializing
+    Debug.Assert TableManager.Initializing
 
     Const RoutineName As String = Module_Name & "Add"
+    On Error GoTo ErrorHandler
+    
     Debug.Assert InScope(ModuleList, Modulename)
     
     On Error GoTo ErrorHandler
@@ -97,9 +102,11 @@ Public Sub Remove( _
     ByVal vIndex As Variant, _
     ByVal Modulename As String)
     
-    Debug.Assert Initializing
+    Debug.Assert TableManager.Initializing
 
     Const RoutineName As String = Module_Name & "Remove"
+    On Error GoTo ErrorHandler
+    
     Debug.Assert InScope(ModuleList, Modulename)
     
     On Error GoTo ErrorHandler
@@ -126,9 +133,17 @@ Public Function Exists( _
     ) As Boolean
     
     Const RoutineName As String = Module_Name & "Exists"
+    On Error GoTo ErrorHandler
+    
     Debug.Assert InScope(ModuleList, Modulename)
     
     Exists = pAllCells.Exists(vIndex)
+
+    '@Ignore LineLabelNotUsed
+Done:
+    Exit Function
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Function                                     ' Exists
 
 

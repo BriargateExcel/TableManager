@@ -15,7 +15,7 @@ Private pName As String
 Private pWorksheetEvent As TableManager.EventClass
 
 Private Sub Class_Initialize()
-    Debug.Assert Initializing
+    Debug.Assert TableManager.Initializing
     Set pWorksheetEvent = New TableManager.EventClass
 End Sub                                          ' Class_Initialize
 

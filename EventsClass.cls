@@ -14,7 +14,7 @@ Private Const Module_Name As String = "EventsClass."
 Private pAllEvents As Scripting.Dictionary
 
 Private Sub Class_Initialize()
-    Debug.Assert Initializing
+    Debug.Assert TableManager.Initializing
 
     Set pAllEvents = New Scripting.Dictionary
 End Sub                                          ' Class_Initialize
@@ -33,7 +33,9 @@ Public Property Get Item( _
     'Attribute Item.VB_UserMemId = 0
     
     Const RoutineName As String = Module_Name & "Get Item"
-     Debug.Assert InScope(ModuleList, Modulename)
+    On Error GoTo ErrorHandler
+    
+    Debug.Assert InScope(ModuleList, Modulename)
        
     On Error Resume Next
     Set Item = pAllEvents.Items()(vIndex)
@@ -46,26 +48,27 @@ Public Property Get Item( _
     Set Item = pAllEvents(vIndex)
     On Error GoTo 0
 
+    Debug.Assert Not Item Is Nothing
+
     '@Ignore LineLabelNotUsed
 Done:
     Exit Property
     '@Ignore LineLabelNotUsed
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
-
 End Property
 
 Public Sub Add( _
     ByVal Evt As TableManager.EventClass, _
     ByVal Modulename As String)
 
-    Debug.Assert Initializing
+    Debug.Assert TableManager.Initializing
 
     Const RoutineName As String = Module_Name & "Add"
-    Debug.Assert InScope(ModuleList, Modulename)
-    
     On Error GoTo ErrorHandler
            
+    Debug.Assert InScope(ModuleList, Modulename)
+    
     If Evt.Name <> vbNullString Then pAllEvents.Add Evt.Name, Evt
         
     '@Ignore LineLabelNotUsed
@@ -80,13 +83,13 @@ Public Sub Remove( _
     ByVal vIndex As Variant, _
     ByVal Modulename As String)
 
-    Debug.Assert Initializing
+    Debug.Assert TableManager.Initializing
     
     Const RoutineName As String = Module_Name & "Remove"
-    Debug.Assert InScope(ModuleList, Modulename)
-    
     On Error GoTo ErrorHandler
    
+    Debug.Assert InScope(ModuleList, Modulename)
+    
     If CStr(vIndex) = "*" Then
         Set pAllEvents = Nothing
         Set pAllEvents = New Collection

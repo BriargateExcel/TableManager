@@ -13,7 +13,7 @@ Private Const Module_Name As String = "CellClass."
 
 'Private pWorksheetName As String
 Private pTableName As String
-Private pControl As Control
+Private pControl As control
 
 ' Attributes common to all table cells
 Private pHeaderText As String
@@ -22,7 +22,7 @@ Private pColumnWidth As Single
 Private pLocked As Variant
 Private pNumberFormat As Variant
 Private pWrap As Boolean
-Private pFormControl As Control
+Private pFormControl As control
 Private pControlValue As String
 Private pDBColNum As Long
 Private pDBRange As Range
@@ -35,6 +35,7 @@ Private pValidationFormula1 As String
 Private pValidationFormula2 As String
 Private pIgnoreBlank As Boolean
 Private pValidationList As Variant
+Private pInCellDropdown As Boolean
 
 ' Attributes for cells with validation inputs messages
 Private pShowInput As Boolean
@@ -57,9 +58,11 @@ Public Sub CollectCellData( _
 
     Dim DataCell As Range
     
-    Debug.Assert Initializing
+    Debug.Assert TableManager.Initializing
 
     Const RoutineName As String = Module_Name & "CollectCellData"
+    On Error GoTo ErrorHandler
+    
     Debug.Assert InScope(ModuleList, Modulename)
     
     On Error GoTo ErrorHandler
@@ -86,21 +89,26 @@ Public Sub CollectCellData( _
     Set pDBRange = CellID.ListObject.DataBodyRange
     
     If HasVal(DataCell) Then
-        pCellValidationType = DataCell.Validation.Type
-        pIgnoreBlank = DataCell.Validation.IgnoreBlank
-        pValidAlertStyle = DataCell.Validation.AlertStyle
-        pOperator = DataCell.Validation.Operator
+        With DataCell.Validation
+            pCellValidationType = .Type
+            pIgnoreBlank = .IgnoreBlank
+            pValidAlertStyle = .AlertStyle
+            pOperator = .Operator
+            
+            pInCellDropdown = .InCellDropDown
+            
+            pShowInput = .ShowInput
+            pInputTitle = .InputTitle
+            pInputMessage = .InputMessage
+            
+            pShowError = .ShowError
+            pErrorTitle = .ErrorTitle
+            pErrorMessage = .ErrorMessage
+            
+            pValidationFormula1 = .Formula1
+            pValidationFormula2 = .Formula2
+        End With 'DataCell.Validation
         
-        pShowInput = DataCell.Validation.ShowInput
-        pInputTitle = DataCell.Validation.InputTitle
-        pInputMessage = DataCell.Validation.InputMessage
-        
-        pShowError = DataCell.Validation.ShowError
-        pErrorTitle = DataCell.Validation.ErrorTitle
-        pErrorMessage = DataCell.Validation.ErrorMessage
-        
-        pValidationFormula1 = DataCell.Validation.Formula1
-        pValidationFormula2 = DataCell.Validation.Formula2
         If pValidationFormula1 <> vbNullString Then
             pValidationList = DataCell.Parent.Evaluate(pValidationFormula1)
             If IsError(pValidationList) Then _
@@ -131,9 +139,9 @@ Public Property Get NumberFormat() As Variant: NumberFormat = pNumberFormat: End
 
 Public Property Get Wrap() As Boolean: Wrap = pWrap: End Property
 
-Public Property Get FormControl() As Control: Set FormControl = pFormControl: End Property
+Public Property Get FormControl() As control: Set FormControl = pFormControl: End Property
 
-Public Property Set FormControl(ByVal Vbl As Control): Set pFormControl = Vbl: End Property
+Public Property Set FormControl(ByVal Vbl As control): Set pFormControl = Vbl: End Property
 
 Public Property Get ControlValue() As String: ControlValue = pControlValue: End Property
 
@@ -145,9 +153,9 @@ End Sub                                          ' LetCellValue
 
 Public Property Get Length() As Long: Length = Len(pHeaderText): End Property
 
-Public Property Get Control() As Control: Set Control = pControl: End Property
+Public Property Get control() As control: Set control = pControl: End Property
 
-Public Property Set Control(ByVal Vbl As Control): Set pControl = Vbl: End Property
+Public Property Set control(ByVal Vbl As control): Set pControl = Vbl: End Property
 
 Public Property Get TableName() As String: TableName = pTableName: End Property
 
@@ -178,9 +186,13 @@ Public Property Let IgnoreBlank(ByVal Vbl As Boolean): pIgnoreBlank = Vbl: End P
 
 Public Property Get ValidationList() As Variant: ValidationList = pValidationList: End Property
 
+Public Property Let InCellDropDown(ByVal Vbl As Boolean): pInCellDropdown = Vbl: End Property
+
+Public Property Get InCellDropDown() As Boolean: InCellDropDown = pInCellDropdown: End Property
+
 Public Property Let ValidationList(ByVal Vbl As Variant): pValidationList = Vbl: End Property
 
-' Attributes for cells with validation inputs messages
+' Attributes for cells with validation input messages
 Public Property Get ShowInput() As Boolean: ShowInput = pShowInput: End Property
 
 Public Property Let ShowInput(ByVal Vbl As Boolean): pShowInput = Vbl: End Property

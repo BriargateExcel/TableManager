@@ -14,7 +14,7 @@ Private Const Module_Name As String = "TablesClass."
 Private pAllTables As Scripting.Dictionary
 
 Private Sub Class_Initialize()
-    Debug.Assert Initializing
+    Debug.Assert TableManager.Initializing
 
     Set pAllTables = New Scripting.Dictionary
 End Sub                                          ' Class_Initialize
@@ -33,9 +33,10 @@ Public Property Get Item( _
     'Attribute Item.VB_UserMemId = 0
 
     Const RoutineName As String = Module_Name & "Get Item"
+    On Error Resume Next
+    
     Debug.Assert InScope(ModuleList, Modulename)
         
-    On Error Resume Next
     Set Item = pAllTables.Items()(vIndex)
     If Err.Number = 0 Then
         On Error GoTo 0
@@ -48,8 +49,12 @@ Public Property Get Item( _
         MsgBox "The Form for this table does not exist: " & CStr(vIndex) & ". Rebuild the Forms.", _
                vbOKOnly Or vbExclamation, _
                "Form Does Not Exist"
+        Set Item = Nothing
+        Exit Property
     End If
     On Error GoTo 0
+    
+    Debug.Assert Not Item Is Nothing
 
     '@Ignore LineLabelNotUsed
 Done:
@@ -57,19 +62,18 @@ Done:
     '@Ignore LineLabelNotUsed
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
-
 End Property
 Public Sub Add( _
     ByVal Tbl As TableManager.TableClass, _
     ByVal Modulename As String)
     
-    Debug.Assert Initializing
+    Debug.Assert TableManager.Initializing
 
     Const RoutineName As String = Module_Name & "Add"
-    Debug.Assert InScope(ModuleList, Modulename)
-    
     On Error GoTo ErrorHandler
            
+    Debug.Assert InScope(ModuleList, Modulename)
+    
     If Tbl.Name <> vbNullString Then pAllTables.Add Tbl.Name, Tbl
         
     '@Ignore LineLabelNotUsed
@@ -86,22 +90,28 @@ Public Function Exists( _
     ) As Boolean
     
     Const RoutineName As String = Module_Name & "Exists"
+    On Error GoTo ErrorHandler
+    
     Debug.Assert InScope(ModuleList, Modulename)
     
     Exists = pAllTables.Exists(vIndex)
+
+    '@Ignore LineLabelNotUsed
+Done:
+    Exit Function
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Function                                     ' Exists
 
 Public Sub Remove( _
     ByVal vIndex As Variant, _
     ByVal Modulename As String)
     
-    Debug.Assert Initializing
-
     Const RoutineName As String = Module_Name & "Remove"
-    Debug.Assert InScope(ModuleList, Modulename)
-    
     On Error GoTo ErrorHandler
    
+    Debug.Assert InScope(ModuleList, Modulename)
+    
     If CStr(vIndex) = "*" Then
         Set pAllTables = Nothing
         Set pAllTables = New Scripting.Dictionary

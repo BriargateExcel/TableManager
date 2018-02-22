@@ -13,7 +13,9 @@ Private Const Module_Name As String = "FormClass."
 
 Private pFormName As String
 Private pWorksheetName As String
-Private pFormObj As Object                       'MSForms.UserForm; when declared as UserFrom it has no height or width
+Private pFormObj As Object
+' pFormObj:
+' MSForms.UserForm; when declared as UserForm it has no height or width
 ' When declared as an object, it has both height and width
 Private pTable As TableManager.TableClass
 Private pControls As TableManager.ControlsClass
@@ -43,12 +45,12 @@ Public Function BuildForm( _
        ) As MSForms.UserForm
        
     Dim TempForm As VBComponent
-    Debug.Assert Initializing
+    Debug.Assert TableManager.Initializing
 
     Const RoutineName As Variant = Module_Name & "BuildForm"
-    Debug.Assert InScope(ModuleList, Modulename)
-    
     On Error GoTo ErrorHandler
+    
+    Debug.Assert InScope(ModuleList, Modulename)
     
     Set pTable = Tbl
     pWorksheetName = Tbl.WorksheetName
@@ -71,12 +73,12 @@ Public Function BuildForm( _
     pEvents.Add Evt, Module_Name
     
     ' Add the texture
-    Texture Tbl
+    Texture Tbl.Form.FormObj
     
     ' Add the logo
-    Dim LogoImage As Control
+    Dim LogoImage As control
     Dim Top As Single
-    Set LogoImage = Logo(Tbl)
+    Set LogoImage = Logo(Tbl.Form.FormObj)
     Dim LogoHeight As Single
     Dim LogoWidth As Single
     If LogoImage Is Nothing Then
@@ -104,7 +106,7 @@ Public Function BuildForm( _
     Dim FieldWidth As Single
     FieldWidth = MaxLabelWidth + MaxFieldWidth + 3 * StandardGap
     Dim LogoTotalWidth As Single
-    LogoWidth = LogoWidth + 2 * StandardGap
+    LogoTotalWidth = LogoWidth + 2 * StandardGap
     pFormObj.Width = Application.WorksheetFunction.Max( _
                      FieldWidth, ButtonSetWidth, LogoTotalWidth) + ScrollBarWidth + 2 * StandardGap
         
@@ -160,7 +162,7 @@ Private Sub BuildControls( _
 
     Dim I As Long
     Dim Field As Variant
-    Dim Lbl As Control
+    Dim Lbl As control
     
     For I = 0 To Tbl.CellCount - 1
         Set Field = Tbl.TableCells.Item(I, Module_Name)
@@ -186,7 +188,7 @@ Private Sub BuildControls( _
     Dim DataLeft As Single
     DataLeft = MaxLabelWidth + 2 * StandardGap
     
-    Dim Ctl As Control
+    Dim Ctl As control
     For Each Ctl In pFormObj.Controls
         If Ctl.Name <> "Filler" And Left$(Ctl.Name, 5) <> "Image" Then
             Ctl.Width = MaxFieldWidth
@@ -204,7 +206,7 @@ Private Sub BuildUnLockedFields( _
         ByVal Field As Variant, _
         ByRef Top As Single, _
         ByRef MaxFieldWidth As Single, _
-        ByRef Lbl As Control, _
+        ByRef Lbl As control, _
         ByRef Tbl As TableManager.TableClass)
     
     Select Case Field.CellType
@@ -263,7 +265,7 @@ Private Function BuildAllButtons( _
     Const RoutineName As String = Module_Name & "BuildAllButtons"
     On Error GoTo ErrorHandler
 
-    Debug.Assert Initializing
+    Debug.Assert TableManager.Initializing
     
     NumRows = 4
     NumCols = 3
@@ -393,13 +395,13 @@ Private Sub BuildOneButton( _
         ByVal Tip As String, _
         ByVal Tbl As TableManager.TableClass)
     
-    Dim Ctl As Control
+    Dim Ctl As control
     Dim Evt As TableManager.EventClass
     
     Const RoutineName As String = Module_Name & "BuildOneButton"
     On Error GoTo ErrorHandler
 
-    Debug.Assert Initializing
+    Debug.Assert TableManager.Initializing
 
     Set Ctl = pFormObj.Controls.Add("Forms.CommandButton.1")
     With Ctl
@@ -448,13 +450,13 @@ Private Sub BuildCombo( _
         ByRef Top As Single, _
         ByVal Field As Variant, _
         ByRef MaxFieldWidth As Single, _
-        ByRef Lbl As Control, _
+        ByRef Lbl As control, _
         ByRef Tbl As TableManager.TableClass)
 
     Const RoutineName As String = Module_Name & "BuildCombo"
     On Error GoTo ErrorHandler
     
-    Dim Ctl As Control
+    Dim Ctl As control
     Dim Evt As TableManager.EventClass
 
     Dim ValListItem As Variant
@@ -502,13 +504,13 @@ Private Sub BuildText( _
         ByRef Top As Single, _
         ByVal Field As Variant, _
         ByRef MaxFieldWidth As Single, _
-        ByRef Lbl As Control, _
+        ByRef Lbl As control, _
         ByRef Tbl As TableManager.TableClass)
 
     Const RoutineName As String = Module_Name & "BuildText"
     On Error GoTo ErrorHandler
     
-    Dim Ctl As Control
+    Dim Ctl As control
     Dim Evt As TableManager.EventClass
 
     Set Ctl = pFormObj.Controls.Add("Forms.TextBox.1", "fld" & Field.Name, True)
@@ -558,13 +560,13 @@ Private Sub BuildCustom( _
         ByRef Top As Single, _
         ByVal Field As Variant, _
         ByRef MaxFieldWidth As Single, _
-        ByRef Lbl As Control, _
+        ByRef Lbl As control, _
         ByRef Tbl As TableManager.TableClass)
 
     Const RoutineName As String = Module_Name & "BuildCustom"
     On Error GoTo ErrorHandler
     
-    Dim Ctl As Control
+    Dim Ctl As control
     Dim Evt As TableManager.EventClass
 
     Set Ctl = pFormObj.Controls.Add("Forms.TextBox.1", "fld" & Field.Name, True)
@@ -614,12 +616,12 @@ Private Sub BuildDataLabel( _
         ByRef Top As Single, _
         ByVal Field As Variant, _
         ByRef MaxFieldWidth As Single, _
-        ByRef Lbl As Control)
+        ByRef Lbl As control)
 
     Const RoutineName As String = Module_Name & "BuildDataLabel"
     On Error GoTo ErrorHandler
     
-    Dim Ctl As Control
+    Dim Ctl As control
 
     Set Ctl = pFormObj.Controls.Add("Forms.Label.1", "val" & Field.Name, True)
     With Ctl
@@ -648,13 +650,13 @@ Private Sub BuildDate( _
         ByRef Top As Single, _
         ByVal Field As Variant, _
         ByRef MaxFieldWidth As Single, _
-        ByRef Lbl As Control, _
+        ByRef Lbl As control, _
         ByRef Tbl As TableManager.TableClass)
 
     Const RoutineName As String = Module_Name & "BuildDate"
     On Error GoTo ErrorHandler
     
-    Dim Ctl As Control
+    Dim Ctl As control
     Dim Evt As TableManager.EventClass
 
     Set Ctl = pFormObj.Controls.Add("Forms.TextBox.1", "dat" & Field.Name, True)
@@ -691,7 +693,7 @@ Private Sub BuildLabel( _
         ByVal Top As Single, _
         ByVal Field As Variant, _
         ByRef MaxLabelWidth As Single, _
-        ByRef Lbl As Control)
+        ByRef Lbl As control)
 
     Const RoutineName As String = Module_Name & "BuildLabel"
     On Error GoTo ErrorHandler
@@ -721,13 +723,13 @@ Private Sub BuildWholeNumber( _
         ByRef Top As Single, _
         ByVal Field As Variant, _
         ByRef MaxFieldWidth As Single, _
-        ByRef Lbl As Control, _
+        ByRef Lbl As control, _
         ByRef Tbl As TableManager.TableClass)
 
     Const RoutineName As String = Module_Name & "BuildWholeNumber"
     On Error GoTo ErrorHandler
     
-    Dim Ctl As Control
+    Dim Ctl As control
     Dim Evt As TableManager.EventClass
 
     Set Ctl = pFormObj.Controls.Add("Forms.TextBox.1", "whl" & Field.Name, True)
@@ -779,74 +781,12 @@ Public Property Get Table() As TableManager.TableClass: Set Table = pTable: End 
 
 Public Property Get WorksheetName() As String: WorksheetName = pWorksheetName: End Property
 
+Public Property Set Picture(ByVal Vbl As StdPicture): Set pFormObj.Picture = Vbl: End Property
+
 Private Sub Class_Initialize()
-    Debug.Assert Initializing
+    Debug.Assert TableManager.Initializing
 
     Set pControls = New TableManager.ControlsClass
     Set pEvents = New TableManager.EventsClass
 End Sub                                          ' Class_Initialize
 
-Private Sub Texture(ByRef Tbl As TableManager.TableClass)
-    Const RoutineName As String = Module_Name & "Texture"
-    On Error GoTo ErrorHandler
-    
-    If Dir(MainWorkbook.Path & "\texture.jpg") <> vbNullString Then
-        Set Tbl.Form.FormObj.Picture = LoadPicture(MainWorkbook.Path & "\texture.jpg")
-    Else
-        Tbl.Form.FormObj.BackColor = DarkestColorValue
-    End If
-    
-    '@Ignore LineLabelNotUsed
-Done:
-    Exit Sub
-ErrorHandler:
-    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
-End Sub
-
-Private Function Logo(ByRef Tbl As TableManager.TableClass) As Control
-    
-    Dim LogoImage As Control
-    Dim Pic As StdPicture
-    
-    Const RoutineName As String = Module_Name & "Logo"
-    On Error GoTo ErrorHandler
-    
-    If Dir(MainWorkbook.Path & "\logo.jpg") <> vbNullString Then
-        Set LogoImage = Tbl.Form.FormObj.Controls.Add("Forms.Image.1")
-        Set Pic = LoadPicture(MainWorkbook.Path & "\logo.jpg")
-        Set LogoImage.Picture = Pic
-        With LogoImage
-            .PictureAlignment = fmPictureAlignmentTopLeft
-            .PictureSizeMode = fmPictureSizeModeZoom
-            .BorderStyle = fmBorderStyleNone
-            .BackStyle = fmBackStyleTransparent
-            '            .AutoSize = True
-
-            Dim PicHeightToWidth As Single
-            PicHeightToWidth = Pic.Height / Pic.Width
-            
-            Dim Factor As Single
-            Factor = Application.WorksheetFunction.Max(Pic.Height, Pic.Width) / 35
-            Factor = Application.WorksheetFunction.Min(Factor, 200)
-
-            If PicHeightToWidth > 1 Then
-                ' Height > Width
-                .Height = Factor
-                .Width = Factor / PicHeightToWidth
-            Else
-                ' Width > Height
-                .Width = Factor
-                .Height = Factor * PicHeightToWidth
-            End If
-        End With
-        Set Logo = LogoImage
-    Else
-        Set Logo = Nothing
-    End If
-    
-    '@Ignore LineLabelNotUsed
-Done:
-    Exit Function
-ErrorHandler:
-    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
-End Function

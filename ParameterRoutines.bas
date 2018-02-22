@@ -32,7 +32,7 @@ Public Function FieldValue( _
     Else
         If FieldExistsOnWorksheet(TableName, SearchFieldName) Then
             Dim Tbl As ListObject
-            Set Tbl = MainWorkbook.Worksheets("Parameters").ListObjects(TableName)
+            Set Tbl = GetMainWorkbook.Worksheets("Parameters").ListObjects(TableName)
             
             FieldValue = SearchTable(Tbl, SearchFieldName, SearchFieldValue, TargetFieldName)
             If FieldValue = 0 Then FieldValue = DefaultValue
@@ -64,7 +64,7 @@ Private Function FieldExistsOnWorksheet( _
     
     If TableExistsOnWorksheet(TableName) Then
         Dim Tbl As ListObject
-        Set Tbl = MainWorkbook.Worksheets("Parameters").ListObjects(TableName)
+        Set Tbl = GetMainWorkbook.Worksheets("Parameters").ListObjects(TableName)
         
         On Error Resume Next
         FieldExistsOnWorksheet = (Application.WorksheetFunction.Match(FieldName, Tbl.HeaderRowRange, 0) <> 0)
@@ -75,12 +75,12 @@ End Function
 Private Function TableExistsOnWorksheet(ByVal TableName As String) As Boolean
     TableExistsOnWorksheet = False
     If ParameterSheetExists Then
-        TableExistsOnWorksheet = Contains(MainWorkbook.Worksheets("Parameters").ListObjects, TableName)
+        TableExistsOnWorksheet = Contains(GetMainWorkbook.Worksheets("Parameters").ListObjects, TableName)
     End If
 End Function
 
 Private Function ParameterSheetExists() As Boolean
-    ParameterSheetExists = Contains(MainWorkbook.Worksheets, "Parameters")
+    ParameterSheetExists = Contains(GetMainWorkbook.Worksheets, "Parameters")
 End Function
 
 Private Function SearchTable( _

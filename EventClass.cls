@@ -47,34 +47,34 @@ Public Property Set TextEvent(ByVal Vbl As MSForms.TextBox): Set pTextEvent = Vb
 Public Property Set ComboEvent(ByVal Vbl As MSForms.ComboBox): Set pComboEvent = Vbl: End Property
 
 Public Property Set TableObj(ByVal Tbl As TableManager.TableClass)
-    Debug.Assert Initializing
+    Debug.Assert TableManager.Initializing
 
     Set pTableObj = Tbl
 End Property
 
 Public Property Set FormObj(ByVal FO As Object)
-    Debug.Assert Initializing
+    Debug.Assert TableManager.Initializing
 
     Set pFormObj = FO
     Set pFormEvent = FO
 End Property
 
 Public Property Set ButtonObj(ByVal Btn As MSForms.CommandButton)
-    Debug.Assert Initializing
+    Debug.Assert TableManager.Initializing
 
     Set pButtonObj = Btn
     Set pButtonEvent = Btn
 End Property                                     ' ButtonObj
 
 Public Property Set TextObj(ByVal Txt As MSForms.TextBox)
-    Debug.Assert Initializing
+    Debug.Assert TableManager.Initializing
 
     Set pTextObj = Txt
     Set pTextEvent = Txt
 End Property                                     ' TextObj
 
 Public Property Set ComboObj(ByVal Cmb As MSForms.ComboBox)
-    Debug.Assert Initializing
+    Debug.Assert TableManager.Initializing
 
     Set pComboEvent = Cmb
     Set pComboObj = Cmb
@@ -86,8 +86,8 @@ Private Sub pFormEvent_MouseMove( _
         ByVal x As Single, _
         ByVal y As Single)
 
-    On Error GoTo ErrorHandler
     Const RoutineName As String = Module_Name & "FormEvent_MouseMove"
+    On Error GoTo ErrorHandler
     
     If LastEvent = "Form Event" Then Exit Sub
     LastEvent = "Form Event"
@@ -108,8 +108,8 @@ Private Sub pButtonEvent_MouseMove( _
         ByVal x As Single, _
         ByVal y As Single)
     
-    On Error GoTo ErrorHandler
     Const RoutineName As String = Module_Name & "ButtonEvent_MouseMove"
+    On Error GoTo ErrorHandler
     
     If LastEvent = "Button Event" Then Exit Sub
     LastEvent = "Button Event"
@@ -139,12 +139,11 @@ Private Sub pTextEvent_MouseMove( _
         ByVal x As Single, _
         ByVal y As Single)
 
-    On Error GoTo ErrorHandler
     Const RoutineName As String = Module_Name & "TextEvent_MouseMove"
+    On Error GoTo ErrorHandler
     
     LowLightControl GetLastControl, Module_Name
     SetLastControl pTextObj
-    Debug.Print "Text"
     
     ' Highlight the selected Text Box
     HighLightControl pTextObj, Module_Name
@@ -163,12 +162,11 @@ Private Sub pComboEvent_MouseMove( _
         ByVal x As Single, _
         ByVal y As Single)
 
-    On Error GoTo ErrorHandler
     Const RoutineName As String = Module_Name & "ComboEvent_MouseMove"
+    On Error GoTo ErrorHandler
     
     LowLightControl GetLastControl, Module_Name
     SetLastControl pComboObj
-    Debug.Print "Combo"
     
     HighLightControl pComboObj, Module_Name
 
@@ -180,15 +178,14 @@ ErrorHandler:
 
 End Sub                                          ' ComboEvent_MouseMove
 
-
 Private Sub pSheetEvent_BeforeDoubleClick( _
         ByVal Target As Range, _
         Cancel As Boolean)
     
     Dim Isect As Range
     
-    On Error GoTo ErrorHandler
     Const RoutineName As String = Module_Name & "SheetEvent_BeforeDoubleClick"
+    On Error GoTo ErrorHandler
     
     Dim TableName As String
     Dim Tbl As TableManager.TableClass
@@ -209,8 +206,7 @@ Private Sub pSheetEvent_BeforeDoubleClick( _
     
     Set Isect = Application.Intersect(Target, Tbl.Table.HeaderRowRange)
     If Not Isect Is Nothing Then
-        MsgBox "Please select a cell in the body of the table", _
-               vbOKOnly Or vbExclamation, "Selected a Header Cell"
+        HandleCopyFetch TableName
         Exit Sub
     End If
     
@@ -340,8 +336,8 @@ Private Sub PaintButtons()
     '   Sets all the button colors to reflect the current state of the form
     ' Assumes that Next and Previous buttons are named properly
 
-    On Error GoTo ErrorHandler
     Const RoutineName As String = Module_Name & "PaintButtons"
+    On Error GoTo ErrorHandler
     
     Debug.Assert Not Initializing
     

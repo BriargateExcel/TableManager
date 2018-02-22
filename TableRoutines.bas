@@ -211,7 +211,7 @@ ErrorHandler:
 
 End Sub
 
-Public Sub BuildParameterTableOnWorksheet(ByVal Wkbk As Workbook)
+Public Sub BuildParameterTableOnWorksheet(ByVal WkBk As Workbook)
     ' Assumes that all tables start in Row 1
     
     Const RoutineName As String = Module_Name & "BuildParameterTableOnWorksheet"
@@ -228,7 +228,7 @@ Public Sub BuildParameterTableOnWorksheet(ByVal Wkbk As Workbook)
     Dim ColumnCount As Long
     ColumnCount = UBound(Tary, 2)
     
-    With Wkbk
+    With WkBk
         ' Ensure there's a sheet called "Parameters"
         If Not Contains(.Worksheets, "Parameters") Then
             .Worksheets.Add(After:=.Worksheets(.Worksheets.Count)).Name = "Parameters"
@@ -264,7 +264,7 @@ Public Sub BuildParameterTableOnWorksheet(ByVal Wkbk As Workbook)
                 TableRemove "ParameterTable", Module_Name
                 ReSetInitializing
             End If
-            .Range(UpperLeftCorner).Resize(RowCount + 1, ColumnCount + 1).Value = Tary
+            .Range(UpperLeftCorner).Resize(RowCount + 1, ColumnCount + 1).value = Tary
     
             Rng = UpperLeftCorner & ":" & ConvertToLetter(ColumnNumber + ColumnCount) & RowCount
             .ListObjects.Add(xlSrcRange, .Range(Rng), , xlYes).Name = "ParameterTable"
@@ -275,23 +275,9 @@ Public Sub BuildParameterTableOnWorksheet(ByVal Wkbk As Workbook)
             AddValidationToParameterTable .ListObjects("ParameterTable")
             
         End With                                 ' .Worksheets("Parameters")
-        ' Gather the table data
-        Dim Tbl As Variant
-        Set Tbl = New TableManager.TableClass
-        Tbl.Name = "ParameterTable"
-        Set Tbl.Table = .Worksheets("Parameters").ListObjects("ParameterTable")
-        
-        SetInitializing
-        If Tbl.CollectTableData(TableManager.WkSht("Parameters", Module_Name), Tbl, Module_Name) Then
-            Dim Frm As TableManager.FormClass
-            Set Frm = New TableManager.FormClass
-            TableManager.TableAdd Tbl, Module_Name
-            
-            Set Frm.FormObj = Frm.BuildForm(Tbl, Module_Name)
-            Set Tbl.Form = Frm
-        End If
-        ReSetInitializing
+    BuildTable .ListObjects("ParameterTable"), Module_Name
     End With                                     ' Wkbk
+        
      
     ActiveWindow.FreezePanes = True
     Application.ScreenUpdating = False
@@ -309,6 +295,18 @@ ErrorHandler:
 
 End Sub
 
+Private Sub BuildTableAndForm()
+    Const RoutineName As String = Module_Name & "BuildParameterTableOnWorksheet"
+    On Error GoTo ErrorHandler
+
+    
+'@Ignore LineLabelNotUsed
+Done:
+Exit Sub
+ErrorHandler:
+RaiseError Err.Number, Err.Source, RoutineName, Err.Description
+End Sub
+
 Private Sub SetCommonValidationParameters( _
         ByRef Tbl As ListObject, _
         ByVal PDA As Variant, _
@@ -321,7 +319,7 @@ Private Sub SetCommonValidationParameters( _
     Cll.FormulaHidden = False
     
     With Cll.Validation
-        .InCellDropdown = (PDA(ColNum)(1) = "xlValidateList")
+        .InCellDropDown = (PDA(ColNum)(1) = "xlValidateList")
         .IgnoreBlank = True
         .InputTitle = vbNullString
         .ErrorTitle = vbNullString
@@ -347,7 +345,7 @@ Private Sub SetCommonValidationParameters( _
     
 End Sub
 
-Public Sub ExtendDataValidationThroughAllTables(ByVal Wkbk As Workbook)
+Public Sub ExtendDataValidationThroughAllTables(ByVal WkBk As Workbook)
 
     Const RoutineName As String = Module_Name & "ExtendDataValidationThroughAllTables"
     On Error GoTo ErrorHandler
@@ -357,7 +355,7 @@ Public Sub ExtendDataValidationThroughAllTables(ByVal Wkbk As Workbook)
     Application.ScreenUpdating = False
     
     Dim CurrentSheet As Worksheet
-    Set CurrentSheet = Wkbk.ActiveSheet
+    Set CurrentSheet = WkBk.ActiveSheet
     
     Dim CurrentCell As Range
     Set CurrentCell = ActiveCell
@@ -367,7 +365,7 @@ Public Sub ExtendDataValidationThroughAllTables(ByVal Wkbk As Workbook)
     For I = 0 To pAllTbls.Count - 1
         Set Tbl = Table(I, Module_Name)
         ExtendDataValidationDownTable Tbl
-        Wkbk.Worksheets(Tbl.WorksheetName).Activate
+        WkBk.Worksheets(Tbl.WorksheetName).Activate
         Tbl.FirstCell.Select
     Next I
     
@@ -385,29 +383,34 @@ ErrorHandler:
 End Sub
 
 Public Sub BuildTable( _
-       ByVal WS As TableManager.WorksheetClass, _
        ByVal TblObj As ListObject, _
        ByVal Modulename As String)
-    
-    
+       
     Const RoutineName As String = Module_Name & "Buildtable"
-    Debug.Assert InScope(ModuleList, Modulename)
-    
     On Error GoTo ErrorHandler
+    
+    Debug.Assert TableManager.InScope(ModuleList, Modulename)
+    
+    SetInitializing
     
     ' Gather the table data
     Dim Tbl As Variant
     Set Tbl = New TableManager.TableClass
     Tbl.Name = TblObj.Name
     Set Tbl.Table = TblObj
-    If Tbl.CollectTableData(WS, Tbl, Module_Name) Then
+    
+    Dim Sht As Worksheet
+    Set Sht = TableManager.GetMainWorkbook.Worksheets(TblObj.Parent.Name)
+    
+    If Tbl.CollectTableData(Tbl, Module_Name) Then
         Dim Frm As TableManager.FormClass
         Set Frm = New TableManager.FormClass
         TableManager.TableAdd Tbl, Module_Name
-        
+            
         Set Frm.FormObj = Frm.BuildForm(Tbl, Module_Name)
         Set Tbl.Form = Frm
     End If
+'    ReSetInitializing
     
     '@Ignore LineLabelNotUsed
 Done:
@@ -445,7 +448,7 @@ Private Sub PopulateValidationData( _
 End Sub                                          ' PopulateValidationData
 
 Private Function ModuleList() As Variant
-    ModuleList = Array("XLAM_Module.", "TablesClass.", "EventClass.", "TableClass.", "TableRoutines.", "ParameterRoutines.")
+    ModuleList = Array("XLAM_Module.", "TablesClass.", "EventClass.", "TableClass.", "TableRoutines.", "ParameterRoutines.", "CSV_Routines.")
 End Function                                     ' ModuleList
 
 Public Sub TurnOnCellDescriptions( _
@@ -459,7 +462,9 @@ Public Sub TurnOnCellDescriptions( _
     Dim I As Long
     
     Const RoutineName As String = Module_Name & "TurnOnCellDescriptions"
-    Debug.Assert InScope(ModuleList, Modulename)
+    On Error GoTo ErrorHandler
+    
+    Debug.Assert TableManager.InScope(ModuleList, Modulename)
 
     On Error GoTo ErrorHandler
 
@@ -493,7 +498,9 @@ Public Sub TurnOffCellDescriptions( _
     Dim I As Long
     
     Const RoutineName As String = Module_Name & "TurnOffCellDescriptions"
-    Debug.Assert InScope(ModuleList, Modulename)
+    On Error GoTo ErrorHandler
+    
+    Debug.Assert TableManager.InScope(ModuleList, Modulename)
 
     On Error GoTo ErrorHandler
 
@@ -521,7 +528,9 @@ Public Sub PopulateTable( _
        ByVal Modulename As String)
 
     Const RoutineName As String = Module_Name & "PopulateTable"
-    Debug.Assert InScope(ModuleList, Modulename)
+    On Error GoTo ErrorHandler
+    
+    Debug.Assert TableManager.InScope(ModuleList, Modulename)
 
     On Error GoTo ErrorHandler
 
@@ -571,7 +580,8 @@ Public Function Table( _
 
     Const RoutineName As String = Module_Name & "Table"
     On Error GoTo ErrorHandler
-    Debug.Assert InScope(ModuleList, Modulename)
+    
+    Debug.Assert TableManager.InScope(ModuleList, Modulename)
 
     Set Table = pAllTbls.Item(TableName, Module_Name)
 
@@ -589,7 +599,8 @@ Public Sub TableAdd( _
 
     Const RoutineName As String = Module_Name & "TableAdd"
     On Error GoTo ErrorHandler
-    Debug.Assert InScope(ModuleList, Modulename)
+    
+    Debug.Assert TableManager.InScope(ModuleList, Modulename)
     pAllTbls.Add Tbl, Module_Name
     
     '@Ignore LineLabelNotUsed
@@ -602,8 +613,16 @@ End Sub                                          ' TableAdd
 
 Public Function TableCount(ByVal Modulename As String) As Long
     Const RoutineName As String = Module_Name & "TableCount"
-    Debug.Assert InScope(ModuleList, Modulename)
+    On Error GoTo ErrorHandler
+    
+    Debug.Assert TableManager.InScope(ModuleList, Modulename)
     TableCount = pAllTbls.Count
+
+    '@Ignore LineLabelNotUsed
+Done:
+    Exit Function
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Function                                     ' TableCount
 
 Public Function TableExists( _
@@ -612,8 +631,16 @@ Public Function TableExists( _
        ) As Boolean
 
     Const RoutineName As String = Module_Name & "TableExists"
-    Debug.Assert InScope(ModuleList, Modulename)
+    On Error GoTo ErrorHandler
+    
+    Debug.Assert TableManager.InScope(ModuleList, Modulename)
     TableExists = pAllTbls.Exists(Tbl, Module_Name)
+
+    '@Ignore LineLabelNotUsed
+Done:
+    Exit Function
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Function                                     ' TableExists
 
 Public Function TableItem( _
@@ -622,8 +649,16 @@ Public Function TableItem( _
        ) As Variant
 
     Const RoutineName As String = Module_Name & "TableItem"
-    Debug.Assert InScope(ModuleList, Modulename)
+    On Error GoTo ErrorHandler
+    
+    Debug.Assert TableManager.InScope(ModuleList, Modulename)
     Set TableItem = pAllTbls.Item(Tbl, Module_Name)
+
+    '@Ignore LineLabelNotUsed
+Done:
+    Exit Function
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Function                                     ' TableItem
 
 Public Sub TableRemove( _
@@ -631,26 +666,132 @@ Public Sub TableRemove( _
        ByVal Modulename As String)
 
     Const RoutineName As String = Module_Name & "TableRemove"
-    Debug.Assert InScope(ModuleList, Modulename)
+    On Error GoTo ErrorHandler
+    
+    Debug.Assert TableManager.InScope(ModuleList, Modulename)
     pAllTbls.Remove Val, Module_Name
+
+    '@Ignore LineLabelNotUsed
+Done:
+    Exit Sub
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Sub                                          ' TableRemove
 
 Public Sub TableSetNewClass(ByVal Modulename As String)
     Const RoutineName As String = Module_Name & "TableSetNewClass"
-    Debug.Assert InScope(ModuleList, Modulename)
+    On Error GoTo ErrorHandler
+    
+    Debug.Assert TableManager.InScope(ModuleList, Modulename)
     Set pAllTbls = New TableManager.TablesClass
+
+    '@Ignore LineLabelNotUsed
+Done:
+    Exit Sub
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Sub                                          ' TableSetNewClass
 
 Public Sub TableSetNewDict(ByVal Modulename As String)
     Const RoutineName As String = Module_Name & "TableSetNewDict"
-    Debug.Assert InScope(ModuleList, Modulename)
+    On Error GoTo ErrorHandler
+    
+    Debug.Assert TableManager.InScope(ModuleList, Modulename)
     Set pAllTbls = New Scripting.Dictionary
+
+    '@Ignore LineLabelNotUsed
+Done:
+    Exit Sub
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Sub                                          ' TableSetNewDict
 
 Public Sub TableSetNothing(ByVal Modulename As String)
     Const RoutineName As String = Module_Name & "TableSetNothing"
-    Debug.Assert InScope(ModuleList, Modulename)
+    On Error GoTo ErrorHandler
+    
+    Debug.Assert TableManager.InScope(ModuleList, Modulename)
     Set pAllTbls = Nothing
+
+    '@Ignore LineLabelNotUsed
+Done:
+    Exit Sub
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Sub                                          ' TableSetNothing
 
+Public Sub CopyToTable( _
+    ByVal TableName As String, _
+    ByVal Ary As Variant)
+    Const RoutineName As String = Module_Name & "CopyToTable"
+    On Error GoTo ErrorHandler
+    
+    ' Copy the file to the table
+    Dim Sht As Worksheet
+    Set Sht = GetMainWorkbook.Worksheets(TableManager.Table(TableName, Module_Name).WorksheetName)
+    
+    Dim UpperLeftRange As Range
+    Dim Tbl As TableManager.TableClass
+    Set Tbl = Table(TableName, Module_Name)
+    Dim UpperLeftRng As Range
+    Set UpperLeftRng = Tbl.FirstCell
+    
+    Set UpperLeftRange = UpperLeftRng.Offset(-1, 0)
+    
+    UpperLeftRange.Resize(UBound(Ary, 1), UBound(Ary, 2)) = Ary
+    
+    ' Re-establish the table
+    Dim UpperLeft As String
+    Dim LowerRight As String
+    UpperLeft = UpperLeftRng.Offset(-1, 0).Address
+    LowerRight = ConvertToLetter(UBound(Ary, 2)) & UBound(Ary, 1)
+    Sht.ListObjects.Add(xlSrcRange, Range(UpperLeft & ":" & LowerRight), , xlYes).Name = TableName
+    Set Tbl.Table = Sht.ListObjects(TableName)
+    
+    ' Re-establish the lock and data validation
+    Dim I As Long
+    Dim Cll As TableManager.CellClass
+    Dim ColRng As Range
+    For I = 0 To Tbl.CellCount - 1
+        Set Cll = Tbl.TableCells.Item(I, Module_Name)
+        Set ColRng = Tbl.DBColRange(Tbl, Cll.HeaderText)
+        
+        If Cll.Locked Then
+            ColRng.Locked = True
+        Else
+            ColRng.Locked = False
+        End If
+        
+        With ColRng.Validation
+'            .Add _
+'                Type:=Cll.CellType, _
+'                AlertStyle:=Cll.ValidAlertStyle, _
+'                Operator:=Cll.Operator, _
+'                Formula1:=Cll.ValidationFormula1, _
+'                Formula2:=Cll.ValidationFormula2
+                
+            .Add Cll.CellType, Cll.ValidAlertStyle, Cll.Operator, Cll.ValidationFormula1, Cll.ValidationFormula2
+                
+            .IgnoreBlank = Cll.IgnoreBlank
+            .InCellDropDown = Cll.InCellDropDown
+            
+            .ShowInput = Cll.ShowInput
+            .InputTitle = Cll.InputTitle
+            .InputMessage = Cll.InputMessage
+            
+            .ShowError = Cll.ShowError
+            .ErrorTitle = Cll.ErrorTitle
+            .ErrorMessage = Cll.ErrorMessage
+            
+        End With ' ColRng.Validation
+        
+    Next I
+
+    '@Ignore LineLabelNotUsed
+Done:
+    Exit Sub
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
+End Sub
+    
 

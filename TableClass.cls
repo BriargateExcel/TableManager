@@ -13,6 +13,7 @@ Private Const Module_Name As String = "TableClass."
 
 Private pTableName As String
 Private pWkShtName As String
+Private pWkSht As Worksheet
 Private pForm As TableManager.FormClass
 Private pCells As TableManager.CellsClass
 Private pTable As ListObject
@@ -46,7 +47,7 @@ Public Sub GoToHome()
 End Sub
 
 Public Property Get DBRange() As Range
-    Set DBRange = MainWorkbook.Worksheets(pWkShtName).ListObjects(pTableName).DataBodyRange
+    Set DBRange = pWkSht.ListObjects(pTableName).DataBodyRange
 End Property
 
 Public Property Get DBColRange( _
@@ -62,6 +63,7 @@ Public Property Get DBColRange( _
     
     Set DBColRange = Tbl.Table.ListColumns(ColNum).DataBodyRange
 End Property
+
 Public Property Get DBColNumber(ByVal ColumnName As String) As Long
     On Error Resume Next
     DBColNumber = Application.WorksheetFunction.Match(ColumnName, Me.Table.HeaderRowRange, 0)
@@ -82,6 +84,7 @@ Public Property Get DBRowNumber( _
     If Err.Number <> 0 Then DBRowNumber = 0
     On Error GoTo 0
 End Property
+
 Public Property Get Form() As TableManager.FormClass: Set Form = pForm: End Property
 Public Property Set Form(ByVal Frm As TableManager.FormClass): Set pForm = Frm: End Property
 
@@ -107,31 +110,33 @@ Public Property Set Target(ByVal Vbl As Range): Set pTarget = Vbl: End Property
 
 Public Property Get WorksheetName() As String: WorksheetName = pWkShtName: End Property
 
+Public Property Get Worksheet() As Worksheet: Set Worksheet = pWkSht: End Property
+
 Public Property Get WrapCount() As Long: WrapCount = pWrapCount: End Property
 
 Public Property Get Table() As ListObject: Set Table = pTable: End Property
+
 Public Property Set Table(ByVal Tbl As ListObject): Set pTable = Tbl: End Property
 
 '@Ignore FunctionReturnValueNotUsed
 Public Function CollectTableData( _
-       ByVal WS As TableManager.WorksheetClass, _
        ByVal Tbl As TableManager.TableClass, _
        ByVal Modulename As String _
        ) As Boolean
-
-    Dim Element As Range
-    Dim OneCell As TableManager.CellClass
-
-    Debug.Assert Initializing
-
-    Const RoutineName As String = Module_Name & "CollectTableData"
-    Debug.Assert InScope(ModuleList, Modulename)
     
+    Const RoutineName As String = Module_Name & "CollectTableData"
     On Error GoTo ErrorHandler
     
-    pTableName = Tbl.Name
-    pWkShtName = WS.Worksheet.Name
+    Debug.Assert TableManager.Initializing
+
+    Debug.Assert InScope(ModuleList, Modulename)
+    
+    pTableName = Tbl.Table.Name
+    pWkShtName = Tbl.Table.Parent.Name
+    Set pWkSht = TableManager.GetMainWorkbook.Worksheets(pWkShtName)
     pLocked = True
+    Dim Element As Range
+    Dim OneCell As TableManager.CellClass
     
     For Each Element In pTable.HeaderRowRange
         Set OneCell = New TableManager.CellClass
@@ -158,7 +163,11 @@ Public Function FirstCell() As Range
     Const RoutineName As String = Module_Name & "FirstCell"
     On Error GoTo ErrorHandler
     
+    On Error Resume Next
     Set FirstCell = pTable.DataBodyRange(1, 1)
+    If Err.Number = 91 Then
+        Set FirstCell = pTable.HeaderRowRange(2, 1)
+    End If
     
     '@Ignore LineLabelNotUsed
 Done:
@@ -247,9 +256,9 @@ Public Function SelectedDBCol(ByVal ColumnName As String) As Long
 End Function                                     ' SelectedDBCol
 
 Public Function ColumnRange(ByVal ColNum As Long) As Range
-    Set ColumnRange = MainWorkbook.Worksheets(pWkShtName).Range( _
-        DBRange(1, ColNum), DBRange(NumRows, ColNum))
+    Set ColumnRange = pWkSht.Range(DBRange(1, ColNum), DBRange(NumRows, ColNum))
 End Function
 
 Public Function CellCount() As Long: CellCount = pCells.Count: End Function
+
 

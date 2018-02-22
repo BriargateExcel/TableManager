@@ -14,7 +14,7 @@ Private Const Module_Name As String = "WorksheetsClass."
 Private pAllSheets As Scripting.Dictionary
 
 Private Sub Class_Initialize()
-    Debug.Assert Initializing
+    Debug.Assert TableManager.Initializing
 
     Set pAllSheets = New Scripting.Dictionary
 End Sub                                          ' Class_Initialize
@@ -26,6 +26,7 @@ Public Property Get Item(ByVal vIndex As Variant) As TableManager.WorksheetClass
     'Attribute Item.VB_UserMemId = 0
     
     Const RoutineName As String = Module_Name & "Get Item"
+    On Error GoTo ErrorHandler
     
     On Error Resume Next
     Set Item = pAllSheets.Items()(vIndex)
@@ -37,6 +38,8 @@ Public Property Get Item(ByVal vIndex As Variant) As TableManager.WorksheetClass
     On Error Resume Next
     Set Item = pAllSheets(vIndex)
     On Error GoTo 0
+    
+    Debug.Assert Not Item Is Nothing
     
     '@Ignore LineLabelNotUsed
 Done:
@@ -51,7 +54,7 @@ Public Sub Add(ByVal Sht As TableManager.WorksheetClass)
 
     Dim Evt As TableManager.EventClass
     
-    Debug.Assert Initializing
+    Debug.Assert TableManager.Initializing
 
     Const RoutineName As String = Module_Name & "Add"
     On Error GoTo ErrorHandler
@@ -74,7 +77,7 @@ End Sub                                          ' Add
 
 Public Sub Remove(ByVal vIndex As Variant)
 
-    Debug.Assert Initializing
+    Debug.Assert TableManager.Initializing
     
     Const RoutineName As String = Module_Name & "Remove"
     On Error GoTo ErrorHandler

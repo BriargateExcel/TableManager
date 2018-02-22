@@ -6,7 +6,7 @@ Private Const Module_Name As String = "XLAM_Module."
 Private Init As Boolean
 Private pMainWorkbook As Workbook
 
-Private LastControl As Control
+Private LastControl As control
 
 ' TODO Implement more specific error messages
 Public Enum CustomError
@@ -15,7 +15,7 @@ Public Enum CustomError
 
     [_First] = vbObjectError - 10000
 
-    CustomErrorOne ' description
+    ArrayMustBe1or2Dimensions ' description
 
     CustomErrorTwo ' description
 
@@ -32,30 +32,39 @@ Public Function IsValidErrNum(ByVal ErrNum As CustomError) As Boolean
 
 End Function
 
-Public Sub SetLastControl(ByVal Ctl As Control)
+Public Sub SetLastControl(ByVal Ctl As control)
     Set LastControl = Ctl
 End Sub
 
-Public Function GetLastControl() As Control
+Public Function GetLastControl() As control
     Set GetLastControl = LastControl
 End Function
 
-Public Function MainWorkbook() As Workbook
-    Set MainWorkbook = pMainWorkbook
+Public Function GetMainWorkbook() As Workbook
+    Set GetMainWorkbook = pMainWorkbook
 End Function
 
-Public Sub AutoOpen(ByVal Wkbk As Workbook)
+Public Sub SetMainWorkbook(ByVal WkBk As Workbook)
+    Set pMainWorkbook = WkBk
+End Sub
+
+Public Function GetWorkBookPath() As String
+    GetWorkBookPath = GetMainWorkbook.Path
+End Function
+
+Public Sub AutoOpen(ByVal WkBk As Workbook)
     
     Dim Sht As Worksheet
-    Dim Tbl As ListObject
+    Dim TblObj As ListObject
     Dim UserFrm As Object
     Dim WkSht As TableManager.WorksheetClass
     
     Const RoutineName As String = Module_Name & "AutoOpen"
     On Error GoTo ErrorHandler
     
-    Init = True
-    Set pMainWorkbook = Wkbk
+    SetInitializing
+    
+    Set pMainWorkbook = WkBk
     
     If Not CheckForVBAProjectAccessEnabled(ThisWorkbook) Then
         MsgBox "You must set the project access for the " & _
@@ -76,21 +85,22 @@ Public Sub AutoOpen(ByVal Wkbk As Workbook)
     TableManager.WorksheetSetNewClass Module_Name
     TableManager.TableSetNewClass Module_Name
     
-    For Each Sht In MainWorkbook.Worksheets
+    For Each Sht In GetMainWorkbook.Worksheets
         Set WkSht = New TableManager.WorksheetClass
         Set WkSht.Worksheet = Sht
         WkSht.Name = Sht.Name
         
-        For Each Tbl In Sht.ListObjects
-            BuildTable WkSht, Tbl, Module_Name
-        Next Tbl
-        
         TableManager.WorksheetAdd WkSht, Module_Name
+        
+        For Each TblObj In Sht.ListObjects
+            BuildTable TblObj, Module_Name
+        Next TblObj
+        
     Next Sht
     
     DoEvents
     
-    Init = False
+    ReSetInitializing
 
     '@Ignore LineLabelNotUsed
 Done:

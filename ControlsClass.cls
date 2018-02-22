@@ -14,7 +14,7 @@ Private Const Module_Name As String = "ControlsClass."
 Private pAllControls As Scripting.Dictionary
 
 Private Sub Class_Initialize()
-    Debug.Assert Initializing
+    Debug.Assert TableManager.Initializing
 
     Set pAllControls = New Scripting.Dictionary:
 End Sub                                          ' Class_Initialize
@@ -29,10 +29,12 @@ Public Property Get Count() As Long: Count = pAllControls.Count: End Property
 Public Property Get Item( _
     ByVal vIndex As Variant, _
     ByVal Modulename As String _
-    ) As Control
+    ) As control
     'Attribute Item.VB_UserMemId = 0
 
     Const RoutineName As String = Module_Name & "Get Item"
+    On Error GoTo ErrorHandler
+    
     Debug.Assert InScope(ModuleList, Modulename)
     
     On Error Resume Next
@@ -46,24 +48,27 @@ Public Property Get Item( _
     Set Item = pAllControls(vIndex)
     On Error GoTo 0
 
+    Debug.Assert Not Item Is Nothing
+
     '@Ignore LineLabelNotUsed
 Done:
     Exit Property
     '@Ignore LineLabelNotUsed
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
-
 End Property
 
 Public Property Get ListControls(): ListControls = pAllControls.Keys: End Property
 
 Public Sub Add( _
-    ByVal Ctl As Control, _
+    ByVal Ctl As control, _
     ByVal Modulename As String)
     
-    Debug.Assert Initializing
+    Debug.Assert TableManager.Initializing
 
     Const RoutineName As String = Module_Name & "Add"
+    On Error GoTo ErrorHandler
+    
     Debug.Assert InScope(ModuleList, Modulename)
     
     On Error GoTo ErrorHandler
@@ -82,13 +87,13 @@ Public Sub Remove( _
     ByVal vIndex As Variant, _
     ByVal Modulename As String)
     
-    Debug.Assert Initializing
-
     Const RoutineName As String = Module_Name & "Remove"
-    Debug.Assert InScope(ModuleList, Modulename)
-    
     On Error GoTo ErrorHandler
    
+    Debug.Assert TableManager.Initializing
+
+    Debug.Assert InScope(ModuleList, Modulename)
+    
     If CStr(vIndex) = "*" Then
         Set pAllControls = Nothing
         Set pAllControls = New Collection

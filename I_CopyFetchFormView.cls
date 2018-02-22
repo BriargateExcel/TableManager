@@ -24,5 +24,8 @@ End Property
 Public Property Let Destination(ByVal Dst As String)
 End Property
 
+Public Property Get Form() As UserForm
+End Property
+
 
 

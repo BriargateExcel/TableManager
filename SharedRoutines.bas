@@ -16,15 +16,17 @@ Public Function ActiveCellTableName() As String
     On Error GoTo 0                              ' Reset the error handling
 End Function                                     ' ActiveCellTableName
 
-Public Function CheckForVBAProjectAccessEnabled(ByVal Wkbk As Workbook) As Boolean
+Public Function CheckForVBAProjectAccessEnabled(ByVal WkBk As Workbook) As Boolean
 
     Const RoutineName As String = Module_Name & "CheckForVBAProjectAccessEnabled"
+    On Error GoTo ErrorHandler
+    
     On Error GoTo ErrorHandler
     
     Dim VBP As VBProject
     
     If Val(Application.VERSION) >= 10 Then
-        Set VBP = Wkbk.VBProject
+        Set VBP = WkBk.VBProject
         CheckForVBAProjectAccessEnabled = True
     Else
         MsgBox "This application must be run on Excel 2002 or greater", _
@@ -51,7 +53,8 @@ Public Function InScope( _
     '   In other words, returns True if ModuleName is found in ModuleList
     
     Const RoutineName As String = "InScope"
-
+    On Error GoTo ErrorHandler
+    
     '     Log RoutineName & ":    " & ModuleName
 
     Dim OneDimArray() As Variant
@@ -103,8 +106,8 @@ ErrorHandler:
 End Function                                     ' InScope
 
 Public Sub ShowAnyForm( _
-    ByVal FormName As String, _
-    Optional ByVal Modal As FormShowConstants = vbModal)
+       ByVal FormName As String, _
+       Optional ByVal Modal As FormShowConstants = vbModal)
     
     ' http://www.cpearson.com/Excel/showanyform.htm
 
@@ -224,25 +227,25 @@ Public Sub Log(ParamArray Msg() As Variant)
     ' http://analystcave.com/vba-proper-vba-error-handling/
     ' https://excelmacromastery.com/vba-error-handling/
     
-    Dim Filename As String
-    Filename = MainWorkbook.Path & "\error_log.txt"
+    Dim FileName As String
+    FileName = GetMainWorkbook.Path & "\error_log.txt"
     Dim MsgString As Variant
     Dim I As Long
     
     Exit Sub
 
     ' Archive file at certain size
-    If FileLen(Filename) > 20000 Then
-        FileCopy Filename, _
-                 Replace(Filename, ".txt", _
+    If FileLen(FileName) > 20000 Then
+        FileCopy FileName, _
+                 Replace(FileName, ".txt", _
                          Format$(Now, "ddmmyyyy hhmmss.txt"))
-        Kill Filename
+        Kill FileName
     End If
 
     ' Open the file to write
     Dim filenumber As Long
     filenumber = FreeFile
-    Open Filename For Append As #filenumber
+    Open FileName For Append As #filenumber
 
     MsgString = Msg(LBound(Msg))
     For I = LBound(Msg) + 1 To UBound(Msg)
@@ -349,14 +352,14 @@ End Sub                                          ' ClearTable
 
 Public Function Contains( _
        ByVal Coll As Object, _
-       ByVal StrName As String _
+       ByVal NamePotentiallyInCollection As String _
        ) As Boolean
     
     Dim Obj As Object
 
     On Error Resume Next
     
-    Set Obj = Coll(StrName)
+    Set Obj = Coll(NamePotentiallyInCollection)
     Contains = (Err.Number = 0)
 End Function                                     ' Contains
 
@@ -367,4 +370,34 @@ Public Function FindLastColumnNumber( _
     
     FindLastColumnNumber = Sht.Cells(RowNumber, Sht.Columns.Count).End(xlToLeft).Column
 End Function                                     ' FindLastColumnNumber
+
+Public Function FindLastRow( _
+       ByVal ColLetter As String, _
+       ByVal RowNumber As Long, _
+       ByVal Sheet As Worksheet _
+       ) As Long
+    Dim RegionRow As Long: RegionRow = Sheet.Range(ColLetter & RowNumber).CurrentRegion.Rows.Count
+    Dim ColumnRow As Long: ColumnRow = Sheet.Range(ColLetter & Sheet.Rows.Count).End(xlUp).Row
+    Dim ColumnNumber As Long: ColumnNumber = Sheet.Range(ColLetter & 1).Column
+    Dim I As Long
+    Dim CurrentCell As Range
+
+    If RegionRow = ColumnRow Then
+        FindLastRow = ColumnRow
+    Else
+        For I = Application.WorksheetFunction.Max(ColumnRow, RegionRow) To Application.WorksheetFunction.Min(ColumnRow, RegionRow) Step -1
+            Set CurrentCell = Sheet.Cells(I, ColumnNumber)
+            If Not IsEmpty(CurrentCell) Then
+                FindLastRow = I
+                Exit For
+            End If
+        Next I
+    End If
+End Function                                     ' FindLastRow
+
+Public Function FileExists(ByVal FullFileName As String) As Boolean
+    Dim FSO As Scripting.FileSystemObject
+    Set FSO = New Scripting.FileSystemObject
+    FileExists = FSO.FileExists(FullFileName)
+End Function
 
