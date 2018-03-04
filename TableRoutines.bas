@@ -384,12 +384,12 @@ End Sub
 
 Public Sub BuildTable( _
        ByVal TblObj As ListObject, _
-       ByVal Modulename As String)
+       ByVal ModuleName As String)
        
     Const RoutineName As String = Module_Name & "Buildtable"
     On Error GoTo ErrorHandler
     
-    Debug.Assert TableManager.InScope(ModuleList, Modulename)
+    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
     
     SetInitializing
     
@@ -410,7 +410,6 @@ Public Sub BuildTable( _
         Set Frm.FormObj = Frm.BuildForm(Tbl, Module_Name)
         Set Tbl.Form = Frm
     End If
-'    ReSetInitializing
     
     '@Ignore LineLabelNotUsed
 Done:
@@ -448,12 +447,12 @@ Private Sub PopulateValidationData( _
 End Sub                                          ' PopulateValidationData
 
 Private Function ModuleList() As Variant
-    ModuleList = Array("XLAM_Module.", "TablesClass.", "EventClass.", "TableClass.", "TableRoutines.", "ParameterRoutines.", "CSV_Routines.")
+    ModuleList = Array("XLAM_Module.", "TablesClass.", "EventClass.", "TableClass.", "TableRoutines.", "ParameterRoutines.", "DataBaseRoutines.")
 End Function                                     ' ModuleList
 
 Public Sub TurnOnCellDescriptions( _
        ByVal Tbl As TableManager.TableClass, _
-       ByVal Modulename As String)
+       ByVal ModuleName As String)
     
     Dim Field As TableManager.CellClass
     Dim DBRow As Long: DBRow = Tbl.DBRow
@@ -464,7 +463,7 @@ Public Sub TurnOnCellDescriptions( _
     Const RoutineName As String = Module_Name & "TurnOnCellDescriptions"
     On Error GoTo ErrorHandler
     
-    Debug.Assert TableManager.InScope(ModuleList, Modulename)
+    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
 
     On Error GoTo ErrorHandler
 
@@ -489,7 +488,7 @@ End Sub                                          ' TurnOnCellDescriptions
 
 Public Sub TurnOffCellDescriptions( _
        ByVal Tbl As TableManager.TableClass, _
-       ByVal Modulename As String)
+       ByVal ModuleName As String)
     
     Dim Field As TableManager.CellClass
     Dim DBRow As Long: DBRow = Tbl.DBRow
@@ -500,7 +499,7 @@ Public Sub TurnOffCellDescriptions( _
     Const RoutineName As String = Module_Name & "TurnOffCellDescriptions"
     On Error GoTo ErrorHandler
     
-    Debug.Assert TableManager.InScope(ModuleList, Modulename)
+    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
 
     On Error GoTo ErrorHandler
 
@@ -525,12 +524,12 @@ End Sub                                          ' TurnOffCellDescriptions
 
 Public Sub PopulateTable( _
        ByVal Tbl As TableManager.TableClass, _
-       ByVal Modulename As String)
+       ByVal ModuleName As String)
 
     Const RoutineName As String = Module_Name & "PopulateTable"
     On Error GoTo ErrorHandler
     
-    Debug.Assert TableManager.InScope(ModuleList, Modulename)
+    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
 
     On Error GoTo ErrorHandler
 
@@ -575,13 +574,13 @@ End Sub                                          ' PopulateTable
 
 Public Function Table( _
        ByVal TableName As String, _
-       ByVal Modulename As String _
+       ByVal ModuleName As String _
        ) As TableManager.TableClass
 
     Const RoutineName As String = Module_Name & "Table"
     On Error GoTo ErrorHandler
     
-    Debug.Assert TableManager.InScope(ModuleList, Modulename)
+    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
 
     Set Table = pAllTbls.Item(TableName, Module_Name)
 
@@ -595,12 +594,12 @@ End Function                                     ' Table
 
 Public Sub TableAdd( _
        ByVal Tbl As Variant, _
-       ByVal Modulename As String)
+       ByVal ModuleName As String)
 
     Const RoutineName As String = Module_Name & "TableAdd"
     On Error GoTo ErrorHandler
     
-    Debug.Assert TableManager.InScope(ModuleList, Modulename)
+    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
     pAllTbls.Add Tbl, Module_Name
     
     '@Ignore LineLabelNotUsed
@@ -611,11 +610,11 @@ ErrorHandler:
 
 End Sub                                          ' TableAdd
 
-Public Function TableCount(ByVal Modulename As String) As Long
+Public Function TableCount(ByVal ModuleName As String) As Long
     Const RoutineName As String = Module_Name & "TableCount"
     On Error GoTo ErrorHandler
     
-    Debug.Assert TableManager.InScope(ModuleList, Modulename)
+    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
     TableCount = pAllTbls.Count
 
     '@Ignore LineLabelNotUsed
@@ -627,13 +626,13 @@ End Function                                     ' TableCount
 
 Public Function TableExists( _
        ByVal Tbl As Variant, _
-       ByVal Modulename As String _
+       ByVal ModuleName As String _
        ) As Boolean
 
     Const RoutineName As String = Module_Name & "TableExists"
     On Error GoTo ErrorHandler
     
-    Debug.Assert TableManager.InScope(ModuleList, Modulename)
+    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
     TableExists = pAllTbls.Exists(Tbl, Module_Name)
 
     '@Ignore LineLabelNotUsed
@@ -645,13 +644,13 @@ End Function                                     ' TableExists
 
 Public Function TableItem( _
        ByVal Tbl As Variant, _
-       ByVal Modulename As String _
+       ByVal ModuleName As String _
        ) As Variant
 
     Const RoutineName As String = Module_Name & "TableItem"
     On Error GoTo ErrorHandler
     
-    Debug.Assert TableManager.InScope(ModuleList, Modulename)
+    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
     Set TableItem = pAllTbls.Item(Tbl, Module_Name)
 
     '@Ignore LineLabelNotUsed
@@ -663,12 +662,12 @@ End Function                                     ' TableItem
 
 Public Sub TableRemove( _
        ByVal Val As Variant, _
-       ByVal Modulename As String)
+       ByVal ModuleName As String)
 
     Const RoutineName As String = Module_Name & "TableRemove"
     On Error GoTo ErrorHandler
     
-    Debug.Assert TableManager.InScope(ModuleList, Modulename)
+    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
     pAllTbls.Remove Val, Module_Name
 
     '@Ignore LineLabelNotUsed
@@ -678,11 +677,11 @@ ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Sub                                          ' TableRemove
 
-Public Sub TableSetNewClass(ByVal Modulename As String)
+Public Sub TableSetNewClass(ByVal ModuleName As String)
     Const RoutineName As String = Module_Name & "TableSetNewClass"
     On Error GoTo ErrorHandler
     
-    Debug.Assert TableManager.InScope(ModuleList, Modulename)
+    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
     Set pAllTbls = New TableManager.TablesClass
 
     '@Ignore LineLabelNotUsed
@@ -692,11 +691,11 @@ ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Sub                                          ' TableSetNewClass
 
-Public Sub TableSetNewDict(ByVal Modulename As String)
+Public Sub TableSetNewDict(ByVal ModuleName As String)
     Const RoutineName As String = Module_Name & "TableSetNewDict"
     On Error GoTo ErrorHandler
     
-    Debug.Assert TableManager.InScope(ModuleList, Modulename)
+    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
     Set pAllTbls = New Scripting.Dictionary
 
     '@Ignore LineLabelNotUsed
@@ -706,11 +705,11 @@ ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Sub                                          ' TableSetNewDict
 
-Public Sub TableSetNothing(ByVal Modulename As String)
+Public Sub TableSetNothing(ByVal ModuleName As String)
     Const RoutineName As String = Module_Name & "TableSetNothing"
     On Error GoTo ErrorHandler
     
-    Debug.Assert TableManager.InScope(ModuleList, Modulename)
+    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
     Set pAllTbls = Nothing
 
     '@Ignore LineLabelNotUsed
@@ -721,8 +720,8 @@ ErrorHandler:
 End Sub                                          ' TableSetNothing
 
 Public Sub CopyToTable( _
-    ByVal TableName As String, _
-    ByVal Ary As Variant)
+       ByVal TableName As String, _
+       ByVal Ary As Variant)
     Const RoutineName As String = Module_Name & "CopyToTable"
     On Error GoTo ErrorHandler
     
@@ -762,28 +761,30 @@ Public Sub CopyToTable( _
             ColRng.Locked = False
         End If
         
-        With ColRng.Validation
-'            .Add _
-'                Type:=Cll.CellType, _
-'                AlertStyle:=Cll.ValidAlertStyle, _
-'                Operator:=Cll.Operator, _
-'                Formula1:=Cll.ValidationFormula1, _
-'                Formula2:=Cll.ValidationFormula2
+        If Cll.CellType <> xlValidateInputOnly Then
+            With ColRng.Validation
+                .Delete
+                '            .Add _
+                '                Type:=Cll.CellType, _
+                '                AlertStyle:=Cll.ValidAlertStyle, _
+                '                Operator:=Cll.Operator, _
+                '                Formula1:=Cll.ValidationFormula1, _
+                '                Formula2:=Cll.ValidationFormula2
+                .Add Cll.CellType, Cll.ValidAlertStyle, Cll.Operator, Cll.ValidationFormula1, Cll.ValidationFormula2
                 
-            .Add Cll.CellType, Cll.ValidAlertStyle, Cll.Operator, Cll.ValidationFormula1, Cll.ValidationFormula2
-                
-            .IgnoreBlank = Cll.IgnoreBlank
-            .InCellDropDown = Cll.InCellDropDown
+                .IgnoreBlank = Cll.IgnoreBlank
+                .InCellDropDown = Cll.InCellDropDown
             
-            .ShowInput = Cll.ShowInput
-            .InputTitle = Cll.InputTitle
-            .InputMessage = Cll.InputMessage
+                .ShowInput = Cll.ShowInput
+                .InputTitle = Cll.InputTitle
+                .InputMessage = Cll.InputMessage
             
-            .ShowError = Cll.ShowError
-            .ErrorTitle = Cll.ErrorTitle
-            .ErrorMessage = Cll.ErrorMessage
+                .ShowError = Cll.ShowError
+                .ErrorTitle = Cll.ErrorTitle
+                .ErrorMessage = Cll.ErrorMessage
             
-        End With ' ColRng.Validation
+            End With                             ' ColRng.Validation
+        End If
         
     Next I
 
@@ -793,5 +794,4 @@ Done:
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Sub
-    
 

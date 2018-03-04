@@ -4,12 +4,12 @@ Option Explicit
 Private Const Module_Name As String = "FormRoutines."
 
 Private Function ModuleList() As Variant
-    ModuleList = Array("EventClass.")
+    ModuleList = Array("EventClass.", "XLAM_Module.")
 End Function                                     ' ModuleList
 
 Public Function ValidateForm( _
        ByVal Tbl As TableManager.TableClass, _
-       ByVal Modulename As String _
+       ByVal ModuleName As String _
        ) As Boolean
     
     Dim Field As TableManager.CellClass
@@ -20,7 +20,7 @@ Public Function ValidateForm( _
     Const RoutineName As String = Module_Name & "ValidateForm"
     On Error GoTo ErrorHandler
     
-    Debug.Assert InScope(ModuleList, Modulename)
+    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
     
     For I = 0 To Tbl.CellCount - 1
         Set Field = Tbl.TableCells.Item(I, Module_Name)
@@ -326,7 +326,7 @@ Private Function ValidateList( _
                    "Validation List Error"
         End If
     Else
-        If InScope(Field.ValidationList, FormVal) Then
+        If TableManager.InScope(Field.ValidationList, FormVal) Then
             ValidateList = True
         Else
             MsgBox "The value in " & _
@@ -522,12 +522,12 @@ End Function                                     ' ValidateList
 
 Public Sub PopulateForm( _
        ByVal Tbl As TableManager.TableClass, _
-       ByVal Modulename As String)
+       ByVal ModuleName As String)
 
     Const RoutineName As String = Module_Name & "PopulateForm"
     On Error GoTo ErrorHandler
 
-    Debug.Assert InScope(ModuleList, Modulename)
+    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
 
     Dim Field As TableManager.CellClass
     Dim DBRange As Range: Set DBRange = Tbl.DBRange
@@ -560,7 +560,7 @@ Public Sub PopulateForm( _
         
     Next I
     
-    TableManager.TurnOffCellDescriptions Tbl, Modulename
+    TableManager.TurnOffCellDescriptions Tbl, ModuleName
     
     '@Ignore LineLabelNotUsed
 Done:
@@ -572,12 +572,12 @@ End Sub                                          ' PopulateForm
 
 Public Sub ClearForm( _
        ByVal Tbl As TableManager.TableClass, _
-       ByVal Modulename As String)
+       ByVal ModuleName As String)
 
     Const RoutineName As String = Module_Name & "ClearForm"
     On Error GoTo ErrorHandler
 
-    Debug.Assert InScope(ModuleList, Modulename)
+    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
 
     Dim Field As TableManager.CellClass
     Dim I As Long
@@ -601,7 +601,7 @@ Public Sub ClearForm( _
         
     Next I
     
-    TableManager.TurnOffCellDescriptions Tbl, Modulename
+    TableManager.TurnOffCellDescriptions Tbl, ModuleName
     
     '@Ignore LineLabelNotUsed
 Done:
@@ -619,7 +619,7 @@ Public Function LogoFileExists() As Boolean
     LogoFileExists = (Dir(GetMainWorkbook.Path & "\logo.jpg") <> vbNullString)
 End Function
 
-Public Sub Texture(ByRef Frm As MSForms.UserForm)
+Public Sub Texture(ByRef Frm As Object)
     Const RoutineName As String = Module_Name & "Texture"
     On Error GoTo ErrorHandler
     
@@ -637,7 +637,7 @@ ErrorHandler:
 End Sub
 
 Public Function Logo( _
-    ByRef Frm As MSForms.UserForm) As control
+    ByRef Frm As Object) As control
     
     Const RoutineName As String = Module_Name & "Logo"
     On Error GoTo ErrorHandler
@@ -654,8 +654,7 @@ Public Function Logo( _
             .PictureSizeMode = fmPictureSizeModeZoom
             .BorderStyle = fmBorderStyleNone
             .BackStyle = fmBackStyleTransparent
-            '            .AutoSize = True
-
+            
             Dim PicHeightToWidth As Single
             PicHeightToWidth = Pic.Height / Pic.Width
             
@@ -684,4 +683,5 @@ Done:
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Function
+
 

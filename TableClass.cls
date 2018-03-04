@@ -121,7 +121,7 @@ Public Property Set Table(ByVal Tbl As ListObject): Set pTable = Tbl: End Proper
 '@Ignore FunctionReturnValueNotUsed
 Public Function CollectTableData( _
        ByVal Tbl As TableManager.TableClass, _
-       ByVal Modulename As String _
+       ByVal ModuleName As String _
        ) As Boolean
     
     Const RoutineName As String = Module_Name & "CollectTableData"
@@ -129,7 +129,7 @@ Public Function CollectTableData( _
     
     Debug.Assert TableManager.Initializing
 
-    Debug.Assert InScope(ModuleList, Modulename)
+    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
     
     pTableName = Tbl.Table.Name
     pWkShtName = Tbl.Table.Parent.Name

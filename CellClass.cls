@@ -54,7 +54,7 @@ End Function                                     ' ModuleList
 Public Sub CollectCellData( _
        ByVal Tbl As TableManager.TableClass, _
        ByVal CellID As Range, _
-       ByVal Modulename As String)
+       ByVal ModuleName As String)
 
     Dim DataCell As Range
     
@@ -63,7 +63,7 @@ Public Sub CollectCellData( _
     Const RoutineName As String = Module_Name & "CollectCellData"
     On Error GoTo ErrorHandler
     
-    Debug.Assert InScope(ModuleList, Modulename)
+    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
     
     On Error GoTo ErrorHandler
     

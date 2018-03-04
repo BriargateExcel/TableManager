@@ -45,14 +45,14 @@ Public Property Get Count() As Long: Count = pAllCells.Count: End Property
 '@DefaultMember
 Public Property Get Item( _
     ByVal vIndex As Variant, _
-    ByVal Modulename As String _
+    ByVal ModuleName As String _
     ) As TableManager.CellClass
     'Attribute Item.VB_UserMemId = 0
     
     Const RoutineName As String = Module_Name & "Get Item"
     On Error GoTo ErrorHandler
     
-    Debug.Assert InScope(ModuleList, Modulename)
+    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
     
     On Error Resume Next
     Set Item = pAllCells.Items()(vIndex)
@@ -77,14 +77,14 @@ End Property
 
 Public Sub Add( _
     ByVal Cll As TableManager.CellClass, _
-    ByVal Modulename As String)
+    ByVal ModuleName As String)
 
     Debug.Assert TableManager.Initializing
 
     Const RoutineName As String = Module_Name & "Add"
     On Error GoTo ErrorHandler
     
-    Debug.Assert InScope(ModuleList, Modulename)
+    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
     
     On Error GoTo ErrorHandler
     
@@ -100,14 +100,14 @@ End Sub                                          ' Add
 
 Public Sub Remove( _
     ByVal vIndex As Variant, _
-    ByVal Modulename As String)
+    ByVal ModuleName As String)
     
     Debug.Assert TableManager.Initializing
 
     Const RoutineName As String = Module_Name & "Remove"
     On Error GoTo ErrorHandler
     
-    Debug.Assert InScope(ModuleList, Modulename)
+    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
     
     On Error GoTo ErrorHandler
    
@@ -129,13 +129,13 @@ End Sub                                          ' Remove
 
 Public Function Exists( _
     ByVal vIndex As Variant, _
-    ByVal Modulename As String _
+    ByVal ModuleName As String _
     ) As Boolean
     
     Const RoutineName As String = Module_Name & "Exists"
     On Error GoTo ErrorHandler
     
-    Debug.Assert InScope(ModuleList, Modulename)
+    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
     
     Exists = pAllCells.Exists(vIndex)
 

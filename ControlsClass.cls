@@ -14,13 +14,11 @@ Private Const Module_Name As String = "ControlsClass."
 Private pAllControls As Scripting.Dictionary
 
 Private Sub Class_Initialize()
-    Debug.Assert TableManager.Initializing
-
     Set pAllControls = New Scripting.Dictionary:
 End Sub                                          ' Class_Initialize
 
 Private Function ModuleList() As Variant
-    ModuleList = Array("FormClass.")
+    ModuleList = Array("FormClass.", "FormRoutines.", "DataBaseRoutines.")
 End Function                                     ' ModuleList
 
 Public Property Get Count() As Long: Count = pAllControls.Count: End Property
@@ -28,14 +26,14 @@ Public Property Get Count() As Long: Count = pAllControls.Count: End Property
 '@DefaultMember
 Public Property Get Item( _
     ByVal vIndex As Variant, _
-    ByVal Modulename As String _
+    ByVal ModuleName As String _
     ) As control
     'Attribute Item.VB_UserMemId = 0
 
     Const RoutineName As String = Module_Name & "Get Item"
     On Error GoTo ErrorHandler
     
-    Debug.Assert InScope(ModuleList, Modulename)
+    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
     
     On Error Resume Next
     Set Item = pAllControls.Items()(vIndex)
@@ -62,14 +60,12 @@ Public Property Get ListControls(): ListControls = pAllControls.Keys: End Proper
 
 Public Sub Add( _
     ByVal Ctl As control, _
-    ByVal Modulename As String)
+    ByVal ModuleName As String)
     
-    Debug.Assert TableManager.Initializing
-
     Const RoutineName As String = Module_Name & "Add"
     On Error GoTo ErrorHandler
     
-    Debug.Assert InScope(ModuleList, Modulename)
+    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
     
     On Error GoTo ErrorHandler
     
@@ -85,14 +81,14 @@ End Sub                                          ' Add
 
 Public Sub Remove( _
     ByVal vIndex As Variant, _
-    ByVal Modulename As String)
+    ByVal ModuleName As String)
     
     Const RoutineName As String = Module_Name & "Remove"
     On Error GoTo ErrorHandler
    
     Debug.Assert TableManager.Initializing
 
-    Debug.Assert InScope(ModuleList, Modulename)
+    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
     
     If CStr(vIndex) = "*" Then
         Set pAllControls = Nothing

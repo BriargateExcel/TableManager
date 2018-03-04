@@ -28,14 +28,14 @@ Public Property Get Count() As Long: Count = pAllTables.Count: End Property
 '@DefaultMember
 Public Property Get Item( _
     ByVal vIndex As Variant, _
-    ByVal Modulename As String _
+    ByVal ModuleName As String _
     ) As TableManager.TableClass
     'Attribute Item.VB_UserMemId = 0
 
     Const RoutineName As String = Module_Name & "Get Item"
     On Error Resume Next
     
-    Debug.Assert InScope(ModuleList, Modulename)
+    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
         
     Set Item = pAllTables.Items()(vIndex)
     If Err.Number = 0 Then
@@ -65,14 +65,14 @@ ErrorHandler:
 End Property
 Public Sub Add( _
     ByVal Tbl As TableManager.TableClass, _
-    ByVal Modulename As String)
+    ByVal ModuleName As String)
     
     Debug.Assert TableManager.Initializing
 
     Const RoutineName As String = Module_Name & "Add"
     On Error GoTo ErrorHandler
            
-    Debug.Assert InScope(ModuleList, Modulename)
+    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
     
     If Tbl.Name <> vbNullString Then pAllTables.Add Tbl.Name, Tbl
         
@@ -86,13 +86,13 @@ End Sub                                          ' Add
 
 Public Function Exists( _
     ByVal vIndex As Variant, _
-    ByVal Modulename As String _
+    ByVal ModuleName As String _
     ) As Boolean
     
     Const RoutineName As String = Module_Name & "Exists"
     On Error GoTo ErrorHandler
     
-    Debug.Assert InScope(ModuleList, Modulename)
+    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
     
     Exists = pAllTables.Exists(vIndex)
 
@@ -105,12 +105,12 @@ End Function                                     ' Exists
 
 Public Sub Remove( _
     ByVal vIndex As Variant, _
-    ByVal Modulename As String)
+    ByVal ModuleName As String)
     
     Const RoutineName As String = Module_Name & "Remove"
     On Error GoTo ErrorHandler
    
-    Debug.Assert InScope(ModuleList, Modulename)
+    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
     
     If CStr(vIndex) = "*" Then
         Set pAllTables = Nothing

@@ -87,6 +87,8 @@ Private Function ArrayFromCSVfile( _
         DataArray = Split2d(OneLine, RowDelimiter, FieldDelimiter)
         OneLine = vbNullString
     End If
+    
+    DecodeCommas DataArray
 
     Application.StatusBar = False
 
@@ -100,6 +102,17 @@ Done:
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Function
+
+Private Sub DecodeCommas(ByRef Ary As Variant)
+    Dim I As Long
+    Dim J As Long
+    
+    For I = LBound(Ary, 1) To UBound(Ary, 1)
+        For J = LBound(Ary, 2) To UBound(Ary, 2)
+            Ary(I, J) = Replace$(Ary(I, J), "<comma>", ",")
+        Next J
+    Next I
+End Sub
 
 Private Function Split2d(ByVal InputString As String, _
                          Optional ByVal RowDelimiter As String = vbCrLf, _
@@ -184,7 +197,7 @@ Private Function Split2d(ByVal InputString As String, _
 
         OneRow = Split(ArrayOfRows(I), FieldDelimiter)
 
-        For J = FirstColumn To LastColumn
+        For J = LBound(OneRow, 1) To UBound(OneRow, 1)
             DataArray(I + I_Lower, J + J_Lower) = OneRow(J)
         Next J
 
@@ -323,17 +336,20 @@ Private Sub SaveAsCSV( _
     
     Dim UpperBound1 As Long
     Dim UpperBound2 As Long
+    Dim PrintString As String
 
     If NumberOfArrayDimensions(MyArray()) = 1 Then '1 dimensional
         Open FileName For Output As #7
-        ' TODO Check the default value of lower bound of one=-dimensional array
+        ' TODO Check the default value of lower bound of one-dimensional array
         If LowerBound = 1 Then
             UpperBound1 = UBound(MyArray(), 1)
         Else
             UpperBound1 = UBound(MyArray(), 1) - 1
         End If
         For I = LowerBound To UpperBound1
-            Print #7, Format$(MyArray(I, 0), "0.000000E+00")
+'            Print #7, Format$(MyArray(I, 0), "0.000000E+00")
+            PrintString = Replace$(MyArray(I, 0), ",", "<comma>")
+            Print #7, PrintString
         Next I
         Close #7
 
@@ -351,7 +367,8 @@ Private Sub SaveAsCSV( _
         For I = LowerBound To UpperBound1
             OneRow = vbNullString
             For J = LowerBound To UpperBound2
-                OneRow = OneRow & Format$(MyArray(I, J)) & Delimiter
+                PrintString = Replace$(MyArray(I, J), ",", "<comma>")
+                OneRow = OneRow & PrintString & Delimiter
             Next J
             OneRow = Left$(OneRow, Len(OneRow) - 1) 'remove last Delimiter
             Print #7, OneRow

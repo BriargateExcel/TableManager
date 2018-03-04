@@ -11,12 +11,12 @@ End Function                                     ' ModuleList
 
 Public Sub WorksheetAdd( _
        ByVal WS As Variant, _
-       ByVal Modulename As String)
+       ByVal ModuleName As String)
     
     Const RoutineName As String = Module_Name & "WorksheetAdd"
     On Error GoTo ErrorHandler
     
-    Debug.Assert TableManager.InScope(ModuleList, Modulename)
+    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
     pAllShts.Add WS
 
     '@Ignore LineLabelNotUsed
@@ -26,11 +26,11 @@ ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Sub                                          ' WorksheetAdd
 
-Public Sub WorksheetSetNewClass(ByVal Modulename As String)
+Public Sub WorksheetSetNewClass(ByVal ModuleName As String)
     Const RoutineName As String = Module_Name & "WorksheetSetNewClass"
     On Error GoTo ErrorHandler
     
-    Debug.Assert TableManager.InScope(ModuleList, Modulename)
+    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
     Set pAllShts = New TableManager.WorksheetsClass
 
     '@Ignore LineLabelNotUsed
@@ -42,13 +42,13 @@ End Sub                                          ' WorksheetSetNewClass
 
 Public Function WkSht( _
        ByVal WorksheetName As String, _
-       ByVal Modulename As String _
+       ByVal ModuleName As String _
        ) As TableManager.WorksheetClass
 
     Const RoutineName As String = Module_Name & "WkSht"
     On Error GoTo ErrorHandler
     
-    Debug.Assert InScope(ModuleList, Modulename)
+    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
 
     Set WkSht = pAllShts.Item(WorksheetName)
 

@@ -11,10 +11,36 @@ Public Function ActiveCellTableName() As String
 
     '   Statement produces error when active cell is not in a table.
     On Error Resume Next
-    ActiveCellTableName = ActiveCell.ListObject.Name
+    ActiveCellTableName = ActiveCellListObject.Name
 
     On Error GoTo 0                              ' Reset the error handling
 End Function                                     ' ActiveCellTableName
+
+Public Function ActiveCellWorksheet() As Worksheet
+    '   Function returns table name if active cell is in a table and
+    '   vbnullstring if it isn't.
+
+    Set ActiveCellWorksheet = Nothing
+
+    '   Statement produces error when active cell is not in a table.
+    On Error Resume Next
+    Set ActiveCellWorksheet = ActiveCell.Worksheet
+
+    On Error GoTo 0                              ' Reset the error handling
+End Function                                     ' ActiveCellWorksheet
+
+Public Function ActiveCellListObject() As ListObject
+    '   Function returns table name if active cell is in a table and
+    '   vbnullstring if it isn't.
+
+    Set ActiveCellListObject = Nothing
+
+    '   Statement produces error when active cell is not in a table.
+    On Error Resume Next
+    Set ActiveCellListObject = ActiveCell.ListObject
+
+    On Error GoTo 0                              ' Reset the error handling
+End Function                                     ' ActiveCellListobject
 
 Public Function CheckForVBAProjectAccessEnabled(ByVal WkBk As Workbook) As Boolean
 
@@ -44,7 +70,7 @@ End Function                                     ' CheckForVBAProjectAccessEnabl
 
 Public Function InScope( _
        ByVal ModuleList As Variant, _
-       ByVal Modulename As String _
+       ByVal ModuleName As String _
        ) As Boolean
 
     '   Uses the name of the module where InScope is called
@@ -82,7 +108,7 @@ Public Function InScope( _
         InScope = _
                 (UBound( _
                  Filter(OneDimArray, _
-                        Modulename, _
+                        ModuleName, _
                         True, _
                         CompareMethod.BinaryCompare) _
                  ) > -1)
@@ -92,7 +118,7 @@ Public Function InScope( _
     InScope = _
             (UBound( _
              Filter(ModuleList, _
-                    Modulename, _
+                    ModuleName, _
                     True, _
                     CompareMethod.BinaryCompare) _
              ) > -1)
@@ -400,4 +426,11 @@ Public Function FileExists(ByVal FullFileName As String) As Boolean
     Set FSO = New Scripting.FileSystemObject
     FileExists = FSO.FileExists(FullFileName)
 End Function
+
+Public Sub CenterMe(ByVal Frm As Object)
+    With Frm
+        .Left = Application.Left + (0.5 * Application.Width) - (0.5 * .InsideWidth)
+        .Top = Application.Top + (0.5 * Application.Height) - (0.5 * .InsideHeight)
+    End With
+End Sub
 

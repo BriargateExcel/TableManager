@@ -14,13 +14,11 @@ Private Const Module_Name As String = "EventsClass."
 Private pAllEvents As Scripting.Dictionary
 
 Private Sub Class_Initialize()
-    Debug.Assert TableManager.Initializing
-
     Set pAllEvents = New Scripting.Dictionary
 End Sub                                          ' Class_Initialize
 
 Private Function ModuleList() As Variant
-    ModuleList = Array("EventsClass.", "FormClass.")
+    ModuleList = Array("EventsClass.", "FormClass.", "FormRoutines.", "DataBaseRoutines.")
 End Function                                     ' ModuleList
 
 Public Property Get Count() As Long: Count = pAllEvents.Count: End Property
@@ -28,14 +26,14 @@ Public Property Get Count() As Long: Count = pAllEvents.Count: End Property
 '@DefaultMember
 Public Property Get Item( _
     ByVal vIndex As Variant, _
-    ByVal Modulename As String _
+    ByVal ModuleName As String _
     ) As TableManager.EventClass
     'Attribute Item.VB_UserMemId = 0
     
     Const RoutineName As String = Module_Name & "Get Item"
     On Error GoTo ErrorHandler
     
-    Debug.Assert InScope(ModuleList, Modulename)
+    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
        
     On Error Resume Next
     Set Item = pAllEvents.Items()(vIndex)
@@ -60,14 +58,12 @@ End Property
 
 Public Sub Add( _
     ByVal Evt As TableManager.EventClass, _
-    ByVal Modulename As String)
-
-    Debug.Assert TableManager.Initializing
+    ByVal ModuleName As String)
 
     Const RoutineName As String = Module_Name & "Add"
     On Error GoTo ErrorHandler
            
-    Debug.Assert InScope(ModuleList, Modulename)
+    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
     
     If Evt.Name <> vbNullString Then pAllEvents.Add Evt.Name, Evt
         
@@ -81,14 +77,14 @@ End Sub                                          ' Add
 
 Public Sub Remove( _
     ByVal vIndex As Variant, _
-    ByVal Modulename As String)
+    ByVal ModuleName As String)
 
     Debug.Assert TableManager.Initializing
     
     Const RoutineName As String = Module_Name & "Remove"
     On Error GoTo ErrorHandler
    
-    Debug.Assert InScope(ModuleList, Modulename)
+    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
     
     If CStr(vIndex) = "*" Then
         Set pAllEvents = Nothing

@@ -53,22 +53,16 @@ Public Property Set TableObj(ByVal Tbl As TableManager.TableClass)
 End Property
 
 Public Property Set FormObj(ByVal FO As Object)
-    Debug.Assert TableManager.Initializing
-
     Set pFormObj = FO
     Set pFormEvent = FO
 End Property
 
 Public Property Set ButtonObj(ByVal Btn As MSForms.CommandButton)
-    Debug.Assert TableManager.Initializing
-
     Set pButtonObj = Btn
     Set pButtonEvent = Btn
 End Property                                     ' ButtonObj
 
 Public Property Set TextObj(ByVal Txt As MSForms.TextBox)
-    Debug.Assert TableManager.Initializing
-
     Set pTextObj = Txt
     Set pTextEvent = Txt
 End Property                                     ' TextObj
@@ -98,8 +92,8 @@ Private Sub pFormEvent_MouseMove( _
 Done:
     Exit Sub
 ErrorHandler:
+    Debug.Print "mousemove error number: " & Err.Number
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
-
 End Sub                                          ' FormEvent_MouseMove
 
 Private Sub pButtonEvent_MouseMove( _
@@ -111,14 +105,20 @@ Private Sub pButtonEvent_MouseMove( _
     Const RoutineName As String = Module_Name & "ButtonEvent_MouseMove"
     On Error GoTo ErrorHandler
     
-    If LastEvent = "Button Event" Then Exit Sub
-    LastEvent = "Button Event"
-    
-    ' Exit if button already properly set
-    ' Reduces the flickering of the user form
-    If pButtonObj.BackColor = LightestColorValue Then Exit Sub
-    
-    PaintButtons
+    If pTableObj Is Nothing Then
+        ' Processing the database form
+'        Debug.Print "db"
+    Else
+        ' Processing a table form
+        If LastEvent = "Button Event" Then Exit Sub
+        LastEvent = "Button Event"
+        
+        ' Exit if button already properly set
+        ' Reduces the flickering of the user form
+        If pButtonObj.BackColor = LightestColorValue Then Exit Sub
+        
+        PaintButtons
+    End If
     
     LowLightControl GetLastControl, Module_Name
     SetLastControl pButtonObj
@@ -132,7 +132,6 @@ ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
 End Sub                                          ' ButtonEvent_MouseMove
-
 Private Sub pTextEvent_MouseMove( _
         ByVal Button As Integer, _
         ByVal Shift As Integer, _
@@ -153,7 +152,6 @@ Done:
     Exit Sub
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
-
 End Sub                                          ' TextEvent_MouseMove
 
 Private Sub pComboEvent_MouseMove( _
@@ -182,8 +180,6 @@ Private Sub pSheetEvent_BeforeDoubleClick( _
         ByVal Target As Range, _
         Cancel As Boolean)
     
-    Dim Isect As Range
-    
     Const RoutineName As String = Module_Name & "SheetEvent_BeforeDoubleClick"
     On Error GoTo ErrorHandler
     
@@ -204,9 +200,12 @@ Private Sub pSheetEvent_BeforeDoubleClick( _
     Set Tbl.ActiveTarget = Target
     Set Tbl.Table = Tbl.ActiveTarget.ListObject
     
+    Dim Isect As Range
+    
     Set Isect = Application.Intersect(Target, Tbl.Table.HeaderRowRange)
     If Not Isect Is Nothing Then
-        HandleCopyFetch TableName
+        TableManager.BuildDataBaseForm Module_Name
+        ShowAnyForm DataBaseFormName
         Exit Sub
     End If
     
@@ -218,9 +217,7 @@ Done:
     Exit Sub
 ErrorHandler:
     DisplayError RoutineName
-
 End Sub                                          ' SheetEvent_BeforeDoubleClick
-
 Private Sub pButtonEvent_Click()
     Dim Target As Range
     Dim TableName As String
@@ -234,6 +231,7 @@ Private Sub pButtonEvent_Click()
     Set Tbl = TableManager.Table(TableName, Module_Name)
     
     Select Case pButtonEvent.Caption
+    ' Table Form Buttons
     Case "Validate Form"
         If TableManager.ValidateForm(Tbl, Module_Name) Then
             MsgBox "There are no validation errors", _
@@ -315,10 +313,28 @@ Private Sub pButtonEvent_Click()
         pFormObj.Hide
         Exit Sub
     
+    ' Start of DataBase Form Buttons
+    Case Is = "Copy to File"
+        TableManager.OutputTable pTableObj, Module_Name
+        Exit Sub
+    
+    Case Is = "Fetch From File"
+        TableManager.InputTable pTableObj, Module_Name
+        Exit Sub
+    
+    Case Is = "Change File"
+        MsgBox "not implemented yet"
+        Exit Sub
+    
+    Case Is = "Cancel File Processing"
+            pFormObj.Hide
+            Exit Sub
+    ' End of DataBase Form Buttons
+
     Case Else
-        MsgBox _
-        "This button does not exist: " & pButtonEvent.Caption & " Select another.", _
-                                       vbOKOnly Or vbExclamation, "Button Does Not Exist"
+        MsgBox "This button does not exist: " & _
+               pButtonEvent.Caption & ". Select another.", _
+               vbOKOnly Or vbExclamation, "Button Does Not Exist"
 
     End Select
     
@@ -329,6 +345,8 @@ Done:
     Exit Sub
 ErrorHandler:
     DisplayError RoutineName
+
+    '    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
 End Sub                                          ' ButtonEvent_Click
 
@@ -369,5 +387,6 @@ End Sub                                          ' PaintButtons
 
 Public Property Get Name() As String: Name = pName: End Property
 Public Property Let Name(ByVal Vbl As String): pName = Vbl: End Property
+
 
 

@@ -24,7 +24,6 @@ Private pEvents As TableManager.EventsClass
 Private pEnabled As Boolean                      ' Whether form is enabled
 
 ' TODO Calculate the gaps and multipliers based on font and font size
-Private Const StandardGap As Long = 12
 Private Const ThinGap As Long = 3
 Private Const TextHeight As Long = 18
 Private Const ComboHeight As Long = 18
@@ -41,7 +40,7 @@ End Function                                     ' ModuleList
 
 Public Function BuildForm( _
        ByVal Tbl As TableManager.TableClass, _
-       ByVal Modulename As String _
+       ByVal ModuleName As String _
        ) As MSForms.UserForm
        
     Dim TempForm As VBComponent
@@ -50,7 +49,7 @@ Public Function BuildForm( _
     Const RoutineName As Variant = Module_Name & "BuildForm"
     On Error GoTo ErrorHandler
     
-    Debug.Assert InScope(ModuleList, Modulename)
+    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
     
     Set pTable = Tbl
     pWorksheetName = Tbl.WorksheetName
@@ -100,7 +99,7 @@ Public Function BuildForm( _
     Dim NumRows As Long
     Dim NumCols As Long
     Dim ButtonSetWidth As Single
-    ButtonSetWidth = BuildAllButtons(Top, MaxLabelWidth, MaxFieldWidth, Tbl, NumRows, NumCols)
+    ButtonSetWidth = BuildAllButtons(Top, MaxLabelWidth, MaxFieldWidth, Tbl, NumRows, NumCols) + 2 * StandardGap
         
     ' Set Properties for TempForm now that we know all the heights and widths
     Dim FieldWidth As Single
@@ -115,14 +114,14 @@ Public Function BuildForm( _
     
     ' Right justify the Logo
     If Not LogoImage Is Nothing Then
-        LogoImage.Left = pFormObj.Width - LogoWidth - StandardGap - ScrollBarWidth
+        LogoImage.Left = pFormObj.Width - StandardGap - ScrollBarWidth - LogoWidth
     End If
     
     ' Center the fields
     Dim LeftFieldMargin As Single
     LeftFieldMargin = (pFormObj.Width - ScrollBarWidth - FieldWidth) / 2
     Dim LeftButtonMargin As Single
-    LeftButtonMargin = (pFormObj.Width - ScrollBarWidth - ButtonSetWidth) / 2
+    LeftButtonMargin = ((pFormObj.Width - ScrollBarWidth) - ButtonSetWidth) / 2 ' Centers the buttons
     Dim Ctl As Variant
     
     For Each Ctl In pFormObj.Controls
@@ -202,6 +201,7 @@ Private Sub BuildControls( _
         
     Top = Top + StandardGap
 End Sub
+
 Private Sub BuildUnLockedFields( _
         ByVal Field As Variant, _
         ByRef Top As Single, _
@@ -250,6 +250,7 @@ Private Sub BuildUnLockedFields( _
     End Select
 
 End Sub
+
 Private Function BuildAllButtons( _
         ByRef Top As Single, _
         ByVal MaxLabelWidth As Single, _
@@ -259,7 +260,7 @@ Private Function BuildAllButtons( _
         ByRef NumCols As Long _
         ) As Single
     
-'    Dim DataLeft As Single
+    '    Dim DataLeft As Single
     Dim Arrangement As String
     
     Const RoutineName As String = Module_Name & "BuildAllButtons"
@@ -377,10 +378,12 @@ Private Sub BuildButtonRow( _
     Dim DataLeft As Single
     DataLeft = 0
     For I = LowerBound To UpperBound
-        BuildOneButton ButtonNames(I), Top, DataLeft, _
-                       ButtonLabels(I), Tbl
-                       DataLeft = DataLeft + ButtonWidth + StandardGap
+        BuildOneButton _
+        ButtonNames(I), Top, DataLeft, ButtonLabels(I), Tbl
+            
+        DataLeft = DataLeft + ButtonWidth + StandardGap
     Next I
+    
     '@Ignore LineLabelNotUsed
 Done:
     Exit Sub
@@ -510,7 +513,7 @@ Private Sub BuildText( _
     Const RoutineName As String = Module_Name & "BuildText"
     On Error GoTo ErrorHandler
     
-    Dim Ctl As control
+    Dim Ctl As MSForms.TextBox
     Dim Evt As TableManager.EventClass
 
     Set Ctl = pFormObj.Controls.Add("Forms.TextBox.1", "fld" & Field.Name, True)
@@ -539,8 +542,10 @@ Private Sub BuildText( _
         .ControlTipText = BuildCaption(Field.InputTitle, Field.InputMessage)
         .TextAlign = 1
     End With
+    
     Set Field.FormControl = Ctl
     pControls.Add Ctl, Module_Name
+    
     Set Evt = New TableManager.EventClass
     Set Evt.TextObj = Ctl
     Set Evt.TableObj = Tbl
@@ -553,7 +558,6 @@ Done:
     Exit Sub
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
-
 End Sub                                          ' BuildText
 
 Private Sub BuildCustom( _
@@ -789,4 +793,5 @@ Private Sub Class_Initialize()
     Set pControls = New TableManager.ControlsClass
     Set pEvents = New TableManager.EventsClass
 End Sub                                          ' Class_Initialize
+
 

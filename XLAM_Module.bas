@@ -74,6 +74,7 @@ Public Sub AutoOpen(ByVal WkBk As Workbook)
     
     End If
     
+    ' Delete all the old UserForms
     For Each UserFrm In Application.ThisWorkbook.VBProject.VBComponents
         If UserFrm.Type = vbext_ct_MSForm And _
            Left$(UserFrm.Name, 8) = "UserForm" _
@@ -85,6 +86,8 @@ Public Sub AutoOpen(ByVal WkBk As Workbook)
     TableManager.WorksheetSetNewClass Module_Name
     TableManager.TableSetNewClass Module_Name
     
+    ' Go through all the worksheets and all the tables on each worksheet
+    ' collecting the data and building the form for each table
     For Each Sht In GetMainWorkbook.Worksheets
         Set WkSht = New TableManager.WorksheetClass
         Set WkSht.Worksheet = Sht
@@ -95,7 +98,7 @@ Public Sub AutoOpen(ByVal WkBk As Workbook)
         For Each TblObj In Sht.ListObjects
             BuildTable TblObj, Module_Name
         Next TblObj
-        
+    
     Next Sht
     
     DoEvents
@@ -109,7 +112,6 @@ ErrorHandler:
     DisplayError RoutineName
 
 End Sub                                          ' AutoOpen
-
 Public Function Initializing() As Boolean
     Initializing = Init
 End Function                                     ' Initializing
