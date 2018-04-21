@@ -64,7 +64,8 @@ Private Function ParameterDescriptionArray() As Variant
                                   Array("Input Message", "xlValidateInputOnly", , "WrapText"), _
                                   Array("Show Error Message", "xlValidateList", ListOfTruefFalse), _
                                   Array("Error Title", "xlValidateInputOnly"), _
-                                        Array("Error Message", "xlValidateInputOnly", , "WrapText"))
+                                        Array("Error Message", "xlValidateInputOnly", , "WrapText") _
+                                        )
     
     ParameterDescriptionArray = PDA
     
@@ -275,7 +276,7 @@ Public Sub BuildParameterTableOnWorksheet(ByVal WkBk As Workbook)
             AddValidationToParameterTable .ListObjects("ParameterTable")
             
         End With                                 ' .Worksheets("Parameters")
-    BuildTable .ListObjects("ParameterTable"), Module_Name
+        BuildTable .ListObjects("ParameterTable"), Module_Name
     End With                                     ' Wkbk
         
      
@@ -300,11 +301,11 @@ Private Sub BuildTableAndForm()
     On Error GoTo ErrorHandler
 
     
-'@Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
-Exit Sub
+    Exit Sub
 ErrorHandler:
-RaiseError Err.Number, Err.Source, RoutineName, Err.Description
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Sub
 
 Private Sub SetCommonValidationParameters( _
@@ -744,7 +745,7 @@ Public Sub CopyToTable( _
     Dim LowerRight As String
     UpperLeft = UpperLeftRng.Offset(-1, 0).Address
     LowerRight = ConvertToLetter(UBound(Ary, 2)) & UBound(Ary, 1)
-    Sht.ListObjects.Add(xlSrcRange, Range(UpperLeft & ":" & LowerRight), , xlYes).Name = TableName
+    Sht.ListObjects.Add(xlSrcRange, Sht.Range(UpperLeft & ":" & LowerRight), , xlYes).Name = TableName
     Set Tbl.Table = Sht.ListObjects(TableName)
     
     ' Re-establish the lock and data validation
@@ -764,12 +765,6 @@ Public Sub CopyToTable( _
         If Cll.CellType <> xlValidateInputOnly Then
             With ColRng.Validation
                 .Delete
-                '            .Add _
-                '                Type:=Cll.CellType, _
-                '                AlertStyle:=Cll.ValidAlertStyle, _
-                '                Operator:=Cll.Operator, _
-                '                Formula1:=Cll.ValidationFormula1, _
-                '                Formula2:=Cll.ValidationFormula2
                 .Add Cll.CellType, Cll.ValidAlertStyle, Cll.Operator, Cll.ValidationFormula1, Cll.ValidationFormula2
                 
                 .IgnoreBlank = Cll.IgnoreBlank
@@ -794,4 +789,5 @@ Done:
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Sub
+
 

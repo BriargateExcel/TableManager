@@ -15,22 +15,15 @@ Public Enum CustomError
 
     [_First] = vbObjectError - 10000
 
-    ArrayMustBe1or2Dimensions ' description
+    ArrayMustBe1or2Dimensions                    ' description
 
-    CustomErrorTwo ' description
+    CustomErrorTwo                               ' description
 
     ' ... more error names
 
     [_Last]
 
 End Enum
-
-Public Function IsValidErrNum(ByVal ErrNum As CustomError) As Boolean
-
-    IsValidErrNum = (ErrNum = CustomError.Success) Or _
-                    ((ErrNum > CustomError.[_First]) And (ErrNum < CustomError.[_Last]))
-
-End Function
 
 Public Sub SetLastControl(ByVal Ctl As control)
     Set LastControl = Ctl
@@ -112,6 +105,7 @@ ErrorHandler:
     DisplayError RoutineName
 
 End Sub                                          ' AutoOpen
+
 Public Function Initializing() As Boolean
     Initializing = Init
 End Function                                     ' Initializing

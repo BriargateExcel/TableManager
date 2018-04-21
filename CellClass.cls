@@ -107,7 +107,7 @@ Public Sub CollectCellData( _
             
             pValidationFormula1 = .Formula1
             pValidationFormula2 = .Formula2
-        End With 'DataCell.Validation
+        End With                                 'DataCell.Validation
         
         If pValidationFormula1 <> vbNullString Then
             pValidationList = DataCell.Parent.Evaluate(pValidationFormula1)
@@ -217,6 +217,8 @@ Public Property Let ErrorTitle(ByVal Vbl As String): pErrorTitle = Vbl: End Prop
 Public Property Get ErrorMessage() As String: ErrorMessage = pErrorMessage: End Property
 
 Public Property Let ErrorMessage(ByVal Vbl As String): pErrorMessage = Vbl: End Property
+
+
 
 
 

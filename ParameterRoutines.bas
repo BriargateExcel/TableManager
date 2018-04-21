@@ -8,7 +8,7 @@ Public Function DarkestColorValue() As Long
                                    "Color Name", _
                                    "Darkest Color", _
                                    "Decimal Color Value", _
-                                   &H8000000E)
+                                   &H80000012)
 End Function
 
 Public Function LightestColorValue() As Long
@@ -16,7 +16,7 @@ Public Function LightestColorValue() As Long
                                     "Color Name", _
                                     "Lightest Color", _
                                     "Decimal Color Value", _
-                                    &H80000007)
+                                    &H8000000F)
 End Function
 
 Public Function FieldValue( _
@@ -27,19 +27,23 @@ Public Function FieldValue( _
        ByVal DefaultValue As Variant _
        ) As Variant
     
+    Dim LocalFieldValue As Variant
+    
     If FieldExistsInXLAM(TableName, SearchFieldName) Then
-        FieldValue = TableManager.GetCellValue(TableName, SearchFieldName, SearchFieldValue, TargetFieldName)
+        LocalFieldValue = TableManager.GetCellValue(TableName, SearchFieldName, SearchFieldValue, TargetFieldName)
     Else
         If FieldExistsOnWorksheet(TableName, SearchFieldName) Then
             Dim Tbl As ListObject
             Set Tbl = GetMainWorkbook.Worksheets("Parameters").ListObjects(TableName)
             
-            FieldValue = SearchTable(Tbl, SearchFieldName, SearchFieldValue, TargetFieldName)
-            If FieldValue = 0 Then FieldValue = DefaultValue
+            LocalFieldValue = SearchTable(Tbl, SearchFieldName, SearchFieldValue, TargetFieldName)
+            If LocalFieldValue = 0 Then FieldValue = DefaultValue
         Else
-            FieldValue = DefaultValue
+            LocalFieldValue = DefaultValue
         End If
     End If
+    
+    FieldValue = LocalFieldValue
 End Function
 
 Private Function FieldExistsInXLAM( _
@@ -123,4 +127,5 @@ Private Function SearchTable( _
             
     SearchTable = Tbl.DataBodyRange(KeyRow, DataColumn)
 End Function
+
 

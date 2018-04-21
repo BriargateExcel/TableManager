@@ -25,9 +25,9 @@ Public Property Get Count() As Long: Count = pAllEvents.Count: End Property
 
 '@DefaultMember
 Public Property Get Item( _
-    ByVal vIndex As Variant, _
-    ByVal ModuleName As String _
-    ) As TableManager.EventClass
+       ByVal vIndex As Variant, _
+       ByVal ModuleName As String _
+       ) As TableManager.EventClass
     'Attribute Item.VB_UserMemId = 0
     
     Const RoutineName As String = Module_Name & "Get Item"
@@ -57,8 +57,8 @@ ErrorHandler:
 End Property
 
 Public Sub Add( _
-    ByVal Evt As TableManager.EventClass, _
-    ByVal ModuleName As String)
+       ByVal Evt As TableManager.EventClass, _
+       ByVal ModuleName As String)
 
     Const RoutineName As String = Module_Name & "Add"
     On Error GoTo ErrorHandler
@@ -76,8 +76,8 @@ ErrorHandler:
 End Sub                                          ' Add
 
 Public Sub Remove( _
-    ByVal vIndex As Variant, _
-    ByVal ModuleName As String)
+       ByVal vIndex As Variant, _
+       ByVal ModuleName As String)
 
     Debug.Assert TableManager.Initializing
     
@@ -101,4 +101,5 @@ ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
     
 End Sub                                          ' Remove
+
 

@@ -4,7 +4,7 @@ Option Explicit
 Private Const Module_Name As String = "CSV_Routines."
 
 Private Function ModuleList() As Variant
-    ModuleList = Array("EventClass.", "XLAM_Module.")
+    ModuleList = Array("EventClass.", "XLAM_Module.", "PlainDataBaseForm.")
 End Function                                     ' ModuleList
 
 Public Function GetFullFileName(ByVal FileName As String) As String
@@ -36,9 +36,7 @@ ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Function
 
-Public Sub InputTable( _
-       ByVal Tbl As TableManager.TableClass, _
-       ByVal ModuleName As String)
+Public Sub InputTable(ByVal ModuleName As String)
     
     Const RoutineName As String = Module_Name & "InputTable"
     On Error GoTo ErrorHandler
@@ -102,9 +100,8 @@ Done:
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Sub
-Public Sub OutputTable( _
-    ByVal Tbl As TableManager.TableClass, _
-    ByVal ModuleName As String)
+
+Public Sub OutputTable(ByVal ModuleName As String)
     
     Const RoutineName As String = Module_Name & "OutputTable"
     On Error GoTo ErrorHandler
@@ -148,4 +145,24 @@ ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
 End Sub
+
+Public Sub ChangeFile( _
+       ByVal Tbl As TableManager.TableClass, _
+       ByVal ModuleName As String)
+    
+    Const RoutineName As String = Module_Name & "OutputTable"
+    On Error GoTo ErrorHandler
+    
+    Debug.Assert InScope(ModuleList, ModuleName)
+    
+    MsgBox "Not implemented yet", vbOKOnly, "File Change"
+    
+    '@Ignore LineLabelNotUsed
+Done:
+    Exit Sub
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
+
+End Sub
+
 

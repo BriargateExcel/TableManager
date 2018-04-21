@@ -17,8 +17,7 @@ Public Function ActiveCellTableName() As String
 End Function                                     ' ActiveCellTableName
 
 Public Function ActiveCellWorksheet() As Worksheet
-    '   Function returns table name if active cell is in a table and
-    '   vbnullstring if it isn't.
+    '   Function returns worksheet of active cell and Nothing if it isn't.
 
     Set ActiveCellWorksheet = Nothing
 
@@ -30,8 +29,8 @@ Public Function ActiveCellWorksheet() As Worksheet
 End Function                                     ' ActiveCellWorksheet
 
 Public Function ActiveCellListObject() As ListObject
-    '   Function returns table name if active cell is in a table and
-    '   vbnullstring if it isn't.
+    '   Function returns the ListObject if active cell is in a table and
+    '   Nothing if it isn't.
 
     Set ActiveCellListObject = Nothing
 
@@ -433,4 +432,5 @@ Public Sub CenterMe(ByVal Frm As Object)
         .Top = Application.Top + (0.5 * Application.Height) - (0.5 * .InsideHeight)
     End With
 End Sub
+
 

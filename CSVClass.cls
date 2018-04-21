@@ -347,7 +347,7 @@ Private Sub SaveAsCSV( _
             UpperBound1 = UBound(MyArray(), 1) - 1
         End If
         For I = LowerBound To UpperBound1
-'            Print #7, Format$(MyArray(I, 0), "0.000000E+00")
+            '            Print #7, Format$(MyArray(I, 0), "0.000000E+00")
             PrintString = Replace$(MyArray(I, 0), ",", "<comma>")
             Print #7, PrintString
         Next I
@@ -375,7 +375,10 @@ Private Sub SaveAsCSV( _
         Next I
         Close #7
     Else
-        Error.Raise ArrayMustBe1or2Dimensions, RoutineName, "Array must be 1 or 2 dimensions"
+        '        Error.Raise ArrayMustBe1or2Dimensions, RoutineName, "Array must be 1 or 2 dimensions"
+        '        RaiseError Err.Number, Err.Source, RoutineName, Err.Description
+        RaiseError ArrayMustBe1or2Dimensions, Err.Source, RoutineName, "Array must be 1 or 2 dimensions"
+
     End If
 
     '@Ignore LineLabelNotUsed

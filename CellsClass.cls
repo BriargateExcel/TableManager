@@ -44,9 +44,9 @@ Public Property Get Count() As Long: Count = pAllCells.Count: End Property
 'TODO Figure out the Rubberduck annotation for a default member
 '@DefaultMember
 Public Property Get Item( _
-    ByVal vIndex As Variant, _
-    ByVal ModuleName As String _
-    ) As TableManager.CellClass
+       ByVal vIndex As Variant, _
+       ByVal ModuleName As String _
+       ) As TableManager.CellClass
     'Attribute Item.VB_UserMemId = 0
     
     Const RoutineName As String = Module_Name & "Get Item"
@@ -76,8 +76,8 @@ ErrorHandler:
 End Property
 
 Public Sub Add( _
-    ByVal Cll As TableManager.CellClass, _
-    ByVal ModuleName As String)
+       ByVal Cll As TableManager.CellClass, _
+       ByVal ModuleName As String)
 
     Debug.Assert TableManager.Initializing
 
@@ -99,8 +99,8 @@ ErrorHandler:
 End Sub                                          ' Add
 
 Public Sub Remove( _
-    ByVal vIndex As Variant, _
-    ByVal ModuleName As String)
+       ByVal vIndex As Variant, _
+       ByVal ModuleName As String)
     
     Debug.Assert TableManager.Initializing
 
@@ -128,9 +128,9 @@ ErrorHandler:
 End Sub                                          ' Remove
 
 Public Function Exists( _
-    ByVal vIndex As Variant, _
-    ByVal ModuleName As String _
-    ) As Boolean
+       ByVal vIndex As Variant, _
+       ByVal ModuleName As String _
+       ) As Boolean
     
     Const RoutineName As String = Module_Name & "Exists"
     On Error GoTo ErrorHandler
@@ -145,6 +145,5 @@ Done:
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Function                                     ' Exists
-
 
 

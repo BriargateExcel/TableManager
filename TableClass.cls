@@ -262,3 +262,5 @@ End Function
 Public Function CellCount() As Long: CellCount = pCells.Count: End Function
 
 
+
+

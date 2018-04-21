@@ -2,12 +2,14 @@ Attribute VB_Name = "DataBaseRoutines"
 Option Explicit
 
 Private Const Module_Name As String = "DataBaseRoutines."
+
 Private pControls As TableManager.ControlsClass
 Private pEvents As TableManager.EventsClass
+Private pDataBaseFormName As String
+
 Private Const pStandardGap As Long = 12
 Private Const ButtonWidth As Long = 90
 Private Const ButtonHeight As Long = 24
-Private pDataBaseFormName As String
 
 Private Function ModuleList() As Variant
     ModuleList = Array("EventClass.", "XLAM_Module.")
@@ -17,41 +19,45 @@ Public Function DataBaseFormName() As String
     DataBaseFormName = pDataBaseFormName
 End Function
 
-Public Sub BuildDataBaseForm(ByVal ModuleName As String)
+Public Sub BuildDataBaseForm( _
+       ByVal Tbl As TableManager.TableClass, _
+       ByVal ModuleName As String)
 
     Debug.Assert TableManager.InScope(ModuleList, ModuleName)
     
     Const RoutineName As Variant = Module_Name & "BuildDataBaseForm"
     On Error GoTo ErrorHandler
     
-    ' Create the UserForm
-    Dim TempForm As VBComponent
-    Set TempForm = ThisWorkbook.VBProject.VBComponents.Add(vbext_ct_MSForm)
-    
-    Dim Frm As Object
-    Set Frm = VBA.UserForms.Add(TempForm.Name)
-    pDataBaseFormName = TempForm.Name
-    Frm.Caption = "Save and Restore Table Data"
-    
-    Set pEvents = New TableManager.EventsClass
-    
-    Dim Evt As TableManager.EventClass
-    Set Evt = New TableManager.EventClass
-    Set Evt.FormObj = Frm
-    Evt.Name = TempForm.Name
-    pEvents.Add Evt, Module_Name
-    
-    ' Add the texture
-    Texture Frm
-    
-    Dim View As I_CopyFetchFormView
-    Dim LogoImage As control
-    Dim ControlsWidth As Long: ControlsWidth = 2 * ButtonWidth + StandardGap
-    Dim Top As Long
-    
-    Top = StandardGap
+    pDataBaseFormName = PlainDataBaseForm.Name
+    PlainDataBaseForm.SetTable Tbl
     
     If LogoFileExists Then
+        ' Create the UserForm
+        Dim TempForm As VBComponent
+        Set TempForm = ThisWorkbook.VBProject.VBComponents.Add(vbext_ct_MSForm)
+    
+        Dim Frm As Object
+        Set Frm = VBA.UserForms.Add(TempForm.Name)
+        pDataBaseFormName = TempForm.Name
+        Frm.Caption = "Save and Restore Table Data"
+    
+        Dim Evt As TableManager.EventClass
+        Set Evt = New TableManager.EventClass
+        Set Evt.FormObj = Frm
+        Evt.Name = TempForm.Name
+        
+        Set pEvents = New TableManager.EventsClass
+        pEvents.Add Evt, Module_Name
+    
+        ' Add the texture
+        Texture Frm
+    
+        Dim LogoImage As control
+        Dim ControlsWidth As Long: ControlsWidth = 2 * ButtonWidth + StandardGap
+        Dim Top As Long
+    
+        Top = StandardGap
+    
         Set LogoImage = Logo(Frm)
         Frm.Width = Application.WorksheetFunction.Max( _
                     LogoImage.Width + 2 * StandardGap, _
@@ -60,39 +66,37 @@ Public Sub BuildDataBaseForm(ByVal ModuleName As String)
         LogoImage.Top = StandardGap
         LogoImage.Left = Frm.Width - 2 * StandardGap - LogoImage.Width
         Top = LogoImage.Height + 2 * StandardGap
-    Else
-        Set View = New PlainDataBaseForm
+        Dim Lft As Long
+        Lft = ((Frm.Width - StandardGap) - ControlsWidth) / 2
+    
+        ' Build the label
+        Dim Lbl As MSForms.Label
+    
+        BuildLabel Frm, Lbl
+        Lbl.Top = Top
+        Top = Top + StandardGap
+        Lbl.Left = Lft
+    
+        Set pControls = New TableManager.ControlsClass
+    
+        ' Build the text box
+        Dim Ctl As MSForms.TextBox
+    
+        BuildTextBox Ctl, Frm
+        Ctl.Top = Top
+        Ctl.Left = Lft
+        Ctl.Width = ControlsWidth
+    
+        Top = Top + 36 + StandardGap
+    
+        Dim ControlsHeight As Long
+        ControlsHeight = Lbl.Height + Ctl.Height + 2 * ButtonHeight + 3 * StandardGap
+    
+        Frm.Height = LogoImage.Height + ControlsHeight + 4 * StandardGap
+    
+        BuildDataBaseFormButtons Frm, Lft, Top
     End If
     
-    Dim Lft As Long
-    Lft = ((Frm.Width - StandardGap) - ControlsWidth) / 2
-    
-    ' Build the label
-    Dim Lbl As MSForms.Label
-    
-    BuildLabel Frm, Lbl
-    Lbl.Top = Top
-    Top = Top + StandardGap
-    Lbl.Left = Lft
-    
-    Set pControls = New TableManager.ControlsClass
-    
-    ' Build the text box
-    Dim Ctl As MSForms.TextBox
-    
-    BuildTextBox Ctl, Frm
-    Ctl.Top = Top
-    Ctl.Left = Lft
-    Ctl.Width = ControlsWidth
-    
-    Top = Top + 36 + StandardGap
-    
-    Dim ControlsHeight As Long
-    ControlsHeight = Lbl.Height + Ctl.Height + 2 * ButtonHeight + 3 * StandardGap
-    
-    Frm.Height = LogoImage.Height + ControlsHeight + 4 * StandardGap
-    
-    BuildDataBaseFormButtons Frm, Lft, Top
     
     '@Ignore LineLabelNotUsed
 Done:
@@ -101,9 +105,10 @@ ErrorHandler:
     
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Sub
+
 Private Sub BuildLabel( _
-    ByVal Frm As Object, _
-    ByRef Lbl As MSForms.Label)
+        ByVal Frm As Object, _
+        ByRef Lbl As MSForms.Label)
     
     Set Lbl = Frm.Controls.Add("Forms.Label.1", "lblFileName", True)
     
@@ -117,8 +122,8 @@ Private Sub BuildLabel( _
 End Sub
 
 Private Sub BuildTextBox( _
-    ByRef Ctl As MSForms.TextBox, _
-    ByVal Frm As Object)
+        ByRef Ctl As MSForms.TextBox, _
+        ByVal Frm As Object)
     
     Const RoutineName As String = Module_Name & "BuildTextBox"
     On Error GoTo ErrorHandler
@@ -155,9 +160,9 @@ ErrorHandler:
 End Sub
 
 Private Sub BuildDataBaseFormButtons( _
-    ByVal Frm As Object, _
-    ByVal Lft As Long, _
-    ByVal Top As Long)
+        ByVal Frm As Object, _
+        ByVal Lft As Long, _
+        ByVal Top As Long)
     
     Const RoutineName As String = Module_Name & "BuildDataBaseFormButtons"
     On Error GoTo ErrorHandler
@@ -221,6 +226,7 @@ ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
 End Sub                                          ' BuildOneButton
+
 Public Function StandardGap() As Long
     StandardGap = pStandardGap
 End Function

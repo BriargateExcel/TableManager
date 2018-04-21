@@ -40,24 +40,4 @@ ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Sub                                          ' WorksheetSetNewClass
 
-Public Function WkSht( _
-       ByVal WorksheetName As String, _
-       ByVal ModuleName As String _
-       ) As TableManager.WorksheetClass
-
-    Const RoutineName As String = Module_Name & "WkSht"
-    On Error GoTo ErrorHandler
-    
-    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
-
-    Set WkSht = pAllShts.Item(WorksheetName)
-
-    '@Ignore LineLabelNotUsed
-Done:
-    Exit Function
-ErrorHandler:
-    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
-
-End Function                                     ' Table
-
 

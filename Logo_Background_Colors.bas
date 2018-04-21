@@ -8,8 +8,8 @@ Private Function ModuleList() As Variant
 End Function                                     ' ModuleList
 
 Public Sub DisableButton( _
-    ByVal Btn As MSForms.CommandButton, _
-    ByVal ModuleName As String)
+       ByVal Btn As MSForms.CommandButton, _
+       ByVal ModuleName As String)
     
     Const RoutineName As String = Module_Name & "ValidateForm"
     On Error GoTo ErrorHandler
@@ -26,8 +26,8 @@ ErrorHandler:
 End Sub                                          ' DisableButton
 
 Public Sub EnableButton( _
-    ByVal Btn As MSForms.CommandButton, _
-    ByVal ModuleName As String)
+       ByVal Btn As MSForms.CommandButton, _
+       ByVal ModuleName As String)
     
     Const RoutineName As String = Module_Name & "ValidateForm"
     On Error GoTo ErrorHandler
@@ -44,8 +44,8 @@ ErrorHandler:
 End Sub                                          ' EnableButton
 
 Public Sub HighLightButton( _
-    ByVal Btn As MSForms.CommandButton, _
-    ByVal ModuleName As String)
+       ByVal Btn As MSForms.CommandButton, _
+       ByVal ModuleName As String)
     
     Const RoutineName As String = Module_Name & "ValidateForm"
     On Error GoTo ErrorHandler
@@ -64,8 +64,8 @@ ErrorHandler:
 End Sub                                          ' HighLightButton
 
 Public Sub HighLightControl( _
-    ByVal Ctl As control, _
-    ByVal ModuleName As String)
+       ByVal Ctl As control, _
+       ByVal ModuleName As String)
     
     Const RoutineName As String = Module_Name & "ValidateForm"
     On Error GoTo ErrorHandler
@@ -83,8 +83,8 @@ ErrorHandler:
 End Sub                                          ' HighLightControl
 
 Public Sub LowLightButton( _
-    ByVal Btn As MSForms.CommandButton, _
-    ByVal ModuleName As String)
+       ByVal Btn As MSForms.CommandButton, _
+       ByVal ModuleName As String)
     
     Const RoutineName As String = Module_Name & "ValidateForm"
     On Error GoTo ErrorHandler
@@ -103,8 +103,8 @@ ErrorHandler:
 End Sub                                          ' LowLightButton
 
 Public Sub LowLightControl( _
-    ByVal Ctl As control, _
-    ByVal ModuleName As String)
+       ByVal Ctl As control, _
+       ByVal ModuleName As String)
     
     If Ctl Is Nothing Then Exit Sub
     
@@ -122,4 +122,5 @@ Done:
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Sub                                          ' LowLightControl
+
 

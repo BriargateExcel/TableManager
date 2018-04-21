@@ -14,7 +14,7 @@ Private Const Module_Name As String = "EventClass."
 Private WithEvents pSheetEvent As Worksheet
 Attribute pSheetEvent.VB_VarHelpID = -1
 
-Private pTableObj As TableManager.TableClass
+Private ptableobj As TableManager.TableClass
 
 Private WithEvents pFormEvent As MSForms.UserForm
 Attribute pFormEvent.VB_VarHelpID = -1
@@ -49,7 +49,7 @@ Public Property Set ComboEvent(ByVal Vbl As MSForms.ComboBox): Set pComboEvent =
 Public Property Set TableObj(ByVal Tbl As TableManager.TableClass)
     Debug.Assert TableManager.Initializing
 
-    Set pTableObj = Tbl
+    Set ptableobj = Tbl
 End Property
 
 Public Property Set FormObj(ByVal FO As Object)
@@ -105,9 +105,9 @@ Private Sub pButtonEvent_MouseMove( _
     Const RoutineName As String = Module_Name & "ButtonEvent_MouseMove"
     On Error GoTo ErrorHandler
     
-    If pTableObj Is Nothing Then
+    If ptableobj Is Nothing Then
         ' Processing the database form
-'        Debug.Print "db"
+        '        Debug.Print "db"
     Else
         ' Processing a table form
         If LastEvent = "Button Event" Then Exit Sub
@@ -132,6 +132,7 @@ ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
 End Sub                                          ' ButtonEvent_MouseMove
+
 Private Sub pTextEvent_MouseMove( _
         ByVal Button As Integer, _
         ByVal Shift As Integer, _
@@ -204,7 +205,7 @@ Private Sub pSheetEvent_BeforeDoubleClick( _
     
     Set Isect = Application.Intersect(Target, Tbl.Table.HeaderRowRange)
     If Not Isect Is Nothing Then
-        TableManager.BuildDataBaseForm Module_Name
+        TableManager.BuildDataBaseForm Tbl, Module_Name
         ShowAnyForm DataBaseFormName
         Exit Sub
     End If
@@ -218,6 +219,7 @@ Done:
 ErrorHandler:
     DisplayError RoutineName
 End Sub                                          ' SheetEvent_BeforeDoubleClick
+
 Private Sub pButtonEvent_Click()
     Dim Target As Range
     Dim TableName As String
@@ -231,7 +233,7 @@ Private Sub pButtonEvent_Click()
     Set Tbl = TableManager.Table(TableName, Module_Name)
     
     Select Case pButtonEvent.Caption
-    ' Table Form Buttons
+        ' Table Form Buttons
     Case "Validate Form"
         If TableManager.ValidateForm(Tbl, Module_Name) Then
             MsgBox "There are no validation errors", _
@@ -256,80 +258,80 @@ Private Sub pButtonEvent_Click()
     
     Case "Next Row"
         TableManager.TurnOnCellDescriptions Tbl, Module_Name
-        pTableObj.NextRow
-        Set pTableObj.ActiveTarget = pTableObj.ActiveTarget.Offset(0, 0)
+        ptableobj.NextRow
+        Set ptableobj.ActiveTarget = ptableobj.ActiveTarget.Offset(0, 0)
         TableManager.PopulateForm Tbl, Module_Name
     
     Case "Previous Row"
         TableManager.TurnOnCellDescriptions Tbl, Module_Name
-        pTableObj.PreviousRow
-        Set pTableObj.ActiveTarget = pTableObj.ActiveTarget.Offset(0, 0)
+        ptableobj.PreviousRow
+        Set ptableobj.ActiveTarget = ptableobj.ActiveTarget.Offset(0, 0)
         TableManager.PopulateForm Tbl, Module_Name
     
     Case "Insert Above"
-        pTableObj.ActiveTarget.ListObject.ListRows.Add pTableObj.ActiveRow
-        Set pTableObj.ActiveTarget = pTableObj.ActiveTarget.Offset(-1, 0)
+        ptableobj.ActiveTarget.ListObject.ListRows.Add ptableobj.ActiveRow
+        Set ptableobj.ActiveTarget = ptableobj.ActiveTarget.Offset(-1, 0)
         ClearForm Tbl, Module_Name
     
     Case "Insert Below"
-        pTableObj.ActiveTarget.ListObject.ListRows.Add pTableObj.ActiveRow + 1
-        Set pTableObj.ActiveTarget = pTableObj.ActiveTarget.Offset(1, 0)
+        ptableobj.ActiveTarget.ListObject.ListRows.Add ptableobj.ActiveRow + 1
+        Set ptableobj.ActiveTarget = ptableobj.ActiveTarget.Offset(1, 0)
         ClearForm Tbl, Module_Name
     
     Case "Insert at Top"
-        pTableObj.ActiveTarget.ListObject.ListRows.Add 1
-        Set pTableObj.ActiveTarget = pTableObj.FirstCell
+        ptableobj.ActiveTarget.ListObject.ListRows.Add 1
+        Set ptableobj.ActiveTarget = ptableobj.FirstCell
         ClearForm Tbl, Module_Name
     
     Case "Insert at Bottom"
-        pTableObj.ActiveTarget.ListObject.ListRows.Add
-        Set pTableObj.ActiveTarget = pTableObj.LastCell
+        ptableobj.ActiveTarget.ListObject.ListRows.Add
+        Set ptableobj.ActiveTarget = ptableobj.LastCell
         ClearForm Tbl, Module_Name
     
     Case "Delete This Row"
-        If pTableObj.LastRow = pTableObj.ActiveRow Then
-            Set Target = pTableObj.ActiveTarget.Offset(-1, 0)
+        If ptableobj.LastRow = ptableobj.ActiveRow Then
+            Set Target = ptableobj.ActiveTarget.Offset(-1, 0)
         Else
-            Set Target = pTableObj.ActiveTarget.Offset(1, 0)
+            Set Target = ptableobj.ActiveTarget.Offset(1, 0)
         End If
-        pTableObj.ActiveTarget.ListObject.ListRows(pTableObj.ActiveRow).Delete
-        Set pTableObj.ActiveTarget = Target
+        ptableobj.ActiveTarget.ListObject.ListRows(ptableobj.ActiveRow).Delete
+        Set ptableobj.ActiveTarget = Target
         PopulateForm Tbl, Module_Name
     
     Case "Go To Top"
-        TableManager.TurnOnCellDescriptions pTableObj, Module_Name
-        Set pTableObj.ActiveTarget = pTableObj.FirstCell
-        TableManager.TurnOffCellDescriptions pTableObj, Module_Name
+        TableManager.TurnOnCellDescriptions ptableobj, Module_Name
+        Set ptableobj.ActiveTarget = ptableobj.FirstCell
+        TableManager.TurnOffCellDescriptions ptableobj, Module_Name
         TableManager.PopulateForm Tbl, Module_Name
     
     Case "Go To Bottom"
-        TableManager.TurnOnCellDescriptions pTableObj, Module_Name
-        Set pTableObj.ActiveTarget = pTableObj.LastCell
-        TableManager.TurnOffCellDescriptions pTableObj, Module_Name
+        TableManager.TurnOnCellDescriptions ptableobj, Module_Name
+        Set ptableobj.ActiveTarget = ptableobj.LastCell
+        TableManager.TurnOffCellDescriptions ptableobj, Module_Name
         TableManager.PopulateForm Tbl, Module_Name
     
     Case Is = "Cancel"
-        TableManager.TurnOnCellDescriptions pTableObj, Module_Name
+        TableManager.TurnOnCellDescriptions ptableobj, Module_Name
         pFormObj.Hide
         Exit Sub
     
-    ' Start of DataBase Form Buttons
+        ' Start of DataBase Form Buttons
     Case Is = "Copy to File"
-        TableManager.OutputTable pTableObj, Module_Name
+        TableManager.OutputTable Module_Name
         Exit Sub
     
     Case Is = "Fetch From File"
-        TableManager.InputTable pTableObj, Module_Name
+        TableManager.InputTable Module_Name
         Exit Sub
     
     Case Is = "Change File"
-        MsgBox "not implemented yet"
+        TableManager.ChangeFile ptableobj, Module_Name
         Exit Sub
     
     Case Is = "Cancel File Processing"
-            pFormObj.Hide
-            Exit Sub
-    ' End of DataBase Form Buttons
+        pFormObj.Hide
+        Exit Sub
+        ' End of DataBase Form Buttons
 
     Case Else
         MsgBox "This button does not exist: " & _
@@ -362,15 +364,15 @@ Private Sub PaintButtons()
     Dim Ctl As Variant
     
     For Each Ctl In pFormObj.Controls
-        If Left$(Ctl.Name, 7) = "Command" Then ' All buttons names start with "CommandButton"
+        If Left$(Ctl.Name, 7) = "Command" Then   ' All buttons names start with "CommandButton"
             EnableButton Ctl, Module_Name
             LowLightControl Ctl, Module_Name
                 
-            If Ctl.Caption = "Previous Row" And pTableObj.ActiveRow = 1 Then
+            If Ctl.Caption = "Previous Row" And ptableobj.ActiveRow = 1 Then
                 DisableButton Ctl, Module_Name
             End If
                 
-            If Ctl.Caption = "Next Row" And pTableObj.ActiveRow = pTableObj.LastRow Then
+            If Ctl.Caption = "Next Row" And ptableobj.ActiveRow = ptableobj.LastRow Then
                 DisableButton Ctl, Module_Name
             End If
                 
@@ -387,6 +389,5 @@ End Sub                                          ' PaintButtons
 
 Public Property Get Name() As String: Name = pName: End Property
 Public Property Let Name(ByVal Vbl As String): pName = Vbl: End Property
-
 
 

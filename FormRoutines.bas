@@ -345,6 +345,7 @@ ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
 End Function                                     ' ValidateList
+
 Private Function ValidateDate( _
         ByVal Tbl As TableManager.TableClass, _
         ByVal Field As Variant _
@@ -637,7 +638,7 @@ ErrorHandler:
 End Sub
 
 Public Function Logo( _
-    ByRef Frm As Object) As control
+       ByRef Frm As Object) As control
     
     Const RoutineName As String = Module_Name & "Logo"
     On Error GoTo ErrorHandler

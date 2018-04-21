@@ -13,76 +13,49 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
-'Option Explicit
-'
-'Implements I_CopyFetchFormView
-'
-'Private Type pTView
-'    Model As CopyFetchClass
-'    IsCancelled As Boolean
-'    FileName As String
-'End Type
-'
-'Private pThis As pTView
-'
-'Public Property Let I_CopyFetchFormView_Source(ByVal Src As String)
-'    pThis.FileName = Src
-'End Property
-'
-'Public Property Let I_CopyFetchFormView_Destination(ByVal Dst As String)
-'    pThis.FileName = Dst
-'End Property
-'
-'Private Function I_CopyFetchFormView_ShowDialog(ByVal viewModel As Object) As Boolean
-'    FileNameBox.Text = pThis.FileName
-'    Set pThis.Model = viewModel
-'    Show
-'    I_CopyFetchFormView_ShowDialog = Not pThis.IsCancelled
-'End Function
-'
-'Private Property Set I_CopyFetchFormView_Model(ByVal CFC As CopyFetchClass)
-'    Set pThis.Model = CFC
-'End Property
-'
-'Private Property Get I_CopyFetchFormView_Form() As UserForm
-'    Set I_CopyFetchFormView_Form = PlainDataBaseForm
-'End Property
-'
-'Private Sub CopyButton_Click()
-'    pThis.Model.CopyClicked = True
-'    Me.Hide
-'End Sub
-'
-'Private Sub FetchButton_Click()
-'    pThis.Model.FetchClicked = True
-'    Me.Hide
-'End Sub
-'
-'Private Property Get I_CopyFetchFormView_Model() As CopyFetchClass
-'    Set I_CopyFetchFormView_Model = pThis.Model
-'End Property
-'
-'Private Sub CancelButton_Click()
-'    OnCancel
-'End Sub
-'
-'Private Sub UserForm_QueryClose(Cancel As Integer, CloseMode As Integer)
-'    If CloseMode = VbQueryClose.vbFormControlMenu Then
-'        Cancel = True
-'        OnCancel
-'    End If
-'End Sub
-'
-'Private Sub OnCancel()
-'    pThis.IsCancelled = True
-'    Hide
-'
-'    FileNameBox = vbNullString
-'End Sub
-'
-'Private Sub UserForm_Activate()
-'    CenterMe Me
-'End Sub
-'
-'
-'
+Option Explicit
+
+Private Const Module_Name As String = "PlainDataBaseForm."
+
+Private ptableobj As TableManager.TableClass
+
+Public Sub SetTable(ByVal Tbl As TableManager.TableClass)
+    Set ptableobj = Tbl
+End Sub
+
+Private Sub CopyButton_Click()
+    TableManager.OutputTable Module_Name
+    Me.Hide
+End Sub
+
+Private Sub FetchButton_Click()
+    TableManager.InputTable Module_Name
+    Me.Hide
+End Sub
+
+Private Sub ChangeFileButton_Click()
+    TableManager.ChangeFile ptableobj, Module_Name
+End Sub
+
+Private Sub CancelButton_Click()
+    OnCancel
+End Sub
+
+Private Sub UserForm_QueryClose(Cancel As Integer, CloseMode As Integer)
+    If CloseMode = VbQueryClose.vbFormControlMenu Then
+        Cancel = True
+        OnCancel
+    End If
+End Sub
+
+Private Sub OnCancel()
+    Me.Hide
+
+    FileNameBox.Text = vbNullString
+End Sub
+
+Private Sub UserForm_Activate()
+    FileNameBox.Text = GetFullFileName(ActiveCellTableName)
+    CenterMe Me
+End Sub
+

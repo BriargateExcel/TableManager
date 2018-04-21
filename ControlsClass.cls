@@ -25,9 +25,9 @@ Public Property Get Count() As Long: Count = pAllControls.Count: End Property
 
 '@DefaultMember
 Public Property Get Item( _
-    ByVal vIndex As Variant, _
-    ByVal ModuleName As String _
-    ) As control
+       ByVal vIndex As Variant, _
+       ByVal ModuleName As String _
+       ) As control
     'Attribute Item.VB_UserMemId = 0
 
     Const RoutineName As String = Module_Name & "Get Item"
@@ -59,8 +59,8 @@ End Property
 Public Property Get ListControls(): ListControls = pAllControls.Keys: End Property
 
 Public Sub Add( _
-    ByVal Ctl As control, _
-    ByVal ModuleName As String)
+       ByVal Ctl As control, _
+       ByVal ModuleName As String)
     
     Const RoutineName As String = Module_Name & "Add"
     On Error GoTo ErrorHandler
@@ -80,8 +80,8 @@ ErrorHandler:
 End Sub                                          ' Add
 
 Public Sub Remove( _
-    ByVal vIndex As Variant, _
-    ByVal ModuleName As String)
+       ByVal vIndex As Variant, _
+       ByVal ModuleName As String)
     
     Const RoutineName As String = Module_Name & "Remove"
     On Error GoTo ErrorHandler
@@ -105,4 +105,5 @@ ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
 End Sub                                          ' Remove
+
 
