@@ -199,6 +199,7 @@ Private Sub pSheetEvent_BeforeDoubleClick( _
     Set Tbl = New TableManager.TableClass
     Set Tbl = TableItem(TableName, Module_Name)
     Set Tbl.ActiveTarget = Target
+    If Tbl Is Nothing Then Exit Sub ' Means the table has no UserForm
     Set Tbl.Table = Tbl.ActiveTarget.ListObject
     
     Dim Isect As Range
