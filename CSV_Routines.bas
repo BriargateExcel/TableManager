@@ -1,4 +1,6 @@
 Attribute VB_Name = "CSV_Routines"
+'@Folder("TableManager.DataBase")
+
 Option Explicit
 
 Private Const Module_Name As String = "CSV_Routines."
@@ -7,7 +9,7 @@ Private Function ModuleList() As Variant
     ModuleList = Array("EventClass.", "XLAM_Module.", "PlainDataBaseForm.")
 End Function                                     ' ModuleList
 
-Public Function GetFullFileName(ByVal FileName As String) As String
+Public Function GetFullFileName(ByVal Filename As String) As String
     Const RoutineName As String = Module_Name & "GetFullFileName"
     On Error GoTo ErrorHandler
     
@@ -16,7 +18,7 @@ Public Function GetFullFileName(ByVal FileName As String) As String
     
     Set FSO = New Scripting.FileSystemObject
 
-    FullFileName = FSO.BuildPath(GetWorkBookPath, FileName)
+    FullFileName = FSO.BuildPath(GetWorkBookPath, Filename)
     
     'check extension and correct if needed
     If InStr(FullFileName, ".csv") = 0 Then
@@ -92,7 +94,7 @@ Public Sub InputTable(ByVal ModuleName As String)
     ClearTable ActiveCellListObject
     
     ' copy the new contents
-    TableManager.CopyToTable ActiveCellListObject, Ary
+    CopyToTable ActiveCellListObject, Ary
     
     '@Ignore LineLabelNotUsed
 Done:
@@ -147,7 +149,7 @@ ErrorHandler:
 End Sub
 
 Public Sub ChangeFile( _
-       ByVal Tbl As TableManager.TableClass, _
+       ByVal Tbl As TableClass, _
        ByVal ModuleName As String)
     
     Const RoutineName As String = Module_Name & "OutputTable"

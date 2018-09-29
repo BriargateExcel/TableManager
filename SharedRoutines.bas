@@ -1,4 +1,6 @@
 Attribute VB_Name = "SharedRoutines"
+'@Folder("TableManager.Main")
+
 Option Explicit
 
 Private Const Module_Name As String = "SharedRoutines."
@@ -50,7 +52,7 @@ Public Function CheckForVBAProjectAccessEnabled(ByVal WkBk As Workbook) As Boole
     
     Dim VBP As VBProject
     
-    If Val(Application.VERSION) >= 10 Then
+    If Val(Application.Version) >= 10 Then
         Set VBP = WkBk.VBProject
         CheckForVBAProjectAccessEnabled = True
     Else
@@ -252,34 +254,34 @@ Public Sub Log(ParamArray Msg() As Variant)
     ' http://analystcave.com/vba-proper-vba-error-handling/
     ' https://excelmacromastery.com/vba-error-handling/
     
-    Dim FileName As String
-    FileName = GetMainWorkbook.Path & "\error_log.txt"
+    Dim Filename As String
+    Filename = GetMainWorkbook.Path & "\error_log.txt"
     Dim MsgString As Variant
     Dim I As Long
     
     Exit Sub
 
     ' Archive file at certain size
-    If FileLen(FileName) > 20000 Then
-        FileCopy FileName, _
-                 Replace(FileName, ".txt", _
+    If FileLen(Filename) > 20000 Then
+        FileCopy Filename, _
+                 Replace(Filename, ".txt", _
                          Format$(Now, "ddmmyyyy hhmmss.txt"))
-        Kill FileName
+        Kill Filename
     End If
 
     ' Open the file to write
-    Dim filenumber As Long
-    filenumber = FreeFile
-    Open FileName For Append As #filenumber
+    Dim FileNumber As Long
+    FileNumber = FreeFile
+    Open Filename For Append As #FileNumber
 
     MsgString = Msg(LBound(Msg))
     For I = LBound(Msg) + 1 To UBound(Msg)
         MsgString = "," & MsgString & Msg(I)
     Next I
 
-    Print #filenumber, Now & ":  " & MsgString
+    Print #FileNumber, Now & ":  " & MsgString
 
-    Close #filenumber
+    Close #FileNumber
     
 End Sub                                          ' Log
 
@@ -433,4 +435,13 @@ Public Sub CenterMe(ByVal Frm As Object)
     End With
 End Sub
 
+Public Function IsArrayAllocated(ByVal Arr As Variant) As Boolean
+    ' http://www.cpearson.com/excel/isarrayallocated.aspx
+    On Error Resume Next
+    IsArrayAllocated = _
+                     IsArray(Arr) And _
+                     Not IsError(LBound(Arr, 1)) And _
+                     LBound(Arr, 1) <= UBound(Arr, 1)
+    On Error GoTo 0
+End Function
 

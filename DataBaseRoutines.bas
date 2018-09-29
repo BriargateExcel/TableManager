@@ -1,10 +1,12 @@
 Attribute VB_Name = "DataBaseRoutines"
+'@Folder("TableManager.DataBase")
+
 Option Explicit
 
 Private Const Module_Name As String = "DataBaseRoutines."
 
-Private pControls As TableManager.ControlsClass
-Private pEvents As TableManager.EventsClass
+Private pControls As ControlsClass
+Private pEvents As EventsClass
 Private pDataBaseFormName As String
 
 Private Const pStandardGap As Long = 12
@@ -20,10 +22,10 @@ Public Function DataBaseFormName() As String
 End Function
 
 Public Sub BuildDataBaseForm( _
-       ByVal Tbl As TableManager.TableClass, _
+       ByVal Tbl As TableClass, _
        ByVal ModuleName As String)
 
-    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
+    Debug.Assert InScope(ModuleList, ModuleName)
     
     Const RoutineName As Variant = Module_Name & "BuildDataBaseForm"
     On Error GoTo ErrorHandler
@@ -41,12 +43,12 @@ Public Sub BuildDataBaseForm( _
         pDataBaseFormName = TempForm.Name
         Frm.Caption = "Save and Restore Table Data"
     
-        Dim Evt As TableManager.EventClass
-        Set Evt = New TableManager.EventClass
+        Dim Evt As EventClass
+        Set Evt = New EventClass
         Set Evt.FormObj = Frm
         Evt.Name = TempForm.Name
         
-        Set pEvents = New TableManager.EventsClass
+        Set pEvents = New EventsClass
         pEvents.Add Evt, Module_Name
     
         ' Add the texture
@@ -77,7 +79,7 @@ Public Sub BuildDataBaseForm( _
         Top = Top + StandardGap
         Lbl.Left = Lft
     
-        Set pControls = New TableManager.ControlsClass
+        Set pControls = New ControlsClass
     
         ' Build the text box
         Dim Ctl As MSForms.TextBox
@@ -144,8 +146,8 @@ Private Sub BuildTextBox( _
     
     pControls.Add Ctl, Module_Name
     
-    Dim Evt As TableManager.EventClass
-    Set Evt = New TableManager.EventClass
+    Dim Evt As EventClass
+    Set Evt = New EventClass
     Set Evt.TextObj = Ctl
     Set Evt.FormObj = Frm
     Evt.Name = "FileName"
@@ -211,9 +213,9 @@ Private Sub BuildOneButton( _
     
     pControls.Add Ctl, Module_Name
     
-    Dim Evt As TableManager.EventClass
+    Dim Evt As EventClass
     
-    Set Evt = New TableManager.EventClass
+    Set Evt = New EventClass
     Set Evt.ButtonObj = Ctl
     Set Evt.FormObj = Frm
     Evt.Name = Cption

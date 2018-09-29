@@ -7,6 +7,8 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+'@Folder("TableManager.DataBase")
+
 Option Explicit
 
 Public Function ArrayFromDataBase(ByVal Parameters As String) As Variant

@@ -7,16 +7,18 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = True
+'@Folder("TableManager.Worksheets")
+
 Option Explicit
 
 Private pWorksheet As Worksheet
 Private pName As String
 
-Private pWorksheetEvent As TableManager.EventClass
+Private pWorksheetEvent As EventClass
 
 Private Sub Class_Initialize()
-    Debug.Assert TableManager.Initializing
-    Set pWorksheetEvent = New TableManager.EventClass
+    Debug.Assert Initializing
+    Set pWorksheetEvent = New EventClass
 End Sub                                          ' Class_Initialize
 
 Public Property Get Worksheet() As Worksheet: Set Worksheet = pWorksheet: End Property

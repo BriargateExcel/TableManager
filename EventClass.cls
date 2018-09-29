@@ -7,6 +7,8 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+'@Folder("TableManager.Events")
+
 Option Explicit
 
 Private Const Module_Name As String = "EventClass."
@@ -14,7 +16,7 @@ Private Const Module_Name As String = "EventClass."
 Private WithEvents pSheetEvent As Worksheet
 Attribute pSheetEvent.VB_VarHelpID = -1
 
-Private ptableobj As TableManager.TableClass
+Private ptableobj As TableClass
 
 Private WithEvents pFormEvent As MSForms.UserForm
 Attribute pFormEvent.VB_VarHelpID = -1
@@ -46,8 +48,8 @@ Public Property Set TextEvent(ByVal Vbl As MSForms.TextBox): Set pTextEvent = Vb
 
 Public Property Set ComboEvent(ByVal Vbl As MSForms.ComboBox): Set pComboEvent = Vbl: End Property
 
-Public Property Set TableObj(ByVal Tbl As TableManager.TableClass)
-    Debug.Assert TableManager.Initializing
+Public Property Set TableObj(ByVal Tbl As TableClass)
+    Debug.Assert Initializing
 
     Set ptableobj = Tbl
 End Property
@@ -68,7 +70,7 @@ Public Property Set TextObj(ByVal Txt As MSForms.TextBox)
 End Property                                     ' TextObj
 
 Public Property Set ComboObj(ByVal Cmb As MSForms.ComboBox)
-    Debug.Assert TableManager.Initializing
+    Debug.Assert Initializing
 
     Set pComboEvent = Cmb
     Set pComboObj = Cmb
@@ -185,7 +187,7 @@ Private Sub pSheetEvent_BeforeDoubleClick( _
     On Error GoTo ErrorHandler
     
     Dim TableName As String
-    Dim Tbl As TableManager.TableClass
+    Dim Tbl As TableClass
     
     Cancel = True
 
@@ -196,7 +198,7 @@ Private Sub pSheetEvent_BeforeDoubleClick( _
         Exit Sub
     End If
     
-    Set Tbl = New TableManager.TableClass
+    Set Tbl = New TableClass
     Set Tbl = TableItem(TableName, Module_Name)
     Set Tbl.ActiveTarget = Target
     If Tbl Is Nothing Then  ' Means the table has no UserForm
@@ -210,12 +212,12 @@ Private Sub pSheetEvent_BeforeDoubleClick( _
     
     Set Isect = Application.Intersect(Target, Tbl.Table.HeaderRowRange)
     If Not Isect Is Nothing Then
-        TableManager.BuildDataBaseForm Tbl, Module_Name
+        BuildDataBaseForm Tbl, Module_Name
         ShowAnyForm DataBaseFormName
         Exit Sub
     End If
     
-    TableManager.PopulateForm Tbl, Module_Name
+    PopulateForm Tbl, Module_Name
     ShowAnyForm Tbl.Form.Name
     
     '@Ignore LineLabelNotUsed
@@ -228,19 +230,19 @@ End Sub                                          ' SheetEvent_BeforeDoubleClick
 Private Sub pButtonEvent_Click()
     Dim Target As Range
     Dim TableName As String
-    Dim Tbl As TableManager.TableClass
+    Dim Tbl As TableClass
     
     Const RoutineName As String = Module_Name & "ButtonEvent_Click"
     On Error GoTo ErrorHandler
     
     TableName = ActiveCellTableName
-    Set Tbl = New TableManager.TableClass
-    Set Tbl = TableManager.Table(TableName, Module_Name)
+    Set Tbl = New TableClass
+    Set Tbl = Table(TableName, Module_Name)
     
     Select Case pButtonEvent.Caption
         ' Table Form Buttons
     Case "Validate Form"
-        If TableManager.ValidateForm(Tbl, Module_Name) Then
+        If ValidateForm(Tbl, Module_Name) Then
             MsgBox "There are no validation errors", _
                    vbOKOnly, "Successful Copy"
         Else
@@ -250,8 +252,8 @@ Private Sub pButtonEvent_Click()
         End If
     
     Case "Copy To Table"
-        If TableManager.ValidateForm(Tbl, Module_Name) Then
-            TableManager.PopulateTable Tbl, Module_Name
+        If ValidateForm(Tbl, Module_Name) Then
+            PopulateTable Tbl, Module_Name
             MsgBox "Form data successfully copied to Table row", _
                    vbOKOnly, "Successful Copy"
         Else
@@ -262,16 +264,16 @@ Private Sub pButtonEvent_Click()
         End If
     
     Case "Next Row"
-        TableManager.TurnOnCellDescriptions Tbl, Module_Name
+        TurnOnCellDescriptions Tbl, Module_Name
         ptableobj.NextRow
         Set ptableobj.ActiveTarget = ptableobj.ActiveTarget.Offset(0, 0)
-        TableManager.PopulateForm Tbl, Module_Name
+        PopulateForm Tbl, Module_Name
     
     Case "Previous Row"
-        TableManager.TurnOnCellDescriptions Tbl, Module_Name
+        TurnOnCellDescriptions Tbl, Module_Name
         ptableobj.PreviousRow
         Set ptableobj.ActiveTarget = ptableobj.ActiveTarget.Offset(0, 0)
-        TableManager.PopulateForm Tbl, Module_Name
+        PopulateForm Tbl, Module_Name
     
     Case "Insert Above"
         ptableobj.ActiveTarget.ListObject.ListRows.Add ptableobj.ActiveRow
@@ -304,33 +306,33 @@ Private Sub pButtonEvent_Click()
         PopulateForm Tbl, Module_Name
     
     Case "Go To Top"
-        TableManager.TurnOnCellDescriptions ptableobj, Module_Name
+        TurnOnCellDescriptions ptableobj, Module_Name
         Set ptableobj.ActiveTarget = ptableobj.FirstCell
-        TableManager.TurnOffCellDescriptions ptableobj, Module_Name
-        TableManager.PopulateForm Tbl, Module_Name
+        TurnOffCellDescriptions ptableobj, Module_Name
+        PopulateForm Tbl, Module_Name
     
     Case "Go To Bottom"
-        TableManager.TurnOnCellDescriptions ptableobj, Module_Name
+        TurnOnCellDescriptions ptableobj, Module_Name
         Set ptableobj.ActiveTarget = ptableobj.LastCell
-        TableManager.TurnOffCellDescriptions ptableobj, Module_Name
-        TableManager.PopulateForm Tbl, Module_Name
+        TurnOffCellDescriptions ptableobj, Module_Name
+        PopulateForm Tbl, Module_Name
     
     Case Is = "Cancel"
-        TableManager.TurnOnCellDescriptions ptableobj, Module_Name
+        TurnOnCellDescriptions ptableobj, Module_Name
         pFormObj.Hide
         Exit Sub
     
         ' Start of DataBase Form Buttons
     Case Is = "Copy to File"
-        TableManager.OutputTable Module_Name
+        OutputTable Module_Name
         Exit Sub
     
     Case Is = "Fetch From File"
-        TableManager.InputTable Module_Name
+        InputTable Module_Name
         Exit Sub
     
     Case Is = "Change File"
-        TableManager.ChangeFile ptableobj, Module_Name
+        ChangeFile ptableobj, Module_Name
         Exit Sub
     
     Case Is = "Cancel File Processing"

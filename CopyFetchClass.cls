@@ -7,13 +7,15 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+'@Folder("TableManager.Forms")
+
 Option Explicit
 
 Private Type TView
     CopyClicked As Boolean
     FetchClicked As Boolean
     ChangeFileClicked As Boolean
-    FileName As String
+    Filename As String
 End Type
 
 Private this As TView

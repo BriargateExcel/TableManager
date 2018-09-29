@@ -7,6 +7,8 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+'@Folder("TableManager.Forms")
+
 Option Explicit
 
 Private Const Module_Name As String = "FormClass."
@@ -17,9 +19,9 @@ Private pFormObj As Object
 ' pFormObj:
 ' MSForms.UserForm; when declared as UserForm it has no height or width
 ' When declared as an object, it has both height and width
-Private pTable As TableManager.TableClass
-Private pControls As TableManager.ControlsClass
-Private pEvents As TableManager.EventsClass
+Private pTable As TableClass
+Private pControls As ControlsClass
+Private pEvents As EventsClass
 
 Private pEnabled As Boolean                      ' Whether form is enabled
 
@@ -39,17 +41,17 @@ Private Function ModuleList() As Variant
 End Function                                     ' ModuleList
 
 Public Function BuildForm( _
-       ByVal Tbl As TableManager.TableClass, _
+       ByVal Tbl As TableClass, _
        ByVal ModuleName As String _
        ) As MSForms.UserForm
        
     Dim TempForm As VBComponent
-    Debug.Assert TableManager.Initializing
+    Debug.Assert Initializing
 
     Const RoutineName As Variant = Module_Name & "BuildForm"
     On Error GoTo ErrorHandler
     
-    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
+    Debug.Assert InScope(ModuleList, ModuleName)
     
     Set pTable = Tbl
     pWorksheetName = Tbl.WorksheetName
@@ -58,14 +60,14 @@ Public Function BuildForm( _
     Set TempForm = ThisWorkbook.VBProject.VBComponents.Add(vbext_ct_MSForm)
     pFormName = TempForm.Name
     
-    Set Tbl.Form = New TableManager.FormClass
+    Set Tbl.Form = New FormClass
     Tbl.Form.Name = pFormName
     Set pFormObj = VBA.UserForms.Add(TempForm.Name)
     Set Tbl.Form.FormObj = pFormObj
     pFormObj.Caption = Tbl.Name
     
-    Dim Evt As TableManager.EventClass
-    Set Evt = New TableManager.EventClass
+    Dim Evt As EventClass
+    Set Evt = New EventClass
     Set Evt.TableObj = Tbl
     Set Evt.FormObj = pFormObj
     Evt.Name = pFormName
@@ -154,7 +156,7 @@ ErrorHandler:
 End Function                                     ' BuildForm
 
 Private Sub BuildControls( _
-        ByVal Tbl As TableManager.TableClass, _
+        ByVal Tbl As TableClass, _
         ByRef Top As Single, _
         ByRef MaxLabelWidth As Single, _
         ByRef MaxFieldWidth As Single)
@@ -207,7 +209,7 @@ Private Sub BuildUnLockedFields( _
         ByRef Top As Single, _
         ByRef MaxFieldWidth As Single, _
         ByRef Lbl As control, _
-        ByRef Tbl As TableManager.TableClass)
+        ByRef Tbl As TableClass)
     
     Select Case Field.CellType
     Case xlValidateInputOnly
@@ -255,7 +257,7 @@ Private Function BuildAllButtons( _
         ByRef Top As Single, _
         ByVal MaxLabelWidth As Single, _
         ByVal MaxFieldWidth As Single, _
-        ByVal Tbl As TableManager.TableClass, _
+        ByVal Tbl As TableClass, _
         ByRef NumRows As Long, _
         ByRef NumCols As Long _
         ) As Single
@@ -266,7 +268,7 @@ Private Function BuildAllButtons( _
     Const RoutineName As String = Module_Name & "BuildAllButtons"
     On Error GoTo ErrorHandler
 
-    Debug.Assert TableManager.Initializing
+    Debug.Assert Initializing
     
     NumRows = 4
     NumCols = 3
@@ -346,7 +348,7 @@ Private Sub BuildButtonRow( _
         ByVal LowerBound As Long, _
         ByVal UpperBound As Long, _
         ByVal Top As Single, _
-        ByVal Tbl As TableManager.TableClass)
+        ByVal Tbl As TableClass)
 
     Const RoutineName As String = Module_Name & "BuildButtonRow"
     On Error GoTo ErrorHandler
@@ -396,15 +398,15 @@ Private Sub BuildOneButton( _
         ByVal Top As Single, _
         ByVal Lft As Single, _
         ByVal Tip As String, _
-        ByVal Tbl As TableManager.TableClass)
+        ByVal Tbl As TableClass)
     
     Dim Ctl As control
-    Dim Evt As TableManager.EventClass
+    Dim Evt As EventClass
     
     Const RoutineName As String = Module_Name & "BuildOneButton"
     On Error GoTo ErrorHandler
 
-    Debug.Assert TableManager.Initializing
+    Debug.Assert Initializing
 
     Set Ctl = pFormObj.Controls.Add("Forms.CommandButton.1")
     With Ctl
@@ -419,7 +421,7 @@ Private Sub BuildOneButton( _
     
     pControls.Add Ctl, Module_Name
     
-    Set Evt = New TableManager.EventClass
+    Set Evt = New EventClass
     Set Evt.ButtonObj = Ctl
     Set Evt.TableObj = Tbl
     Set Evt.FormObj = pFormObj
@@ -454,13 +456,13 @@ Private Sub BuildCombo( _
         ByVal Field As Variant, _
         ByRef MaxFieldWidth As Single, _
         ByRef Lbl As control, _
-        ByRef Tbl As TableManager.TableClass)
+        ByRef Tbl As TableClass)
 
     Const RoutineName As String = Module_Name & "BuildCombo"
     On Error GoTo ErrorHandler
     
     Dim Ctl As control
-    Dim Evt As TableManager.EventClass
+    Dim Evt As EventClass
 
     Dim ValListItem As Variant
 
@@ -488,7 +490,7 @@ Private Sub BuildCombo( _
     End With
     Set Field.FormControl = Ctl
     pControls.Add Ctl, Module_Name
-    Set Evt = New TableManager.EventClass
+    Set Evt = New EventClass
     Set Evt.ComboObj = Ctl
     Set Evt.TableObj = Tbl
     Set Evt.FormObj = pFormObj
@@ -508,13 +510,13 @@ Private Sub BuildText( _
         ByVal Field As Variant, _
         ByRef MaxFieldWidth As Single, _
         ByRef Lbl As control, _
-        ByRef Tbl As TableManager.TableClass)
+        ByRef Tbl As TableClass)
 
     Const RoutineName As String = Module_Name & "BuildText"
     On Error GoTo ErrorHandler
     
     Dim Ctl As MSForms.TextBox
-    Dim Evt As TableManager.EventClass
+    Dim Evt As EventClass
 
     Set Ctl = pFormObj.Controls.Add("Forms.TextBox.1", "fld" & Field.Name, True)
     With Ctl
@@ -546,7 +548,7 @@ Private Sub BuildText( _
     Set Field.FormControl = Ctl
     pControls.Add Ctl, Module_Name
     
-    Set Evt = New TableManager.EventClass
+    Set Evt = New EventClass
     Set Evt.TextObj = Ctl
     Set Evt.TableObj = Tbl
     Set Evt.FormObj = pFormObj
@@ -565,13 +567,13 @@ Private Sub BuildCustom( _
         ByVal Field As Variant, _
         ByRef MaxFieldWidth As Single, _
         ByRef Lbl As control, _
-        ByRef Tbl As TableManager.TableClass)
+        ByRef Tbl As TableClass)
 
     Const RoutineName As String = Module_Name & "BuildCustom"
     On Error GoTo ErrorHandler
     
     Dim Ctl As control
-    Dim Evt As TableManager.EventClass
+    Dim Evt As EventClass
 
     Set Ctl = pFormObj.Controls.Add("Forms.TextBox.1", "fld" & Field.Name, True)
     With Ctl
@@ -601,7 +603,7 @@ Private Sub BuildCustom( _
     End With
     Set Field.FormControl = Ctl
     pControls.Add Ctl, Module_Name
-    Set Evt = New TableManager.EventClass
+    Set Evt = New EventClass
     Set Evt.TextObj = Ctl
     Set Evt.TableObj = Tbl
     Set Evt.FormObj = pFormObj
@@ -655,13 +657,13 @@ Private Sub BuildDate( _
         ByVal Field As Variant, _
         ByRef MaxFieldWidth As Single, _
         ByRef Lbl As control, _
-        ByRef Tbl As TableManager.TableClass)
+        ByRef Tbl As TableClass)
 
     Const RoutineName As String = Module_Name & "BuildDate"
     On Error GoTo ErrorHandler
     
     Dim Ctl As control
-    Dim Evt As TableManager.EventClass
+    Dim Evt As EventClass
 
     Set Ctl = pFormObj.Controls.Add("Forms.TextBox.1", "dat" & Field.Name, True)
     With Ctl
@@ -678,7 +680,7 @@ Private Sub BuildDate( _
     End With
     Set Field.FormControl = Ctl
     pControls.Add Ctl, Module_Name
-    Set Evt = New TableManager.EventClass
+    Set Evt = New EventClass
     Set Evt.TextObj = Ctl
     Set Evt.TableObj = Tbl
     Set Evt.FormObj = pFormObj
@@ -728,13 +730,13 @@ Private Sub BuildWholeNumber( _
         ByVal Field As Variant, _
         ByRef MaxFieldWidth As Single, _
         ByRef Lbl As control, _
-        ByRef Tbl As TableManager.TableClass)
+        ByRef Tbl As TableClass)
 
     Const RoutineName As String = Module_Name & "BuildWholeNumber"
     On Error GoTo ErrorHandler
     
     Dim Ctl As control
-    Dim Evt As TableManager.EventClass
+    Dim Evt As EventClass
 
     Set Ctl = pFormObj.Controls.Add("Forms.TextBox.1", "whl" & Field.Name, True)
     With Ctl
@@ -752,7 +754,7 @@ Private Sub BuildWholeNumber( _
     End With
     Set Field.FormControl = Ctl
     pControls.Add Ctl, Module_Name
-    Set Evt = New TableManager.EventClass
+    Set Evt = New EventClass
     Set Evt.TextObj = Ctl
     Set Evt.TableObj = Tbl
     Set Evt.FormObj = pFormObj
@@ -767,7 +769,7 @@ ErrorHandler:
 
 End Sub                                          ' BuildWholeNumber
 
-Public Property Get Controls() As TableManager.ControlsClass: Set Controls = pControls: End Property
+Public Property Get Controls() As ControlsClass: Set Controls = pControls: End Property
 
 Public Property Get Enabled() As Boolean: Enabled = pEnabled: End Property
 
@@ -781,17 +783,17 @@ Public Property Get Name() As String: Name = pFormName: End Property
 
 Public Property Let Name(ByVal Vbl As String): pFormName = Vbl: End Property
 
-Public Property Get Table() As TableManager.TableClass: Set Table = pTable: End Property
+Public Property Get Table() As TableClass: Set Table = pTable: End Property
 
 Public Property Get WorksheetName() As String: WorksheetName = pWorksheetName: End Property
 
 Public Property Set Picture(ByVal Vbl As StdPicture): Set pFormObj.Picture = Vbl: End Property
 
 Private Sub Class_Initialize()
-    Debug.Assert TableManager.Initializing
+    Debug.Assert Initializing
 
-    Set pControls = New TableManager.ControlsClass
-    Set pEvents = New TableManager.EventsClass
+    Set pControls = New ControlsClass
+    Set pEvents = New EventsClass
 End Sub                                          ' Class_Initialize
 
 

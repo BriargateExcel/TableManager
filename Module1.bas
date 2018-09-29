@@ -1,10 +1,12 @@
 Attribute VB_Name = "Module1"
+'@Folder("TableManager.Main")
+
 Option Explicit
 
 Private Const Module_Name As String = "Module1."
 
 Public Sub Auto_Open()
-    TableManager.AutoOpen ThisWorkbook
+    AutoOpen ThisWorkbook
 End Sub
 
 Public Sub BuildDataDescriptionTable()
@@ -12,12 +14,12 @@ Public Sub BuildDataDescriptionTable()
     Const RoutineName As String = Module_Name & "BuildDataDescriptionTable"
     On Error GoTo ErrorHandler
     
-    If Not TableManager.TableDataCollected Then
+    If Not TableDataCollected Then
         MsgBox "Build the tables first"
         Exit Sub
     End If
     
-    TableManager.BuildParameterTableOnWorksheet TableManager.mainworkbook
+    BuildParameterTableOnWorksheet GetMainWorkbook
     
     '@Ignore LineLabelNotUsed
 Done:
@@ -33,12 +35,12 @@ Public Sub ExtendDataValidation()
     Const RoutineName As String = Module_Name & "ExtendDataValidation"
     On Error GoTo ErrorHandler
     
-    If Not TableManager.TableDataCollected Then
+    If Not TableDataCollected Then
         MsgBox "Build the tables first"
         Exit Sub
     End If
     
-    TableManager.ExtendDataValidationThroughAllTables TableManager.mainworkbook
+    ExtendDataValidationThroughAllTables GetMainWorkbook
     
     '@Ignore LineLabelNotUsed
 Done:

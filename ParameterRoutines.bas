@@ -1,4 +1,6 @@
 Attribute VB_Name = "ParameterRoutines"
+'@Folder("TableManager.Colors")
+
 Option Explicit
 
 Private Const Module_Name As String = "ParameterRoutines."
@@ -30,7 +32,7 @@ Public Function FieldValue( _
     Dim LocalFieldValue As Variant
     
     If FieldExistsInXLAM(TableName, SearchFieldName) Then
-        LocalFieldValue = TableManager.GetCellValue(TableName, SearchFieldName, SearchFieldValue, TargetFieldName)
+        LocalFieldValue = GetCellValue(TableName, SearchFieldName, SearchFieldValue, TargetFieldName)
     Else
         If FieldExistsOnWorksheet(TableName, SearchFieldName) Then
             Dim Tbl As ListObject
@@ -53,9 +55,9 @@ Private Function FieldExistsInXLAM( _
  
     FieldExistsInXLAM = False
     
-    If TableManager.TableExists(TableName, Module_Name) Then
-        Dim Tbl As TableManager.TableClass
-        Set Tbl = TableManager.Table(TableName, Module_Name)
+    If TableExists(TableName, Module_Name) Then
+        Dim Tbl As TableClass
+        Set Tbl = Table(TableName, Module_Name)
         
         FieldExistsInXLAM = Tbl.TableCells.Exists(FieldName, Module_Name)
     End If

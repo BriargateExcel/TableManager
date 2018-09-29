@@ -7,8 +7,9 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
-Option Explicit
+'@Folder("TableManager.DataBase")
 
+Option Explicit
 Private Const Module_Name As String = "CSVClass."
 
 Implements I_DataBase
@@ -310,7 +311,7 @@ End Function
 
 Private Sub SaveAsCSV( _
         ByRef MyArray() As Variant, _
-        ByVal FileName As String, _
+        ByVal Filename As String, _
         Optional ByVal LowerBound As Long = 1, _
         Optional ByVal Delimiter As String = ",")
     ' https://stackoverflow.com/questions/4191560/create-csv-from-array-in-vba
@@ -339,7 +340,7 @@ Private Sub SaveAsCSV( _
     Dim PrintString As String
 
     If NumberOfArrayDimensions(MyArray()) = 1 Then '1 dimensional
-        Open FileName For Output As #7
+        Open Filename For Output As #7
         ' TODO Check the default value of lower bound of one-dimensional array
         If LowerBound = 1 Then
             UpperBound1 = UBound(MyArray(), 1)
@@ -354,7 +355,7 @@ Private Sub SaveAsCSV( _
         Close #7
 
     ElseIf NumberOfArrayDimensions(MyArray()) = 2 Then '2 dimensional
-        Open FileName For Output As #7
+        Open Filename For Output As #7
         
         If LowerBound = 1 Then
             UpperBound1 = UBound(MyArray(), 1)

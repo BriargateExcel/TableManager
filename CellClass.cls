@@ -7,6 +7,8 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+'@Folder("TableManager.Cells")
+
 Option Explicit
 
 Private Const Module_Name As String = "CellClass."
@@ -52,18 +54,20 @@ Private Function ModuleList() As Variant
 End Function                                     ' ModuleList
 
 Public Sub CollectCellData( _
-       ByVal Tbl As TableManager.TableClass, _
+       ByVal Tbl As TableClass, _
        ByVal CellID As Range, _
        ByVal ModuleName As String)
 
-    Dim DataCell As Range
+' CellID is a cell within the Tbl's HeaderRowRange
+' Purpose
+'   Collects all the type data for the column under CellID
     
-    Debug.Assert TableManager.Initializing
+    Debug.Assert Initializing
 
     Const RoutineName As String = Module_Name & "CollectCellData"
     On Error GoTo ErrorHandler
     
-    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
+    Debug.Assert InScope(ModuleList, ModuleName)
     
     On Error GoTo ErrorHandler
     
@@ -73,7 +77,11 @@ Public Sub CollectCellData( _
     pName = Replace(pHeaderText, " ", vbNullString)
     pTableName = Tbl.Name
     
+    Dim DataCell As Range
+    ' DataCell is the cell in row 1 of Tbl in the CellID column
+    ' The topmost data cell in the column
     Set DataCell = CellID.Offset(1, 0)
+    
     pColumnWidth = CellID.ColumnWidth
     On Error Resume Next
     pDBColNum = Application.WorksheetFunction.Match(CellID, CellID.ListObject.HeaderRowRange, 0)

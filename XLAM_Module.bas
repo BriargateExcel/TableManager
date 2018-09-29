@@ -1,4 +1,6 @@
 Attribute VB_Name = "XLAM_Module"
+'@Folder("TableManager.Main")
+
 Option Explicit
 
 Private Const Module_Name As String = "XLAM_Module."
@@ -50,7 +52,7 @@ Public Sub AutoOpen(ByVal WkBk As Workbook)
     Dim Sht As Worksheet
     Dim TblObj As ListObject
     Dim UserFrm As Object
-    Dim WkSht As TableManager.WorksheetClass
+    Dim WkSht As WorksheetClass
     
     Const RoutineName As String = Module_Name & "AutoOpen"
     On Error GoTo ErrorHandler
@@ -76,17 +78,17 @@ Public Sub AutoOpen(ByVal WkBk As Workbook)
         End If
     Next UserFrm
     
-    TableManager.WorksheetSetNewClass Module_Name
-    TableManager.TableSetNewClass Module_Name
+    WorksheetSetNewClass Module_Name
+    TableSetNewClass Module_Name
     
     ' Go through all the worksheets and all the tables on each worksheet
     ' collecting the data and building the form for each table
     For Each Sht In GetMainWorkbook.Worksheets
-        Set WkSht = New TableManager.WorksheetClass
+        Set WkSht = New WorksheetClass
         Set WkSht.Worksheet = Sht
         WkSht.Name = Sht.Name
         
-        TableManager.WorksheetAdd WkSht, Module_Name
+        WorksheetAdd WkSht, Module_Name
         
         For Each TblObj In Sht.ListObjects
             BuildTable TblObj, Module_Name

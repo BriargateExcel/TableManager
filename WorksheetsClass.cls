@@ -7,6 +7,8 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+'@Folder("TableManager.Worksheets")
+
 Option Explicit
 
 Private Const Module_Name As String = "WorksheetsClass."
@@ -14,7 +16,7 @@ Private Const Module_Name As String = "WorksheetsClass."
 Private pAllSheets As Scripting.Dictionary
 
 Private Sub Class_Initialize()
-    Debug.Assert TableManager.Initializing
+    Debug.Assert Initializing
 
     Set pAllSheets = New Scripting.Dictionary
 End Sub                                          ' Class_Initialize
@@ -22,7 +24,7 @@ End Sub                                          ' Class_Initialize
 Public Property Get Count() As Long: Count = TableCount(pAllSheets.Count): End Property
 
 '@DefaultMember
-Public Property Get Item(ByVal vIndex As Variant) As TableManager.WorksheetClass
+Public Property Get Item(ByVal vIndex As Variant) As WorksheetClass
     'Attribute Item.VB_UserMemId = 0
     
     Const RoutineName As String = Module_Name & "Get Item"
@@ -32,7 +34,7 @@ Public Property Get Item(ByVal vIndex As Variant) As TableManager.WorksheetClass
     Set Item = pAllSheets.Items()(vIndex)
     If Err.Number = 0 Then
         On Error GoTo 0
-        Exit Function
+        Exit Property
     End If
     
     On Error Resume Next
@@ -50,16 +52,16 @@ ErrorHandler:
 
 End Property
 
-Public Sub Add(ByVal Sht As TableManager.WorksheetClass)
+Public Sub Add(ByVal Sht As WorksheetClass)
 
-    Dim Evt As TableManager.EventClass
+    Dim Evt As EventClass
     
-    Debug.Assert TableManager.Initializing
+    Debug.Assert Initializing
 
     Const RoutineName As String = Module_Name & "Add"
     On Error GoTo ErrorHandler
     
-    Set Evt = New TableManager.EventClass
+    Set Evt = New EventClass
     
     If Sht.Name <> vbNullString Then
         pAllSheets.Add Sht.Name, Sht
@@ -77,7 +79,7 @@ End Sub                                          ' Add
 
 Public Sub Remove(ByVal vIndex As Variant)
 
-    Debug.Assert TableManager.Initializing
+    Debug.Assert Initializing
     
     Const RoutineName As String = Module_Name & "Remove"
     On Error GoTo ErrorHandler
