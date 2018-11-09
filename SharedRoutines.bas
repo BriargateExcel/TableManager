@@ -43,7 +43,7 @@ Public Function ActiveCellListObject() As ListObject
     On Error GoTo 0                              ' Reset the error handling
 End Function                                     ' ActiveCellListobject
 
-Public Function CheckForVBAProjectAccessEnabled(ByVal WkBk As Workbook) As Boolean
+Public Function CheckForVBAProjectAccessEnabled(ByVal Wkbk As Workbook) As Boolean
 
     Const RoutineName As String = Module_Name & "CheckForVBAProjectAccessEnabled"
     On Error GoTo ErrorHandler
@@ -53,7 +53,7 @@ Public Function CheckForVBAProjectAccessEnabled(ByVal WkBk As Workbook) As Boole
     Dim VBP As VBProject
     
     If Val(Application.Version) >= 10 Then
-        Set VBP = WkBk.VBProject
+        Set VBP = Wkbk.VBProject
         CheckForVBAProjectAccessEnabled = True
     Else
         MsgBox "This application must be run on Excel 2002 or greater", _

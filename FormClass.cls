@@ -45,6 +45,8 @@ Public Function BuildForm( _
        ByVal ModuleName As String _
        ) As MSForms.UserForm
        
+    ' Called in TableRoutines
+       
     Dim TempForm As VBComponent
     Debug.Assert Initializing
 
@@ -160,6 +162,8 @@ Private Sub BuildControls( _
         ByRef Top As Single, _
         ByRef MaxLabelWidth As Single, _
         ByRef MaxFieldWidth As Single)
+        
+    ' Called in FormClass
 
     Dim I As Long
     Dim Field As Variant
@@ -210,6 +214,8 @@ Private Sub BuildUnLockedFields( _
         ByRef MaxFieldWidth As Single, _
         ByRef Lbl As control, _
         ByRef Tbl As TableClass)
+        
+    ' Called in FormClass
     
     Select Case Field.CellType
     Case xlValidateInputOnly
@@ -261,6 +267,8 @@ Private Function BuildAllButtons( _
         ByRef NumRows As Long, _
         ByRef NumCols As Long _
         ) As Single
+        
+    ' Called in FormClass
     
     '    Dim DataLeft As Single
     Dim Arrangement As String
@@ -349,6 +357,8 @@ Private Sub BuildButtonRow( _
         ByVal UpperBound As Long, _
         ByVal Top As Single, _
         ByVal Tbl As TableClass)
+        
+    ' Called in FormClass
 
     Const RoutineName As String = Module_Name & "BuildButtonRow"
     On Error GoTo ErrorHandler

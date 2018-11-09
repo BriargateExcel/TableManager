@@ -35,8 +35,11 @@ Attribute pComboEvent.VB_VarHelpID = -1
 Private pComboObj As MSForms.ComboBox
 
 Private pName As String
+Private pWkbk As Workbook
 
 Private LastEvent As String
+
+Public Property Set WorkbookEvent(ByVal Vbl As Workbook): Set pWkbk = Vbl: End Property
 
 Public Property Set SheetEvent(ByVal Vbl As Worksheet): Set pSheetEvent = Vbl: End Property
 
@@ -212,7 +215,7 @@ Private Sub pSheetEvent_BeforeDoubleClick( _
     
     Set Isect = Application.Intersect(Target, Tbl.Table.HeaderRowRange)
     If Not Isect Is Nothing Then
-        BuildDataBaseForm Tbl, Module_Name
+        BuildDataBaseForm pWkbk, Tbl, Module_Name
         ShowAnyForm DataBaseFormName
         Exit Sub
     End If
@@ -324,11 +327,11 @@ Private Sub pButtonEvent_Click()
     
         ' Start of DataBase Form Buttons
     Case Is = "Copy to File"
-        OutputTable Module_Name
+        OutputTable pWkbk, Module_Name
         Exit Sub
     
     Case Is = "Fetch From File"
-        InputTable Module_Name
+        InputTable pWkbk, Module_Name
         Exit Sub
     
     Case Is = "Change File"

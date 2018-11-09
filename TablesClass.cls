@@ -69,6 +69,7 @@ End Property
 Public Sub Add( _
        ByVal Tbl As TableClass, _
        ByVal ModuleName As String)
+' Used in TableRoutines
     
     Debug.Assert Initializing
 
@@ -91,6 +92,7 @@ Public Function Exists( _
        ByVal vIndex As Variant, _
        ByVal ModuleName As String _
        ) As Boolean
+' Used in TableRoutines
     
     Const RoutineName As String = Module_Name & "Exists"
     On Error GoTo ErrorHandler
@@ -109,6 +111,7 @@ End Function                                     ' Exists
 Public Sub Remove( _
        ByVal vIndex As Variant, _
        ByVal ModuleName As String)
+' Used in TableRoutines
     
     Const RoutineName As String = Module_Name & "Remove"
     On Error GoTo ErrorHandler

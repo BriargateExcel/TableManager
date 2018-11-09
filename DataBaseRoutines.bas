@@ -22,6 +22,7 @@ Public Function DataBaseFormName() As String
 End Function
 
 Public Sub BuildDataBaseForm( _
+    ByVal Wkbk As Workbook, _
        ByVal Tbl As TableClass, _
        ByVal ModuleName As String)
 
@@ -84,7 +85,7 @@ Public Sub BuildDataBaseForm( _
         ' Build the text box
         Dim Ctl As MSForms.TextBox
     
-        BuildTextBox Ctl, Frm
+        BuildTextBox Wkbk, Ctl, Frm
         Ctl.Top = Top
         Ctl.Left = Lft
         Ctl.Width = ControlsWidth
@@ -124,6 +125,7 @@ Private Sub BuildLabel( _
 End Sub
 
 Private Sub BuildTextBox( _
+    ByVal Wkbk As Workbook, _
         ByRef Ctl As MSForms.TextBox, _
         ByVal Frm As Object)
     
@@ -141,7 +143,7 @@ Private Sub BuildTextBox( _
         ' TODO Need to make the file name fetch dependent on the type of file storage selected
         ' Currently we only have CSV files
         ' Eventually, there could be other file types like MSAccess
-        .Text = GetFullFileName(ActiveCellTableName)
+        .Text = GetFullFileName(Wkbk, ActiveCellTableName)
     End With
     
     pControls.Add Ctl, Module_Name

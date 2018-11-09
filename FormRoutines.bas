@@ -72,6 +72,97 @@ ErrorHandler:
 
 End Function                                     ' ValidateForm
 
+Public Sub PopulateForm( _
+       ByVal Tbl As TableClass, _
+       ByVal ModuleName As String)
+
+    Const RoutineName As String = Module_Name & "PopulateForm"
+    On Error GoTo ErrorHandler
+
+    Debug.Assert InScope(ModuleList, ModuleName)
+
+    Dim Field As CellClass
+    Dim DBRange As Range: Set DBRange = Tbl.DBRange
+    Dim DBRow As Long: DBRow = Tbl.DBRow
+    Dim DBCol As Long
+    Dim I As Long
+
+    For I = 0 To Tbl.CellCount - 1
+        Set Field = Tbl.TableCells.Item(I, Module_Name)
+        DBCol = Tbl.SelectedDBCol(Field.HeaderText)
+        If DBCol = 0 Then
+            Err.Raise 1, "FormClass.PopulateForm", "Fatal error. HeaderText not found."
+        End If
+
+        Field.ControlValue = DBRange(DBRow, DBCol)
+        
+        Select Case Left$(Field.FormControl.Name, 3)
+        Case "lbl":                              ' Do nothing
+        Case "val": Field.FormControl.Caption = DBRange(DBRow, DBCol)
+        Case "fld": Field.FormControl.Text = DBRange(DBRow, DBCol)
+        Case "cmb": Field.FormControl.Text = DBRange(DBRow, DBCol)
+        Case "whl": Field.FormControl.Text = DBRange(DBRow, DBCol)
+        Case "dat": Field.FormControl.Text = DBRange(DBRow, DBCol)
+        Case Else
+            MsgBox "This is an illegal field type: " & _
+                   Left$(Field.FormControl.Name, 3), _
+                   vbOKOnly Or vbExclamation, "Illegal Field Type"
+
+        End Select
+        
+    Next I
+    
+    TurnOffCellDescriptions Tbl, ModuleName
+    
+    '@Ignore LineLabelNotUsed
+Done:
+    Exit Sub
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
+
+End Sub                                          ' PopulateForm
+
+Public Sub ClearForm( _
+       ByVal Tbl As TableClass, _
+       ByVal ModuleName As String)
+
+    Const RoutineName As String = Module_Name & "ClearForm"
+    On Error GoTo ErrorHandler
+
+    Debug.Assert InScope(ModuleList, ModuleName)
+
+    Dim Field As CellClass
+    Dim I As Long
+
+    For I = 0 To Tbl.CellCount - 1
+        Set Field = Tbl.TableCells.Item(I, Module_Name)
+
+        Select Case Left$(Field.FormControl.Name, 3)
+        Case "lbl":                              ' Do nothing
+        Case "val": Field.FormControl.Caption = vbNullString
+        Case "fld": Field.FormControl.Text = vbNullString
+        Case "cmb": Field.FormControl.Text = vbNullString
+        Case "whl": Field.FormControl.Text = vbNullString
+        Case "dat": Field.FormControl.Text = vbNullString
+        Case Else
+            MsgBox _
+        "This is an illegal field type: " & Left$(Field.FormControl.Name, 3), _
+                                            vbOKOnly Or vbExclamation, "Illegal Field Type"
+
+        End Select
+        
+    Next I
+    
+    TurnOffCellDescriptions Tbl, ModuleName
+    
+    '@Ignore LineLabelNotUsed
+Done:
+    Exit Sub
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
+
+End Sub                                          ' ClearForm
+
 Private Function ValString(ByVal Val As Variant) As String
     Const RoutineName As String = Module_Name & "ValString"
     On Error GoTo ErrorHandler
@@ -522,95 +613,4 @@ ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
 End Function                                     ' ValidateList
-
-Public Sub PopulateForm( _
-       ByVal Tbl As TableClass, _
-       ByVal ModuleName As String)
-
-    Const RoutineName As String = Module_Name & "PopulateForm"
-    On Error GoTo ErrorHandler
-
-    Debug.Assert InScope(ModuleList, ModuleName)
-
-    Dim Field As CellClass
-    Dim DBRange As Range: Set DBRange = Tbl.DBRange
-    Dim DBRow As Long: DBRow = Tbl.DBRow
-    Dim DBCol As Long
-    Dim I As Long
-
-    For I = 0 To Tbl.CellCount - 1
-        Set Field = Tbl.TableCells.Item(I, Module_Name)
-        DBCol = Tbl.SelectedDBCol(Field.HeaderText)
-        If DBCol = 0 Then
-            Err.Raise 1, "FormClass.PopulateForm", "Fatal error. HeaderText not found."
-        End If
-
-        Field.ControlValue = DBRange(DBRow, DBCol)
-        
-        Select Case Left$(Field.FormControl.Name, 3)
-        Case "lbl":                              ' Do nothing
-        Case "val": Field.FormControl.Caption = DBRange(DBRow, DBCol)
-        Case "fld": Field.FormControl.Text = DBRange(DBRow, DBCol)
-        Case "cmb": Field.FormControl.Text = DBRange(DBRow, DBCol)
-        Case "whl": Field.FormControl.Text = DBRange(DBRow, DBCol)
-        Case "dat": Field.FormControl.Text = DBRange(DBRow, DBCol)
-        Case Else
-            MsgBox "This is an illegal field type: " & _
-                   Left$(Field.FormControl.Name, 3), _
-                   vbOKOnly Or vbExclamation, "Illegal Field Type"
-
-        End Select
-        
-    Next I
-    
-    TurnOffCellDescriptions Tbl, ModuleName
-    
-    '@Ignore LineLabelNotUsed
-Done:
-    Exit Sub
-ErrorHandler:
-    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
-
-End Sub                                          ' PopulateForm
-
-Public Sub ClearForm( _
-       ByVal Tbl As TableClass, _
-       ByVal ModuleName As String)
-
-    Const RoutineName As String = Module_Name & "ClearForm"
-    On Error GoTo ErrorHandler
-
-    Debug.Assert InScope(ModuleList, ModuleName)
-
-    Dim Field As CellClass
-    Dim I As Long
-
-    For I = 0 To Tbl.CellCount - 1
-        Set Field = Tbl.TableCells.Item(I, Module_Name)
-
-        Select Case Left$(Field.FormControl.Name, 3)
-        Case "lbl":                              ' Do nothing
-        Case "val": Field.FormControl.Caption = vbNullString
-        Case "fld": Field.FormControl.Text = vbNullString
-        Case "cmb": Field.FormControl.Text = vbNullString
-        Case "whl": Field.FormControl.Text = vbNullString
-        Case "dat": Field.FormControl.Text = vbNullString
-        Case Else
-            MsgBox _
-        "This is an illegal field type: " & Left$(Field.FormControl.Name, 3), _
-                                            vbOKOnly Or vbExclamation, "Illegal Field Type"
-
-        End Select
-        
-    Next I
-    
-    TurnOffCellDescriptions Tbl, ModuleName
-    
-    '@Ignore LineLabelNotUsed
-Done:
-    Exit Sub
-ErrorHandler:
-    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
-
-End Sub                                          ' ClearForm
 

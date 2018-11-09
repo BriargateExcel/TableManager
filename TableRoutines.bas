@@ -27,6 +27,7 @@ Public Function GetCellValue( _
        ByVal KeyValue As String, _
        ByVal DataColumnName As String _
        ) As Variant
+' Used in ParameterRoutines
 
     Dim Tbl As TableClass
     Set Tbl = Table(TableName, Module_Name)
@@ -214,7 +215,9 @@ ErrorHandler:
 
 End Sub
 
-Public Sub BuildParameterTableOnWorksheet(ByVal WkBk As Workbook)
+Public Sub BuildParameterTableOnWorksheet(ByVal Wkbk As Workbook)
+' Used in Main
+
     ' Assumes that all tables start in Row 1
     
     Const RoutineName As String = Module_Name & "BuildParameterTableOnWorksheet"
@@ -231,7 +234,7 @@ Public Sub BuildParameterTableOnWorksheet(ByVal WkBk As Workbook)
     Dim ColumnCount As Long
     ColumnCount = UBound(Tary, 2)
     
-    With WkBk
+    With Wkbk
         ' Ensure there's a sheet called "Parameters"
         If Not Contains(.Worksheets, "Parameters") Then
             .Worksheets.Add(After:=.Worksheets(.Worksheets.Count)).Name = "Parameters"
@@ -278,7 +281,7 @@ Public Sub BuildParameterTableOnWorksheet(ByVal WkBk As Workbook)
             AddValidationToParameterTable .ListObjects("ParameterTable")
             
         End With                                 ' .Worksheets("Parameters")
-        BuildTable .ListObjects("ParameterTable"), Module_Name
+        BuildTable Wkbk, .ListObjects("ParameterTable"), Module_Name
     End With                                     ' Wkbk
         
      
@@ -348,7 +351,8 @@ Private Sub SetCommonValidationParameters( _
     
 End Sub
 
-Public Sub ExtendDataValidationThroughAllTables(ByVal WkBk As Workbook)
+Public Sub ExtendDataValidationThroughAllTables(ByVal Wkbk As Workbook)
+' Used in Main
 
     Const RoutineName As String = Module_Name & "ExtendDataValidationThroughAllTables"
     On Error GoTo ErrorHandler
@@ -358,7 +362,7 @@ Public Sub ExtendDataValidationThroughAllTables(ByVal WkBk As Workbook)
     Application.ScreenUpdating = False
     
     Dim CurrentSheet As Worksheet
-    Set CurrentSheet = WkBk.ActiveSheet
+    Set CurrentSheet = Wkbk.ActiveSheet
     
     Dim CurrentCell As Range
     Set CurrentCell = ActiveCell
@@ -368,7 +372,7 @@ Public Sub ExtendDataValidationThroughAllTables(ByVal WkBk As Workbook)
     For I = 0 To pAllTbls.Count - 1
         Set Tbl = Table(I, Module_Name)
         ExtendDataValidationDownTable Tbl
-        WkBk.Worksheets(Tbl.WorksheetName).Activate
+        Wkbk.Worksheets(Tbl.WorksheetName).Activate
         Tbl.FirstCell.Select
     Next I
     
@@ -386,8 +390,10 @@ ErrorHandler:
 End Sub
 
 Public Sub BuildTable( _
+        ByVal Wkbk As Workbook, _
        ByVal TblObj As ListObject, _
        ByVal ModuleName As String)
+' Used in XLAM_Module, TableRoutines
        
     Const RoutineName As String = Module_Name & "Buildtable"
     On Error GoTo ErrorHandler
@@ -403,9 +409,9 @@ Public Sub BuildTable( _
     Set Tbl.Table = TblObj
     
     Dim Sht As Worksheet
-    Set Sht = GetMainWorkbook.Worksheets(TblObj.Parent.Name)
+    Set Sht = Wkbk.Worksheets(TblObj.Parent.Name)
     
-    If Tbl.CollectTableData(Tbl, Module_Name) Then
+    If Tbl.CollectTableData(Wkbk, Tbl, Module_Name) Then
         Dim Frm As FormClass
         Set Frm = New FormClass
         TableAdd Tbl, Module_Name
@@ -423,6 +429,7 @@ ErrorHandler:
 End Sub                                          ' BuildTable
 
 Public Function TableDataCollected() As Boolean
+' Used in Main
     On Error Resume Next
     TableDataCollected = (pAllTbls.Count <> 0)
     TableDataCollected = (Err.Number = 0)
@@ -528,6 +535,7 @@ End Sub                                          ' TurnOffCellDescriptions
 Public Sub PopulateTable( _
        ByVal Tbl As TableClass, _
        ByVal ModuleName As String)
+' Used in EventClass
 
     Const RoutineName As String = Module_Name & "PopulateTable"
     On Error GoTo ErrorHandler
@@ -579,6 +587,7 @@ Public Function Table( _
        ByVal TableName As String, _
        ByVal ModuleName As String _
        ) As TableClass
+' Used in TableRoutines, ParameterRoutines, EventClass
 
     Const RoutineName As String = Module_Name & "Table"
     On Error GoTo ErrorHandler
@@ -595,7 +604,7 @@ ErrorHandler:
 
 End Function                                     ' Table
 
-Public Sub TableAdd( _
+Private Sub TableAdd( _
        ByVal Tbl As Variant, _
        ByVal ModuleName As String)
 
@@ -666,6 +675,7 @@ End Function                                     ' TableItem
 Public Sub TableRemove( _
        ByVal Val As Variant, _
        ByVal ModuleName As String)
+' Used in TableRoutines, WorksheetsClass
 
     Const RoutineName As String = Module_Name & "TableRemove"
     On Error GoTo ErrorHandler
@@ -681,6 +691,8 @@ ErrorHandler:
 End Sub                                          ' TableRemove
 
 Public Sub TableSetNewClass(ByVal ModuleName As String)
+' Used in XLAM_Module
+
     Const RoutineName As String = Module_Name & "TableSetNewClass"
     On Error GoTo ErrorHandler
     
@@ -695,6 +707,8 @@ ErrorHandler:
 End Sub                                          ' TableSetNewClass
 
 Public Sub TableSetNewDict(ByVal ModuleName As String)
+' Used in WorksheetsClass
+
     Const RoutineName As String = Module_Name & "TableSetNewDict"
     On Error GoTo ErrorHandler
     
@@ -709,6 +723,8 @@ ErrorHandler:
 End Sub                                          ' TableSetNewDict
 
 Public Sub TableSetNothing(ByVal ModuleName As String)
+' Used in WorksheetsClass
+
     Const RoutineName As String = Module_Name & "TableSetNothing"
     On Error GoTo ErrorHandler
     
@@ -723,14 +739,17 @@ ErrorHandler:
 End Sub                                          ' TableSetNothing
 
 Public Sub CopyToTable( _
+    ByVal Wkbk As Workbook, _
        ByVal TableName As String, _
        ByVal Ary As Variant)
+' Used in CSVRoutines
+
     Const RoutineName As String = Module_Name & "CopyToTable"
     On Error GoTo ErrorHandler
     
     ' Copy the file to the table
     Dim Sht As Worksheet
-    Set Sht = GetMainWorkbook.Worksheets(Table(TableName, Module_Name).WorksheetName)
+    Set Sht = Wkbk.Worksheets(Table(TableName, Module_Name).WorksheetName)
     
     Dim UpperLeftRange As Range
     Dim Tbl As TableClass

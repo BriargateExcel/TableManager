@@ -26,12 +26,12 @@ Public Sub SetTable(ByVal Tbl As TableClass)
 End Sub
 
 Private Sub CopyButton_Click()
-    OutputTable Module_Name
+    OutputTable GetMainWorkbook, Module_Name
     Me.Hide
 End Sub
 
 Private Sub FetchButton_Click()
-    InputTable Module_Name
+    InputTable GetMainWorkbook, Module_Name
     Me.Hide
 End Sub
 
@@ -57,7 +57,7 @@ Private Sub OnCancel()
 End Sub
 
 Private Sub UserForm_Activate()
-    FileNameBox.Text = GetFullFileName(ActiveCellTableName)
+    FileNameBox.Text = GetFullFileName(GetMainWorkbook, ActiveCellTableName)
     CenterMe Me
 End Sub
 

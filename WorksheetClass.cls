@@ -21,12 +21,35 @@ Private Sub Class_Initialize()
     Set pWorksheetEvent = New EventClass
 End Sub                                          ' Class_Initialize
 
-Public Property Get Worksheet() As Worksheet: Set Worksheet = pWorksheet: End Property
-Public Property Set Worksheet(ByVal WS As Worksheet): Set pWorksheet = WS: End Property
+Public Property Get Worksheet() As Worksheet
+' Only called from WorksheetsClass
 
-Public Property Get WorksheetEvent() As Object: Set WorksheetEvent = pWorksheetEvent: End Property
-Public Property Set WorksheetEvent(ByVal WS As Worksheet): Set pWorksheetEvent = WS: End Property
+    Set Worksheet = pWorksheet
+End Property
 
-Public Property Get Name() As String: Name = pName: End Property
-Public Property Let Name(ByVal NM As String): pName = NM: End Property
+Public Property Set Worksheet(ByVal WS As Worksheet)
+' Only called from WorksheetsClass
+
+    Set pWorksheet = WS
+End Property
+
+Public Property Get WorksheetEvent() As Object
+    Set WorksheetEvent = pWorksheetEvent
+' Only called from WorksheetsClass
+
+End Property
+
+Public Property Set WorksheetEvent(ByVal WS As Worksheet)
+' Used in WorksheetsClass, XLAM_Module
+
+    Set pWorksheetEvent = WS
+End Property
+
+Public Property Get Name() As String
+    Name = pName
+End Property
+
+Public Property Let Name(ByVal NM As String)
+    pName = NM
+End Property
 

@@ -64,21 +64,24 @@ Private Function ModuleList() As Variant
 End Function                                     ' ModuleList
 
 Public Property Get ActiveRow() As Long
+' Used in EventClass
     ActiveRow = Me.DBRow
 End Property
 
-Public Property Get ActiveTarget() As Range: Set ActiveTarget = pTarget: End Property
+Public Property Get ActiveTarget() As Range
+' Used in EventClass, TableClass
+Set ActiveTarget = pTarget
+End Property
 
 Public Property Set ActiveTarget(ByVal Target As Range)
+' Used in EventClass
+
     Target.Select
     Set pTarget = Target
 End Property
 
-Public Sub GoToHome()
-    Set pTarget = Me.FirstCell
-End Sub
-
 Public Property Get DBRange() As Range
+' Used in FormRoutines, TableClass, TableRoutines, CalendarBuilder
     Set DBRange = pWkSht.ListObjects(pTableName).DataBodyRange
 End Property
 
@@ -86,6 +89,7 @@ Public Property Get DBColRange( _
        ByVal Tbl As TableClass, _
        ByVal ColumnName As String _
        ) As Range
+' Used in TableRoutines, TableClass
     
     Dim ColNum As Long
     ColNum = Tbl.DBColNumber(ColumnName)
@@ -97,6 +101,8 @@ Public Property Get DBColRange( _
 End Property
 
 Public Property Get DBColNumber(ByVal ColumnName As String) As Long
+' Used in TableRoutines, TableClass
+    
     On Error Resume Next
     DBColNumber = Application.WorksheetFunction.Match(ColumnName, Me.Table.HeaderRowRange, 0)
     If Err.Number <> 0 Then DBColNumber = 0
@@ -107,6 +113,8 @@ Public Property Get DBRowNumber( _
        ByVal ColumnName As String, _
        ByVal Key As String _
        ) As Long
+       
+' Used in TableRoutines, TableClass
     
     Dim KeyRange As Range
     Set KeyRange = Me.DBColRange(Me, ColumnName)
@@ -118,6 +126,7 @@ Public Property Get DBRowNumber( _
 End Property
 
 Public Property Get Form() As FormClass: Set Form = pForm: End Property
+
 Public Property Set Form(ByVal Frm As FormClass): Set pForm = Frm: End Property
 
 Public Property Get Locked() As Boolean: Locked = pLocked: End Property
@@ -152,9 +161,11 @@ Public Property Set Table(ByVal Tbl As ListObject): Set pTable = Tbl: End Proper
 
 '@Ignore FunctionReturnValueNotUsed
 Public Function CollectTableData( _
+    ByVal Wkbk As Workbook, _
        ByVal Tbl As TableClass, _
        ByVal ModuleName As String _
        ) As Boolean
+' Used in TableClass
        
 ' Call CollectCellData to collect all the type information for each column of the table
     
@@ -167,7 +178,7 @@ Public Function CollectTableData( _
     
     pTableName = Tbl.Table.Name
     pWkShtName = Tbl.Table.Parent.Name
-    Set pWkSht = GetMainWorkbook.Worksheets(pWkShtName)
+    Set pWkSht = Wkbk.Worksheets(pWkShtName)
     pLocked = True
     Dim Element As Range
     Dim OneCell As CellClass
@@ -182,7 +193,7 @@ Public Function CollectTableData( _
         If Not OneCell.Locked Then pLocked = False
     Next Element
     
-    LoadTable Tbl.Table, pDataTable
+    LoadTable Wkbk, Tbl.Table, pDataTable
 
     CollectTableData = Not pLocked
 
@@ -197,6 +208,7 @@ End Function                                     ' CollectTableData
 Public Function FirstCell() As Range
     Const RoutineName As String = Module_Name & "FirstCell"
     On Error GoTo ErrorHandler
+' Used in EventClass, TableClass, TableRoutines
     
     On Error Resume Next
     Set FirstCell = pTable.DataBodyRange(1, 1)
@@ -213,6 +225,7 @@ ErrorHandler:
 End Function                                     ' FirstCell
 
 Public Function LastCell() As Range
+' Used in TableClass, EventClass
     Const RoutineName As String = Module_Name & "LastCell"
     On Error GoTo ErrorHandler
     
@@ -231,6 +244,9 @@ Public Function LastRow() As Long
 End Function                                     ' LastRow
 
 Public Sub NextRow()
+
+    ' Called in EventClass
+    
     Dim DBRow As Long
     Dim I As Long
     
@@ -250,6 +266,9 @@ Public Sub NextRow()
 End Sub                                          ' NextRow
 
 Public Sub PreviousRow()
+
+    ' Called in EventClass
+    
     Dim DBRow As Long
     Dim I As Long
     
@@ -270,12 +289,17 @@ Public Sub PreviousRow()
 End Sub                                          ' PreviousRow
 
 Public Function DBRow() As Long
+
+    ' Called in TableClass, FormRoutines, TableRoutines,
     Dim THRow As Long: THRow = Me.ActiveTarget.ListObject.HeaderRowRange.Row
     Dim TRow As Long: TRow = Me.ActiveTarget.Row
     DBRow = TRow - THRow
 End Function                                     ' DBRow
 
 Public Function SelectedDBCol(ByVal ColumnName As String) As Long
+
+    ' Called in FormRoutines, TableRoutines
+    
     Dim Rng As Range
     Dim Vbl As Variant
     
@@ -291,45 +315,14 @@ Public Function SelectedDBCol(ByVal ColumnName As String) As Long
 End Function                                     ' SelectedDBCol
 
 Public Function ColumnRange(ByVal ColNum As Long) As Range
+
+    ' Called in TableRoutines
+    
     Set ColumnRange = pWkSht.Range(DBRange(1, ColNum), DBRange(NumRows, ColNum))
 End Function
 
 Public Function CellCount() As Long: CellCount = pCells.Count: End Function
-
-Private Sub LoadTable( _
-       ByVal ExcelTable As ListObject, _
-       ByRef DataTable As TableType)
-       
-    ' Purpose
-    ' Loads the contents of an Excel table (ExcelTable)
-    '   into a TableType data structure (DataTable)
-    ' Errors are reported via standard error handling logic
-    ' Assumptions
-    ' The structure of ColumnFilter is column name
-    '   then a boolean comparator then the operand.
-
-    Const Routine_Name As String = Module_Name & "LoadTable"
-    On Error GoTo ErrorHandler
-    
-    Dim Sht As Worksheet
-    Set Sht = GetMainWorkbook.Worksheets(ExcelTable.Parent.Name)
-    
-    Dim TableName As String
-    TableName = ExcelTable.Name
-
-    If Not IsArrayAllocated(DataTable.Body) Then
-        DataTable.Headers = Sht.ListObjects(TableName).HeaderRowRange
-        DataTable.Body = Sht.ListObjects(TableName).DataBodyRange
-        DataTable.Valid = "Valid"
-    End If
-
-    '@Ignore LineLabelNotUsed
-Done:
-    Exit Sub
-ErrorHandler:
-    RaiseError Err.Number, Err.Source, Routine_Name, Err.Description
-
-End Sub
+    ' Called in FormClass, TableClass, FormRoutines, TableRoutines
 
 Public Property Get Headers() As Variant
     Headers = pDataTable.Headers
@@ -634,8 +627,6 @@ ErrorHandler:
     RaiseError Err.Number, Err.Source, Routine_Name, Err.Description
 
 End Function
-
-
 
 Private Function ValidRowDesignator( _
         SearchTable As TableType, _
@@ -1008,4 +999,46 @@ ErrorHandler:
 
 End Function
 
+
+'Public Sub GoToHome()
+'    Set pTarget = Me.FirstCell
+'End Sub
+
+Private Sub LoadTable( _
+    ByVal Wkbk As Workbook, _
+       ByVal ExcelTable As ListObject, _
+       ByRef DataTable As TableType)
+       
+    ' Called in TableClass
+       
+    ' Purpose
+    ' Loads the contents of an Excel table (ExcelTable)
+    '   into a TableType data structure (DataTable)
+    ' Errors are reported via standard error handling logic
+    ' Assumptions
+    ' The structure of ColumnFilter is column name
+    '   then a boolean comparator then the operand.
+
+    Const Routine_Name As String = Module_Name & "LoadTable"
+    On Error GoTo ErrorHandler
+    
+    Dim Sht As Worksheet
+    Set Sht = Wkbk.Worksheets(ExcelTable.Parent.Name)
+    
+    Dim TableName As String
+    TableName = ExcelTable.Name
+
+    If Not IsArrayAllocated(DataTable.Body) Then
+        DataTable.Headers = Sht.ListObjects(TableName).HeaderRowRange
+        DataTable.Body = Sht.ListObjects(TableName).DataBodyRange
+        DataTable.Valid = "Valid"
+    End If
+
+    '@Ignore LineLabelNotUsed
+Done:
+    Exit Sub
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, Routine_Name, Err.Description
+
+End Sub
 

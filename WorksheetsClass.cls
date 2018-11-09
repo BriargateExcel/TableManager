@@ -21,13 +21,21 @@ Private Sub Class_Initialize()
     Set pAllSheets = New Scripting.Dictionary
 End Sub                                          ' Class_Initialize
 
+Private Function ModuleList() As Variant
+    ModuleList = Array("XLAM_Module.")
+End Function                                     ' ModuleList
+
 Public Property Get Count() As Long: Count = TableCount(pAllSheets.Count): End Property
 
 '@DefaultMember
-Public Property Get Item(ByVal vIndex As Variant) As WorksheetClass
+Public Property Get Item( _
+    ByVal vIndex As Variant, _
+    ByVal ModuleName As String) As WorksheetClass
     'Attribute Item.VB_UserMemId = 0
     
-    Const RoutineName As String = Module_Name & "Get Item"
+    Const RoutineName As String = Module_Name & "Get_Item"
+    Debug.Assert InScope(ModuleList, ModuleName)
+    
     On Error GoTo ErrorHandler
     
     On Error Resume Next
@@ -52,13 +60,16 @@ ErrorHandler:
 
 End Property
 
-Public Sub Add(ByVal Sht As WorksheetClass)
+Public Sub Add( _
+    ByVal Sht As WorksheetClass, _
+    ByVal ModuleName As String)
 
     Dim Evt As EventClass
     
-    Debug.Assert Initializing
-
     Const RoutineName As String = Module_Name & "Add"
+    Debug.Assert Initializing
+    Debug.Assert InScope(ModuleList, ModuleName)
+
     On Error GoTo ErrorHandler
     
     Set Evt = New EventClass
@@ -77,11 +88,14 @@ ErrorHandler:
 
 End Sub                                          ' Add
 
-Public Sub Remove(ByVal vIndex As Variant)
+Public Sub Remove( _
+    ByVal vIndex As Variant, _
+    ByVal ModuleName As String)
 
-    Debug.Assert Initializing
-    
     Const RoutineName As String = Module_Name & "Remove"
+    Debug.Assert Initializing
+    Debug.Assert InScope(ModuleList, ModuleName)
+    
     On Error GoTo ErrorHandler
    
     If CStr(vIndex) = "*" Then
