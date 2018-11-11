@@ -11,7 +11,7 @@ Public Function DarkestColorValue() As Long
                                    "Color Name", _
                                    "Darkest Color", _
                                    "Decimal Color Value", _
-                                   &H80000012)
+                                   &H8000000F)
 End Function
 
 Public Function LightestColorValue() As Long
@@ -20,7 +20,7 @@ Public Function LightestColorValue() As Long
                                     "Color Name", _
                                     "Lightest Color", _
                                     "Decimal Color Value", _
-                                    &H8000000F)
+                                    &H80000012)
 End Function
 
 Public Function FieldValue( _

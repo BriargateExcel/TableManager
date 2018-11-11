@@ -17,8 +17,9 @@ Private pFormName As String
 Private pWorksheetName As String
 Private pFormObj As Object
 ' pFormObj:
-' MSForms.UserForm; when declared as UserForm it has no height or width
+' When declared as MSForms.UserForm, it has no height or width
 ' When declared as an object, it has both height and width
+Private pUserForm As MSForms.UserForm
 Private pTable As TableClass
 Private pControls As ControlsClass
 Private pEvents As EventsClass
@@ -41,13 +42,13 @@ Private Function ModuleList() As Variant
 End Function                                     ' ModuleList
 
 Public Function BuildForm( _
+    ByVal Wkbk As Workbook, _
        ByVal Tbl As TableClass, _
        ByVal ModuleName As String _
        ) As MSForms.UserForm
        
     ' Called in TableRoutines
        
-    Dim TempForm As VBComponent
     Debug.Assert Initializing
 
     Const RoutineName As Variant = Module_Name & "BuildForm"
@@ -59,14 +60,20 @@ Public Function BuildForm( _
     pWorksheetName = Tbl.WorksheetName
     
     ' Create the UserForm
-    Set TempForm = ThisWorkbook.VBProject.VBComponents.Add(vbext_ct_MSForm)
+    Dim TempForm As VBComponent
+    Set TempForm = Wkbk.VBProject.VBComponents.Add(vbext_ct_MSForm)
     pFormName = TempForm.Name
     
     Set Tbl.Form = New FormClass
     Tbl.Form.Name = pFormName
     Set pFormObj = VBA.UserForms.Add(TempForm.Name)
-    Set Tbl.Form.FormObj = pFormObj
-    pFormObj.Caption = Tbl.Name
+    Set pFormObj = Wkbk.VBProject.VBComponents.Add(vbext_ct_MSForm)
+'    Set pUserForm = Wkbk.VBProject.VBComponents.Add(vbext_ct_MSForm)
+'    pFormObj.Name = TempForm.Name
+'    Set Tbl.Form.FormObj = pFormObj
+'    Set Tbl.Form.UserForm = pFormObj
+'    Set pUserForm = pFormObj
+'    pFormObj.Caption = Tbl.Name
     
     Dim Evt As EventClass
     Set Evt = New EventClass
@@ -785,9 +792,13 @@ Public Property Get Enabled() As Boolean: Enabled = pEnabled: End Property
 
 Public Property Let Enabled(ByVal Vbl As Boolean): pEnabled = Vbl: End Property
 
-Public Property Get FormObj() As MSForms.UserForm: Set FormObj = pFormObj: End Property
+Public Property Get UserForm() As MSForms.UserForm: Set UserForm = pUserForm: End Property
 
-Public Property Set FormObj(ByVal Vbl As MSForms.UserForm): Set pFormObj = Vbl: End Property
+Public Property Set UserForm(ByVal Vbl As MSForms.UserForm): Set pUserForm = Vbl: End Property
+
+Public Property Get FormObj() As Object: Set FormObj = pFormObj: End Property
+
+Public Property Set FormObj(ByVal Vbl As Object): Set pFormObj = Vbl: End Property
 
 Public Property Get Name() As String: Name = pFormName: End Property
 

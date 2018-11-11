@@ -302,7 +302,7 @@ ErrorHandler:
 End Sub
 
 'Private Sub BuildTableAndForm()
-'    Const RoutineName As String = Module_Name & "BuildParameterTableOnWorksheet"
+'    Const RoutineName As String = Module_Name & "BuildTableAndForm"
 '    On Error GoTo ErrorHandler
 '
 '
@@ -416,7 +416,7 @@ Public Sub BuildTable( _
         Set Frm = New FormClass
         TableAdd Tbl, Module_Name
             
-        Set Frm.FormObj = Frm.BuildForm(Tbl, Module_Name)
+        Set Frm.FormObj = Frm.BuildForm(Wkbk, Tbl, Module_Name)
         Set Tbl.Form = Frm
     End If
     

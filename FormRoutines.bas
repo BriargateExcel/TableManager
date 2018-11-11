@@ -82,7 +82,7 @@ Public Sub PopulateForm( _
     Debug.Assert InScope(ModuleList, ModuleName)
 
     Dim Field As CellClass
-    Dim DBRange As Range: Set DBRange = Tbl.DBRange
+'    Dim DBRange As Range: Set DBRange = Tbl.DBRange
     Dim DBRow As Long: DBRow = Tbl.DBRow
     Dim DBCol As Long
     Dim I As Long
@@ -94,15 +94,21 @@ Public Sub PopulateForm( _
             Err.Raise 1, "FormClass.PopulateForm", "Fatal error. HeaderText not found."
         End If
 
-        Field.ControlValue = DBRange(DBRow, DBCol)
+'        Field.ControlValue = DBRange(DBRow, DBCol)
+        Field.ControlValue = Tbl.Headers(DBCol)
         
         Select Case Left$(Field.FormControl.Name, 3)
         Case "lbl":                              ' Do nothing
-        Case "val": Field.FormControl.Caption = DBRange(DBRow, DBCol)
-        Case "fld": Field.FormControl.Text = DBRange(DBRow, DBCol)
-        Case "cmb": Field.FormControl.Text = DBRange(DBRow, DBCol)
-        Case "whl": Field.FormControl.Text = DBRange(DBRow, DBCol)
-        Case "dat": Field.FormControl.Text = DBRange(DBRow, DBCol)
+'        Case "val": Field.FormControl.Caption = DBRange(DBRow, DBCol)
+'        Case "fld": Field.FormControl.Text = DBRange(DBRow, DBCol)
+'        Case "cmb": Field.FormControl.Text = DBRange(DBRow, DBCol)
+'        Case "whl": Field.FormControl.Text = DBRange(DBRow, DBCol)
+'        Case "dat": Field.FormControl.Text = DBRange(DBRow, DBCol)
+        Case "val": Field.FormControl.Caption = Tbl.GetData(DBRow, DBCol)
+        Case "fld": Field.FormControl.Text = Tbl.GetData(DBRow, DBCol)
+        Case "cmb": Field.FormControl.Text = Tbl.GetData(DBRow, DBCol)
+        Case "whl": Field.FormControl.Text = Tbl.GetData(DBRow, DBCol)
+        Case "dat": Field.FormControl.Text = Tbl.GetData(DBRow, DBCol)
         Case Else
             MsgBox "This is an illegal field type: " & _
                    Left$(Field.FormControl.Name, 3), _

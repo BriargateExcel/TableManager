@@ -54,7 +54,7 @@ Public Sub SetUpWorkbook(ByVal Wkbk As Workbook)
     Dim UserFrm As Object
     Dim WkSht As WorksheetClass
     
-    Const RoutineName As String = Module_Name & "AutoOpen"
+    Const RoutineName As String = Module_Name & "SetUpWorkbook"
     On Error GoTo ErrorHandler
     
     SetInitializing
@@ -66,19 +66,19 @@ Public Sub SetUpWorkbook(ByVal Wkbk As Workbook)
                "TableManager Add-In to work", _
                vbOKOnly Or vbCritical, _
                "Project Access"
-    
+        Stop
     End If
     
     ' Delete all the old UserForms
-    If Wkbk.Name = ThisWorkbook.Name Then
+'    If Wkbk.Name = ThisWorkbook.Name Then
         For Each UserFrm In Wkbk.VBProject.VBComponents
             If UserFrm.Type = vbext_ct_MSForm And _
                Left$(UserFrm.Name, 8) = "UserForm" _
                Then
-                Application.Wkbk.VBProject.VBComponents.Remove UserFrm
+                Wkbk.VBProject.VBComponents.Remove UserFrm
             End If
         Next UserFrm
-    End If
+'    End If
     
     WorksheetSetNewClass Module_Name
     TableSetNewClass Module_Name
@@ -106,7 +106,8 @@ Public Sub SetUpWorkbook(ByVal Wkbk As Workbook)
 Done:
     Exit Sub
 ErrorHandler:
-    DisplayError RoutineName
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
+'    DisplayError RoutineName
 
 End Sub                                          ' AutoOpen
 

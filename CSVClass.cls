@@ -231,7 +231,7 @@ Private Function Join2d( _
     ' Note that the default delimiters are those inserted into the string
     '  returned by ADODB.Recordset.GetString
 
-    Const RoutineName As String = Module_Name & "Split2d"
+    Const RoutineName As String = Module_Name & "Join2d"
     On Error GoTo ErrorHandler
     
     ' Coding note: we're not doing any string-handling in VBA.Strings -

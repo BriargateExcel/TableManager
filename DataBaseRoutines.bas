@@ -37,7 +37,7 @@ Public Sub BuildDataBaseForm( _
     If LogoFileExists Then
         ' Create the UserForm
         Dim TempForm As VBComponent
-        Set TempForm = ThisWorkbook.VBProject.VBComponents.Add(vbext_ct_MSForm)
+        Set TempForm = Wkbk.VBProject.VBComponents.Add(vbext_ct_MSForm)
     
         Dim Frm As Object
         Set Frm = VBA.UserForms.Add(TempForm.Name)

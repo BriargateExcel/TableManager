@@ -5,8 +5,8 @@ Option Explicit
 
 Private Const Module_Name As String = "Module1."
 
-Public Sub Auto_Open()
-    SetUpWorkbook ThisWorkbook
+Public Sub InitializeWorkbookForTableManager(ByVal Wkbk As Workbook)
+    SetUpWorkbook Wkbk
 End Sub
 
 Public Sub test()

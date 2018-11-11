@@ -13,7 +13,7 @@ Public Sub DisableButton( _
        ByVal Btn As MSForms.CommandButton, _
        ByVal ModuleName As String)
     
-    Const RoutineName As String = Module_Name & "ValidateForm"
+    Const RoutineName As String = Module_Name & "DisableButton"
     On Error GoTo ErrorHandler
     
     Debug.Assert InScope(ModuleList, ModuleName)
@@ -31,7 +31,7 @@ Public Sub EnableButton( _
        ByVal Btn As MSForms.CommandButton, _
        ByVal ModuleName As String)
     
-    Const RoutineName As String = Module_Name & "ValidateForm"
+    Const RoutineName As String = Module_Name & "EnableButton"
     On Error GoTo ErrorHandler
     
     Debug.Assert InScope(ModuleList, ModuleName)
@@ -49,7 +49,7 @@ Public Sub HighLightButton( _
        ByVal Btn As MSForms.CommandButton, _
        ByVal ModuleName As String)
     
-    Const RoutineName As String = Module_Name & "ValidateForm"
+    Const RoutineName As String = Module_Name & "HighLightButton"
     On Error GoTo ErrorHandler
     
     Debug.Assert InScope(ModuleList, ModuleName)
@@ -69,7 +69,7 @@ Public Sub HighLightControl( _
        ByVal Ctl As control, _
        ByVal ModuleName As String)
     
-    Const RoutineName As String = Module_Name & "ValidateForm"
+    Const RoutineName As String = Module_Name & "HighLightControl"
     On Error GoTo ErrorHandler
     
     Debug.Assert InScope(ModuleList, ModuleName)
@@ -88,7 +88,7 @@ Public Sub LowLightButton( _
        ByVal Btn As MSForms.CommandButton, _
        ByVal ModuleName As String)
     
-    Const RoutineName As String = Module_Name & "ValidateForm"
+    Const RoutineName As String = Module_Name & "LowLightButton"
     On Error GoTo ErrorHandler
     
     Debug.Assert InScope(ModuleList, ModuleName)
@@ -110,7 +110,7 @@ Public Sub LowLightControl( _
     
     If Ctl Is Nothing Then Exit Sub
     
-    Const RoutineName As String = Module_Name & "ValidateForm"
+    Const RoutineName As String = Module_Name & "LowLightControl"
     On Error GoTo ErrorHandler
     
     Debug.Assert InScope(ModuleList, ModuleName)

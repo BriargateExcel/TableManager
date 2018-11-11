@@ -43,31 +43,64 @@ Public Function ActiveCellListObject() As ListObject
     On Error GoTo 0                              ' Reset the error handling
 End Function                                     ' ActiveCellListobject
 
-Public Function CheckForVBAProjectAccessEnabled(ByVal Wkbk As Workbook) As Boolean
+'Public Function VBAIsTrusted(ByVal Wkbk As Workbook) As Boolean
+'    Dim a1 As Integer
+'
+'    On Error GoTo Label1
+'    a1 = Wkbk.VBProject.VBComponents.Count
+'    VBAIsTrusted = True
+'    Exit Function
+'Label1:
+'    VBAIsTrusted = False
+'End Function
 
-    Const RoutineName As String = Module_Name & "CheckForVBAProjectAccessEnabled"
-    On Error GoTo ErrorHandler
+Public Function CheckForVBAProjectAccessEnabled(ByVal Wkbk As Workbook) As Boolean
+' Make sure access to the VBProject is allowed
+    Dim VBP As Object ' as VBProject
     
-    On Error GoTo ErrorHandler
-    
-    Dim VBP As VBProject
+    CheckForVBAProjectAccessEnabled = True
     
     If Val(Application.Version) >= 10 Then
+        On Error Resume Next
         Set VBP = Wkbk.VBProject
-        CheckForVBAProjectAccessEnabled = True
-    Else
-        MsgBox "This application must be run on Excel 2002 or greater", _
-               vbCritical, "Excel Version Check"
-        GoTo ErrorHandler
+        If Err.Number <> 0 Then
+            MsgBox "Your security settings do not allow this procedure to run." _
+              & vbCrLf & vbCrLf & "To change your security setting:" _
+              & vbCrLf & vbCrLf & " 1. Select Tools - Macro - Security." & vbCrLf _
+              & " 2. Click the 'Trusted Sources' tab" & vbCrLf _
+              & " 3. Place a checkmark next to 'Trust access to Visual Basic Project.'", _
+              vbCritical
+            CheckForVBAProjectAccessEnabled = False
+            Exit Function
+        End If
     End If
-
-    '@Ignore LineLabelNotUsed
-Done:
-    Exit Function
-ErrorHandler:
-    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
-
 End Function                                     ' CheckForVBAProjectAccessEnabled
+
+'Public Function CheckForVBAProjectAccessEnabled(ByVal Wkbk As Workbook) As Boolean
+'
+'    Const RoutineName As String = Module_Name & "CheckForVBAProjectAccessEnabled"
+'    On Error GoTo ErrorHandler
+'
+'    On Error GoTo ErrorHandler
+'
+'    Dim VBP As VBProject
+'
+'    If Val(Application.Version) >= 10 Then
+'        Set VBP = Wkbk.VBProject
+'        CheckForVBAProjectAccessEnabled = True
+'    Else
+'        MsgBox "This application must be run on Excel 2002 or greater", _
+'               vbCritical, "Excel Version Check"
+'        GoTo ErrorHandler
+'    End If
+'
+'    '@Ignore LineLabelNotUsed
+'Done:
+'    Exit Function
+'ErrorHandler:
+'    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
+'
+'End Function                                     ' CheckForVBAProjectAccessEnabled
 
 Public Function InScope( _
        ByVal ModuleList As Variant, _
