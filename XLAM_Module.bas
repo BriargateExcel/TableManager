@@ -1,4 +1,6 @@
 Attribute VB_Name = "XLAM_Module"
+'@Folder("TableManager.Main")
+
 Option Explicit
 
 Private Const Module_Name As String = "XLAM_Module."
@@ -37,59 +39,62 @@ Public Function GetMainWorkbook() As Workbook
     Set GetMainWorkbook = pMainWorkbook
 End Function
 
-Public Sub SetMainWorkbook(ByVal WkBk As Workbook)
-    Set pMainWorkbook = WkBk
+Public Sub SetMainWorkbook(ByVal Wkbk As Workbook)
+    Set pMainWorkbook = Wkbk
 End Sub
 
-Public Function GetWorkBookPath() As String
-    GetWorkBookPath = GetMainWorkbook.Path
+Public Function GetWorkBookPath(ByVal Wkbk As Workbook) As String
+    GetWorkBookPath = Wkbk.Path
 End Function
 
-Public Sub AutoOpen(ByVal WkBk As Workbook)
+Public Sub SetUpWorkbook(ByVal Wkbk As Workbook)
     
     Dim Sht As Worksheet
     Dim TblObj As ListObject
     Dim UserFrm As Object
-    Dim WkSht As TableManager.WorksheetClass
+    Dim WkSht As WorksheetClass
     
-    Const RoutineName As String = Module_Name & "AutoOpen"
+    Const RoutineName As String = Module_Name & "SetUpWorkbook"
     On Error GoTo ErrorHandler
     
     SetInitializing
     
-    Set pMainWorkbook = WkBk
+    Set pMainWorkbook = Wkbk
     
-    If Not CheckForVBAProjectAccessEnabled(ThisWorkbook) Then
+    If Not CheckForVBAProjectAccessEnabled(Wkbk) Then
         MsgBox "You must set the project access for the " & _
                "TableManager Add-In to work", _
                vbOKOnly Or vbCritical, _
                "Project Access"
-    
+        Stop
     End If
     
     ' Delete all the old UserForms
-    For Each UserFrm In Application.ThisWorkbook.VBProject.VBComponents
-        If UserFrm.Type = vbext_ct_MSForm And _
-           Left$(UserFrm.Name, 8) = "UserForm" _
-           Then
-            Application.ThisWorkbook.VBProject.VBComponents.Remove UserFrm
-        End If
-    Next UserFrm
+'    If Wkbk.Name = ThisWorkbook.Name Then
+'        For Each UserFrm In Workbooks("Tablemanager.xlam").VBProject.VBComponents
+        For Each UserFrm In Wkbk.VBProject.VBComponents
+            If UserFrm.Type = vbext_ct_MSForm And _
+               Left$(UserFrm.Name, 8) = "UserForm" _
+               Then
+                Wkbk.VBProject.VBComponents.Remove UserFrm
+            End If
+        Next UserFrm
+'    End If
     
-    TableManager.WorksheetSetNewClass Module_Name
-    TableManager.TableSetNewClass Module_Name
+    WorksheetSetNewClass Module_Name
+    TableSetNewClass Module_Name
     
     ' Go through all the worksheets and all the tables on each worksheet
     ' collecting the data and building the form for each table
-    For Each Sht In GetMainWorkbook.Worksheets
-        Set WkSht = New TableManager.WorksheetClass
+    For Each Sht In Wkbk.Worksheets
+        Set WkSht = New WorksheetClass
         Set WkSht.Worksheet = Sht
         WkSht.Name = Sht.Name
         
-        TableManager.WorksheetAdd WkSht, Module_Name
+        WorksheetAdd WkSht, Module_Name
         
         For Each TblObj In Sht.ListObjects
-            BuildTable TblObj, Module_Name
+            BuildTable Wkbk, TblObj, Module_Name
         Next TblObj
     
     Next Sht
@@ -102,7 +107,8 @@ Public Sub AutoOpen(ByVal WkBk As Workbook)
 Done:
     Exit Sub
 ErrorHandler:
-    DisplayError RoutineName
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
+'    DisplayError RoutineName
 
 End Sub                                          ' AutoOpen
 

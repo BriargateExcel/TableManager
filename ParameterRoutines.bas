@@ -1,25 +1,30 @@
 Attribute VB_Name = "ParameterRoutines"
+'@Folder("TableManager.Colors")
+
 Option Explicit
 
 Private Const Module_Name As String = "ParameterRoutines."
 
 Public Function DarkestColorValue() As Long
-    DarkestColorValue = FieldValue("ColorTable", _
+    DarkestColorValue = FieldValue(GetMainWorkbook, _
+                                "ColorTable", _
                                    "Color Name", _
                                    "Darkest Color", _
                                    "Decimal Color Value", _
-                                   &H80000012)
+                                   &H8000000F)
 End Function
 
 Public Function LightestColorValue() As Long
-    LightestColorValue = FieldValue("ColorTable", _
+    LightestColorValue = FieldValue(GetMainWorkbook, _
+                                    "ColorTable", _
                                     "Color Name", _
                                     "Lightest Color", _
                                     "Decimal Color Value", _
-                                    &H8000000F)
+                                    &H80000012)
 End Function
 
 Public Function FieldValue( _
+    ByVal Wkbk As Workbook, _
        ByVal TableName As String, _
        ByVal SearchFieldName As String, _
        ByVal SearchFieldValue As String, _
@@ -30,11 +35,11 @@ Public Function FieldValue( _
     Dim LocalFieldValue As Variant
     
     If FieldExistsInXLAM(TableName, SearchFieldName) Then
-        LocalFieldValue = TableManager.GetCellValue(TableName, SearchFieldName, SearchFieldValue, TargetFieldName)
+        LocalFieldValue = GetCellValue(TableName, SearchFieldName, SearchFieldValue, TargetFieldName)
     Else
-        If FieldExistsOnWorksheet(TableName, SearchFieldName) Then
+        If FieldExistsOnWorksheet(Wkbk, TableName, SearchFieldName) Then
             Dim Tbl As ListObject
-            Set Tbl = GetMainWorkbook.Worksheets("Parameters").ListObjects(TableName)
+            Set Tbl = Wkbk.Worksheets("Parameters").ListObjects(TableName)
             
             LocalFieldValue = SearchTable(Tbl, SearchFieldName, SearchFieldValue, TargetFieldName)
             If LocalFieldValue = 0 Then FieldValue = DefaultValue
@@ -53,22 +58,23 @@ Private Function FieldExistsInXLAM( _
  
     FieldExistsInXLAM = False
     
-    If TableManager.TableExists(TableName, Module_Name) Then
-        Dim Tbl As TableManager.TableClass
-        Set Tbl = TableManager.Table(TableName, Module_Name)
+    If TableExists(TableName, Module_Name) Then
+        Dim Tbl As TableClass
+        Set Tbl = Table(TableName, Module_Name)
         
         FieldExistsInXLAM = Tbl.TableCells.Exists(FieldName, Module_Name)
     End If
 End Function
 
 Private Function FieldExistsOnWorksheet( _
+    ByVal Wkbk As Workbook, _
         ByVal TableName As String, _
         ByVal FieldName As String _
         ) As Boolean
     
     If TableExistsOnWorksheet(TableName) Then
         Dim Tbl As ListObject
-        Set Tbl = GetMainWorkbook.Worksheets("Parameters").ListObjects(TableName)
+        Set Tbl = Wkbk.Worksheets("Parameters").ListObjects(TableName)
         
         On Error Resume Next
         FieldExistsOnWorksheet = (Application.WorksheetFunction.Match(FieldName, Tbl.HeaderRowRange, 0) <> 0)
@@ -76,7 +82,10 @@ Private Function FieldExistsOnWorksheet( _
     End If
 End Function
 
-Private Function TableExistsOnWorksheet(ByVal TableName As String) As Boolean
+Private Function TableExistsOnWorksheet( _
+    ByVal TableName As String _
+    ) As Boolean
+    
     TableExistsOnWorksheet = False
     If ParameterSheetExists Then
         TableExistsOnWorksheet = Contains(GetMainWorkbook.Worksheets("Parameters").ListObjects, TableName)

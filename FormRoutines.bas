@@ -1,4 +1,6 @@
 Attribute VB_Name = "FormRoutines"
+'@Folder("TableManager.Forms")
+
 Option Explicit
 
 Private Const Module_Name As String = "FormRoutines."
@@ -8,11 +10,11 @@ Private Function ModuleList() As Variant
 End Function                                     ' ModuleList
 
 Public Function ValidateForm( _
-       ByVal Tbl As TableManager.TableClass, _
+       ByVal Tbl As TableClass, _
        ByVal ModuleName As String _
        ) As Boolean
     
-    Dim Field As TableManager.CellClass
+    Dim Field As CellClass
     Dim Intermediate As Boolean: Intermediate = True
     Dim Check As Boolean
     Dim I As Long
@@ -20,7 +22,7 @@ Public Function ValidateForm( _
     Const RoutineName As String = Module_Name & "ValidateForm"
     On Error GoTo ErrorHandler
     
-    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
+    Debug.Assert InScope(ModuleList, ModuleName)
     
     For I = 0 To Tbl.CellCount - 1
         Set Field = Tbl.TableCells.Item(I, Module_Name)
@@ -70,6 +72,106 @@ ErrorHandler:
 
 End Function                                     ' ValidateForm
 
+Public Sub PopulateForm( _
+       ByVal Tbl As TableClass, _
+       ByVal ModuleName As String)
+
+    Const RoutineName As String = Module_Name & "PopulateForm"
+    On Error GoTo ErrorHandler
+
+    Debug.Assert InScope(ModuleList, ModuleName)
+
+    Dim Field As CellClass
+'    Dim DBRange As Range: Set DBRange = Tbl.DBRange
+    Dim DBRow As Long: DBRow = Tbl.DBRow
+    Dim DBCol As Long
+    Dim I As Long
+
+    For I = 0 To Tbl.CellCount - 1
+        Set Field = Tbl.TableCells.Item(I, Module_Name)
+        DBCol = Tbl.SelectedDBCol(Field.HeaderText)
+        If DBCol = 0 Then
+            Err.Raise 1, "FormClass.PopulateForm", "Fatal error. HeaderText not found."
+        End If
+
+'        Field.ControlValue = DBRange(DBRow, DBCol)
+        Field.ControlValue = Tbl.Headers(1, DBCol)
+        
+        Dim TableData As Variant
+        Set TableData = Tbl.GetData(DBRow, DBCol)
+        
+        Select Case Left$(Field.FormControl.Name, 3)
+        Case "lbl":                              ' Do nothing
+'        Case "val": Field.FormControl.Caption = DBRange(DBRow, DBCol)
+'        Case "fld": Field.FormControl.Text = DBRange(DBRow, DBCol)
+'        Case "cmb": Field.FormControl.Text = DBRange(DBRow, DBCol)
+'        Case "whl": Field.FormControl.Text = DBRange(DBRow, DBCol)
+'        Case "dat": Field.FormControl.Text = DBRange(DBRow, DBCol)
+        Case "val": Field.FormControl.Caption = Tbl.GetData(DBRow, DBCol)
+        Case "fld": Field.FormControl.Text = Tbl.GetData(DBRow, DBCol)
+        Case "cmb": Field.FormControl.Text = Tbl.GetData(DBRow, DBCol)
+        Case "whl": Field.FormControl.Text = Tbl.GetData(DBRow, DBCol)
+        Case "dat": Field.FormControl.Text = Tbl.GetData(DBRow, DBCol)
+        Case Else
+            MsgBox "This is an illegal field type: " & _
+                   Left$(Field.FormControl.Name, 3), _
+                   vbOKOnly Or vbExclamation, "Illegal Field Type"
+
+        End Select
+        
+    Next I
+    
+    TurnOffCellDescriptions Tbl, ModuleName
+    
+    '@Ignore LineLabelNotUsed
+Done:
+    Exit Sub
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
+
+End Sub                                          ' PopulateForm
+
+Public Sub ClearForm( _
+       ByVal Tbl As TableClass, _
+       ByVal ModuleName As String)
+
+    Const RoutineName As String = Module_Name & "ClearForm"
+    On Error GoTo ErrorHandler
+
+    Debug.Assert InScope(ModuleList, ModuleName)
+
+    Dim Field As CellClass
+    Dim I As Long
+
+    For I = 0 To Tbl.CellCount - 1
+        Set Field = Tbl.TableCells.Item(I, Module_Name)
+
+        Select Case Left$(Field.FormControl.Name, 3)
+        Case "lbl":                              ' Do nothing
+        Case "val": Field.FormControl.Caption = vbNullString
+        Case "fld": Field.FormControl.Text = vbNullString
+        Case "cmb": Field.FormControl.Text = vbNullString
+        Case "whl": Field.FormControl.Text = vbNullString
+        Case "dat": Field.FormControl.Text = vbNullString
+        Case Else
+            MsgBox _
+        "This is an illegal field type: " & Left$(Field.FormControl.Name, 3), _
+                                            vbOKOnly Or vbExclamation, "Illegal Field Type"
+
+        End Select
+        
+    Next I
+    
+    TurnOffCellDescriptions Tbl, ModuleName
+    
+    '@Ignore LineLabelNotUsed
+Done:
+    Exit Sub
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
+
+End Sub                                          ' ClearForm
+
 Private Function ValString(ByVal Val As Variant) As String
     Const RoutineName As String = Module_Name & "ValString"
     On Error GoTo ErrorHandler
@@ -112,7 +214,7 @@ Private Function CheckRanges( _
         ByVal Val2 As Variant, _
         ByVal FormVal As Variant, _
         ByVal TableVal As Variant, _
-        ByVal Field As TableManager.CellClass _
+        ByVal Field As CellClass _
         ) As Boolean
     
     ' Return True if value is validated
@@ -223,7 +325,7 @@ ErrorHandler:
 End Function                                     ' CheckRanges
 
 Private Function ValidateWholeNumber( _
-        ByVal Tbl As TableManager.TableClass, _
+        ByVal Tbl As TableClass, _
         ByVal Field As Variant _
         ) As Boolean
 
@@ -263,7 +365,7 @@ ErrorHandler:
 End Function                                     ' ValidateWholeNumber
 
 Private Function ValidateDecimal( _
-        ByVal Tbl As TableManager.TableClass, _
+        ByVal Tbl As TableClass, _
         ByVal Field As Variant _
         ) As Boolean
 
@@ -326,7 +428,7 @@ Private Function ValidateList( _
                    "Validation List Error"
         End If
     Else
-        If TableManager.InScope(Field.ValidationList, FormVal) Then
+        If InScope(Field.ValidationList, FormVal) Then
             ValidateList = True
         Else
             MsgBox "The value in " & _
@@ -347,7 +449,7 @@ ErrorHandler:
 End Function                                     ' ValidateList
 
 Private Function ValidateDate( _
-        ByVal Tbl As TableManager.TableClass, _
+        ByVal Tbl As TableClass, _
         ByVal Field As Variant _
         ) As Boolean
 
@@ -404,7 +506,7 @@ ErrorHandler:
 End Function                                     ' ValidateDate
 
 Private Function ValidateTime( _
-        ByVal Tbl As TableManager.TableClass, _
+        ByVal Tbl As TableClass, _
         ByVal Field As Variant _
         ) As Boolean
 
@@ -443,7 +545,7 @@ ErrorHandler:
 End Function                                     ' ValidateTime
 
 Private Function ValidateTextLength( _
-        ByVal Tbl As TableManager.TableClass, _
+        ByVal Tbl As TableClass, _
         ByVal Field As Variant _
         ) As Boolean
 
@@ -489,7 +591,7 @@ ErrorHandler:
 End Function                                     ' ValidateTextLength
 
 Private Function ValidateCustom( _
-        ByVal Tbl As TableManager.TableClass, _
+        ByVal Tbl As TableClass, _
         ByVal Field As Variant _
         ) As Boolean
 
@@ -520,169 +622,4 @@ ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
 End Function                                     ' ValidateList
-
-Public Sub PopulateForm( _
-       ByVal Tbl As TableManager.TableClass, _
-       ByVal ModuleName As String)
-
-    Const RoutineName As String = Module_Name & "PopulateForm"
-    On Error GoTo ErrorHandler
-
-    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
-
-    Dim Field As TableManager.CellClass
-    Dim DBRange As Range: Set DBRange = Tbl.DBRange
-    Dim DBRow As Long: DBRow = Tbl.DBRow
-    Dim DBCol As Long
-    Dim I As Long
-
-    For I = 0 To Tbl.CellCount - 1
-        Set Field = Tbl.TableCells.Item(I, Module_Name)
-        DBCol = Tbl.SelectedDBCol(Field.HeaderText)
-        If DBCol = 0 Then
-            Err.Raise 1, "FormClass.PopulateForm", "Fatal error. HeaderText not found."
-        End If
-
-        Field.ControlValue = DBRange(DBRow, DBCol)
-        
-        Select Case Left$(Field.FormControl.Name, 3)
-        Case "lbl":                              ' Do nothing
-        Case "val": Field.FormControl.Caption = DBRange(DBRow, DBCol)
-        Case "fld": Field.FormControl.Text = DBRange(DBRow, DBCol)
-        Case "cmb": Field.FormControl.Text = DBRange(DBRow, DBCol)
-        Case "whl": Field.FormControl.Text = DBRange(DBRow, DBCol)
-        Case "dat": Field.FormControl.Text = DBRange(DBRow, DBCol)
-        Case Else
-            MsgBox "This is an illegal field type: " & _
-                   Left$(Field.FormControl.Name, 3), _
-                   vbOKOnly Or vbExclamation, "Illegal Field Type"
-
-        End Select
-        
-    Next I
-    
-    TableManager.TurnOffCellDescriptions Tbl, ModuleName
-    
-    '@Ignore LineLabelNotUsed
-Done:
-    Exit Sub
-ErrorHandler:
-    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
-
-End Sub                                          ' PopulateForm
-
-Public Sub ClearForm( _
-       ByVal Tbl As TableManager.TableClass, _
-       ByVal ModuleName As String)
-
-    Const RoutineName As String = Module_Name & "ClearForm"
-    On Error GoTo ErrorHandler
-
-    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
-
-    Dim Field As TableManager.CellClass
-    Dim I As Long
-
-    For I = 0 To Tbl.CellCount - 1
-        Set Field = Tbl.TableCells.Item(I, Module_Name)
-
-        Select Case Left$(Field.FormControl.Name, 3)
-        Case "lbl":                              ' Do nothing
-        Case "val": Field.FormControl.Caption = vbNullString
-        Case "fld": Field.FormControl.Text = vbNullString
-        Case "cmb": Field.FormControl.Text = vbNullString
-        Case "whl": Field.FormControl.Text = vbNullString
-        Case "dat": Field.FormControl.Text = vbNullString
-        Case Else
-            MsgBox _
-        "This is an illegal field type: " & Left$(Field.FormControl.Name, 3), _
-                                            vbOKOnly Or vbExclamation, "Illegal Field Type"
-
-        End Select
-        
-    Next I
-    
-    TableManager.TurnOffCellDescriptions Tbl, ModuleName
-    
-    '@Ignore LineLabelNotUsed
-Done:
-    Exit Sub
-ErrorHandler:
-    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
-
-End Sub                                          ' ClearForm
-
-Public Function TextureFileExists() As Boolean
-    TextureFileExists = (Dir(GetMainWorkbook.Path & "\texture.jpg") <> vbNullString)
-End Function
-
-Public Function LogoFileExists() As Boolean
-    LogoFileExists = (Dir(GetMainWorkbook.Path & "\logo.jpg") <> vbNullString)
-End Function
-
-Public Sub Texture(ByRef Frm As Object)
-    Const RoutineName As String = Module_Name & "Texture"
-    On Error GoTo ErrorHandler
-    
-    If TextureFileExists Then
-        Set Frm.Picture = LoadPicture(GetMainWorkbook.Path & "\texture.jpg")
-    Else
-        Frm.BackColor = DarkestColorValue
-    End If
-    
-    '@Ignore LineLabelNotUsed
-Done:
-    Exit Sub
-ErrorHandler:
-    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
-End Sub
-
-Public Function Logo( _
-       ByRef Frm As Object) As control
-    
-    Const RoutineName As String = Module_Name & "Logo"
-    On Error GoTo ErrorHandler
-    
-    Dim LogoImage As control
-    Dim Pic As StdPicture
-    
-    If LogoFileExists Then
-        Set LogoImage = Frm.Controls.Add("Forms.Image.1")
-        Set Pic = LoadPicture(GetMainWorkbook.Path & "\logo.jpg")
-        Set LogoImage.Picture = Pic
-        With LogoImage
-            .PictureAlignment = fmPictureAlignmentTopLeft
-            .PictureSizeMode = fmPictureSizeModeZoom
-            .BorderStyle = fmBorderStyleNone
-            .BackStyle = fmBackStyleTransparent
-            
-            Dim PicHeightToWidth As Single
-            PicHeightToWidth = Pic.Height / Pic.Width
-            
-            Dim Factor As Single
-            Factor = Application.WorksheetFunction.Max(Pic.Height, Pic.Width) / 35
-            Factor = Application.WorksheetFunction.Min(Factor, 200)
-
-            If PicHeightToWidth > 1 Then
-                ' Height > Width
-                .Height = Factor
-                .Width = Factor / PicHeightToWidth
-            Else
-                ' Width > Height
-                .Width = Factor
-                .Height = Factor * PicHeightToWidth
-            End If
-        End With
-        Set Logo = LogoImage
-    Else
-        Set Logo = Nothing
-    End If
-    
-    '@Ignore LineLabelNotUsed
-Done:
-    Exit Function
-ErrorHandler:
-    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
-End Function
-
 

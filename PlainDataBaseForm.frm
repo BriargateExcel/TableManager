@@ -13,28 +13,30 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+'@Folder("TableManager.DataBase")
+
 Option Explicit
 
 Private Const Module_Name As String = "PlainDataBaseForm."
 
-Private ptableobj As TableManager.TableClass
+Private ptableobj As TableClass
 
-Public Sub SetTable(ByVal Tbl As TableManager.TableClass)
+Public Sub SetTable(ByVal Tbl As TableClass)
     Set ptableobj = Tbl
 End Sub
 
 Private Sub CopyButton_Click()
-    TableManager.OutputTable Module_Name
+    OutputTable GetMainWorkbook, Module_Name
     Me.Hide
 End Sub
 
 Private Sub FetchButton_Click()
-    TableManager.InputTable Module_Name
+    InputTable GetMainWorkbook, Module_Name
     Me.Hide
 End Sub
 
 Private Sub ChangeFileButton_Click()
-    TableManager.ChangeFile ptableobj, Module_Name
+    ChangeFile ptableobj, Module_Name
 End Sub
 
 Private Sub CancelButton_Click()
@@ -55,7 +57,7 @@ Private Sub OnCancel()
 End Sub
 
 Private Sub UserForm_Activate()
-    FileNameBox.Text = GetFullFileName(ActiveCellTableName)
+    FileNameBox.Text = GetFullFileName(GetMainWorkbook, ActiveCellTableName)
     CenterMe Me
 End Sub
 
