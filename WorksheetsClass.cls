@@ -29,8 +29,8 @@ Public Property Get Count() As Long: Count = TableCount(pAllSheets.Count): End P
 
 '@DefaultMember
 Public Property Get Item( _
-    ByVal vIndex As Variant, _
-    ByVal ModuleName As String) As WorksheetClass
+       ByVal vIndex As Variant, _
+       ByVal ModuleName As String) As WorksheetClass
     'Attribute Item.VB_UserMemId = 0
     
     Const RoutineName As String = Module_Name & "Get_Item"
@@ -61,8 +61,8 @@ ErrorHandler:
 End Property
 
 Public Sub Add( _
-    ByVal Sht As WorksheetClass, _
-    ByVal ModuleName As String)
+       ByVal Sht As WorksheetClass, _
+       ByVal ModuleName As String)
 
     Dim Evt As EventClass
     
@@ -89,8 +89,8 @@ ErrorHandler:
 End Sub                                          ' Add
 
 Public Sub Remove( _
-    ByVal vIndex As Variant, _
-    ByVal ModuleName As String)
+       ByVal vIndex As Variant, _
+       ByVal ModuleName As String)
 
     Const RoutineName As String = Module_Name & "Remove"
     Debug.Assert Initializing
@@ -113,4 +113,5 @@ ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
     
 End Sub                                          ' Remove
+
 

@@ -7,7 +7,7 @@ Private Const Module_Name As String = "ParameterRoutines."
 
 Public Function DarkestColorValue() As Long
     DarkestColorValue = FieldValue(GetMainWorkbook, _
-                                "ColorTable", _
+                                   "ColorTable", _
                                    "Color Name", _
                                    "Darkest Color", _
                                    "Decimal Color Value", _
@@ -24,7 +24,7 @@ Public Function LightestColorValue() As Long
 End Function
 
 Public Function FieldValue( _
-    ByVal Wkbk As Workbook, _
+       ByVal Wkbk As Workbook, _
        ByVal TableName As String, _
        ByVal SearchFieldName As String, _
        ByVal SearchFieldValue As String, _
@@ -67,7 +67,7 @@ Private Function FieldExistsInXLAM( _
 End Function
 
 Private Function FieldExistsOnWorksheet( _
-    ByVal Wkbk As Workbook, _
+        ByVal Wkbk As Workbook, _
         ByVal TableName As String, _
         ByVal FieldName As String _
         ) As Boolean
@@ -83,8 +83,8 @@ Private Function FieldExistsOnWorksheet( _
 End Function
 
 Private Function TableExistsOnWorksheet( _
-    ByVal TableName As String _
-    ) As Boolean
+        ByVal TableName As String _
+        ) As Boolean
     
     TableExistsOnWorksheet = False
     If ParameterSheetExists Then

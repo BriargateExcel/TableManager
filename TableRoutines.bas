@@ -21,13 +21,31 @@ Private Const ListOfTruefFalse As String = "True,False"
 
 Private Const ListOfYesNo As String = "Yes,No"
 
+Public Function GetTable(ByVal TableName As String) As TableClass
+    Set GetTable = pAllTbls.Item(TableName, Module_Name)
+End Function
+
+Public Function GetTableData(ByVal TableName As String) As Variant
+    Dim TempTable As TableClass
+    Set TempTable = New TableClass
+    Set TempTable = pAllTbls.Item(TableName, Module_Name)
+    GetTableData = TempTable.Body
+End Function
+
+Public Function GetTableHeaders(ByVal TableName As String) As Variant
+    Dim TempTable As TableClass
+    Set TempTable = New TableClass
+    Set TempTable = pAllTbls.Item(TableName, Module_Name)
+    GetTableHeaders = TempTable.Headers
+End Function
+
 Public Function GetCellValue( _
        ByVal TableName As String, _
        ByVal KeyColumnName As String, _
        ByVal KeyValue As String, _
        ByVal DataColumnName As String _
        ) As Variant
-' Used in ParameterRoutines
+    ' Used in ParameterRoutines
 
     Dim Tbl As TableClass
     Set Tbl = Table(TableName, Module_Name)
@@ -216,7 +234,7 @@ ErrorHandler:
 End Sub
 
 Public Sub BuildParameterTableOnWorksheet(ByVal Wkbk As Workbook)
-' Used in Main
+    ' Used in Main
 
     ' Assumes that all tables start in Row 1
     
@@ -352,7 +370,7 @@ Private Sub SetCommonValidationParameters( _
 End Sub
 
 Public Sub ExtendDataValidationThroughAllTables(ByVal Wkbk As Workbook)
-' Used in Main
+    ' Used in Main
 
     Const RoutineName As String = Module_Name & "ExtendDataValidationThroughAllTables"
     On Error GoTo ErrorHandler
@@ -390,10 +408,10 @@ ErrorHandler:
 End Sub
 
 Public Sub BuildTable( _
-        ByVal Wkbk As Workbook, _
+       ByVal Wkbk As Workbook, _
        ByVal TblObj As ListObject, _
        ByVal ModuleName As String)
-' Used in XLAM_Module, TableRoutines
+    ' Used in XLAM_Module, TableRoutines
        
     Const RoutineName As String = Module_Name & "BuildTable"
     On Error GoTo ErrorHandler
@@ -418,8 +436,8 @@ Public Sub BuildTable( _
             
         Set Frm.FormObj = Frm.BuildForm(Tbl, Module_Name)
         Set Tbl.Form = Frm
-'        Tbl.Form.Name = Frm.FormObj.Name
-'        Set Tbl.UserForms = Wkbk
+        '        Tbl.Form.Name = Frm.FormObj.Name
+        '        Set Tbl.UserForms = Wkbk
     End If
     
     '@Ignore LineLabelNotUsed
@@ -431,7 +449,7 @@ ErrorHandler:
 End Sub                                          ' BuildTable
 
 Public Function TableDataCollected() As Boolean
-' Used in Main
+    ' Used in Main
     On Error Resume Next
     TableDataCollected = (pAllTbls.Count <> 0)
     TableDataCollected = (Err.Number = 0)
@@ -537,8 +555,8 @@ End Sub                                          ' TurnOffCellDescriptions
 Public Sub PopulateTable( _
        ByVal Tbl As TableClass, _
        ByVal ModuleName As String)
-' Used in EventClass
-' Populate one row of the table with the data in the form
+    ' Used in EventClass
+    ' Populate one row of the table with the data in the form
 
     Const RoutineName As String = Module_Name & "PopulateTable"
     On Error GoTo ErrorHandler
@@ -590,7 +608,7 @@ Public Function Table( _
        ByVal TableName As String, _
        ByVal ModuleName As String _
        ) As TableClass
-' Used in TableRoutines, ParameterRoutines, EventClass
+    ' Used in TableRoutines, ParameterRoutines, EventClass
 
     Const RoutineName As String = Module_Name & "Table"
     On Error GoTo ErrorHandler
@@ -608,8 +626,8 @@ ErrorHandler:
 End Function                                     ' Table
 
 Private Sub TableAdd( _
-       ByVal Tbl As Variant, _
-       ByVal ModuleName As String)
+        ByVal Tbl As Variant, _
+        ByVal ModuleName As String)
 
     Const RoutineName As String = Module_Name & "TableAdd"
     On Error GoTo ErrorHandler
@@ -678,7 +696,7 @@ End Function                                     ' TableItem
 Public Sub TableRemove( _
        ByVal Val As Variant, _
        ByVal ModuleName As String)
-' Used in TableRoutines, WorksheetsClass
+    ' Used in TableRoutines, WorksheetsClass
 
     Const RoutineName As String = Module_Name & "TableRemove"
     On Error GoTo ErrorHandler
@@ -694,7 +712,7 @@ ErrorHandler:
 End Sub                                          ' TableRemove
 
 Public Sub TableSetNewClass(ByVal ModuleName As String)
-' Used in XLAM_Module
+    ' Used in XLAM_Module
 
     Const RoutineName As String = Module_Name & "TableSetNewClass"
     On Error GoTo ErrorHandler
@@ -710,7 +728,7 @@ ErrorHandler:
 End Sub                                          ' TableSetNewClass
 
 Public Sub TableSetNewDict(ByVal ModuleName As String)
-' Used in WorksheetsClass
+    ' Used in WorksheetsClass
 
     Const RoutineName As String = Module_Name & "TableSetNewDict"
     On Error GoTo ErrorHandler
@@ -726,7 +744,7 @@ ErrorHandler:
 End Sub                                          ' TableSetNewDict
 
 Public Sub TableSetNothing(ByVal ModuleName As String)
-' Used in WorksheetsClass
+    ' Used in WorksheetsClass
 
     Const RoutineName As String = Module_Name & "TableSetNothing"
     On Error GoTo ErrorHandler
@@ -742,10 +760,10 @@ ErrorHandler:
 End Sub                                          ' TableSetNothing
 
 Public Sub CopyToTable( _
-    ByVal Wkbk As Workbook, _
+       ByVal Wkbk As Workbook, _
        ByVal TableName As String, _
        ByVal Ary As Variant)
-' Used in CSVRoutines
+    ' Used in CSVRoutines
 
     Const RoutineName As String = Module_Name & "CopyToTable"
     On Error GoTo ErrorHandler

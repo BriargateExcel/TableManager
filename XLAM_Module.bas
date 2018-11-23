@@ -47,14 +47,14 @@ Public Function GetWorkBookPath(ByVal Wkbk As Workbook) As String
     GetWorkBookPath = Wkbk.Path
 End Function
 
-Public Sub SetUpWorkbook(ByVal Wkbk As Workbook)
+Public Sub InitializeWorkbookForTableManager(ByVal Wkbk As Workbook)
     
     Dim Sht As Worksheet
     Dim TblObj As ListObject
     Dim UserFrm As Object
     Dim WkSht As WorksheetClass
     
-    Const RoutineName As String = Module_Name & "SetUpWorkbook"
+    Const RoutineName As String = Module_Name & "InitializeWorkbookForTableManager"
     On Error GoTo ErrorHandler
     
     SetInitializing
@@ -70,16 +70,13 @@ Public Sub SetUpWorkbook(ByVal Wkbk As Workbook)
     End If
     
     ' Delete all the old UserForms
-'    If Wkbk.Name = ThisWorkbook.Name Then
-'        For Each UserFrm In Workbooks("Tablemanager.xlam").VBProject.VBComponents
-        For Each UserFrm In ThisWorkbook.VBProject.VBComponents
-            If UserFrm.Type = vbext_ct_MSForm And _
-               Left$(UserFrm.Name, 8) = "UserForm" _
-               Then
-                ThisWorkbook.VBProject.VBComponents.Remove UserFrm
-            End If
-        Next UserFrm
-'    End If
+    For Each UserFrm In ThisWorkbook.VBProject.VBComponents
+        If UserFrm.Type = vbext_ct_MSForm And _
+           Left$(UserFrm.Name, 8) = "UserForm" _
+           Then
+            ThisWorkbook.VBProject.VBComponents.Remove UserFrm
+        End If
+    Next UserFrm
     
     WorksheetSetNewClass Module_Name
     TableSetNewClass Module_Name
@@ -108,9 +105,9 @@ Done:
     Exit Sub
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
-'    DisplayError RoutineName
+    '    DisplayError RoutineName
 
-End Sub                                          ' AutoOpen
+End Sub                                          ' InitializeWorkbookForTableManager
 
 Public Function Initializing() As Boolean
     Initializing = Init

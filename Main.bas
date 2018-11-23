@@ -5,19 +5,6 @@ Option Explicit
 
 Private Const Module_Name As String = "Module1."
 
-Public Sub InitializeWorkbookForTableManager(ByVal Wkbk As Workbook)
-    SetUpWorkbook Wkbk
-End Sub
-
-Public Sub test()
-Dim Wkbk As Workbook
-
-    Workbooks.Open "C:\Users\Owner\Documents\Excel\Headcount\Calendars\LM.xlsx"
-
-    Set Wkbk = Workbooks("LM.xlsx")
-    SetUpWorkbook Wkbk
-End Sub
-
 Public Sub BuildDataDescriptionTable(ByVal Wkbk As Workbook)
     
     Const RoutineName As String = Module_Name & "BuildDataDescriptionTable"
@@ -38,7 +25,6 @@ ErrorHandler:
 
 End Sub
 
-
 Public Sub ExtendDataValidation(ByVal Wkbk As Workbook)
 
     Const RoutineName As String = Module_Name & "ExtendDataValidation"
@@ -58,3 +44,4 @@ ErrorHandler:
     DisplayError RoutineName
 
 End Sub
+

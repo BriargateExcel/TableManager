@@ -48,4 +48,3 @@ Public Property Let ChangeFileClicked(ByVal Clicked As Boolean)
     this.ChangeFileClicked = Clicked
 End Property
 
-

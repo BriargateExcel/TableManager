@@ -55,8 +55,8 @@ End Function                                     ' ActiveCellListobject
 'End Function
 
 Public Function CheckForVBAProjectAccessEnabled(ByVal Wkbk As Workbook) As Boolean
-' Make sure access to the VBProject is allowed
-    Dim VBP As Object ' as VBProject
+    ' Make sure access to the VBProject is allowed
+    Dim VBP As Object                            ' as VBProject
     
     CheckForVBAProjectAccessEnabled = True
     
@@ -65,11 +65,11 @@ Public Function CheckForVBAProjectAccessEnabled(ByVal Wkbk As Workbook) As Boole
         Set VBP = Wkbk.VBProject
         If Err.Number <> 0 Then
             MsgBox "Your security settings do not allow this procedure to run." _
-              & vbCrLf & vbCrLf & "To change your security setting:" _
-              & vbCrLf & vbCrLf & " 1. Select Tools - Macro - Security." & vbCrLf _
-              & " 2. Click the 'Trusted Sources' tab" & vbCrLf _
-              & " 3. Place a checkmark next to 'Trust access to Visual Basic Project.'", _
-              vbCritical
+                 & vbCrLf & vbCrLf & "To change your security setting:" _
+                 & vbCrLf & vbCrLf & " 1. Select Tools - Macro - Security." & vbCrLf _
+                 & " 2. Click the 'Trusted Sources' tab" & vbCrLf _
+                 & " 3. Place a checkmark next to 'Trust access to Visual Basic Project.'", _
+                   vbCritical
             CheckForVBAProjectAccessEnabled = False
             Exit Function
         End If
@@ -166,7 +166,7 @@ ErrorHandler:
 End Function                                     ' InScope
 
 Public Sub ShowAnyForm( _
-        ByVal Wkbk As Workbook, _
+       ByVal Wkbk As Workbook, _
        ByVal FormName As String, _
        Optional ByVal Modal As FormShowConstants = vbModal)
     
@@ -190,7 +190,7 @@ Public Sub ShowAnyForm( _
     ' add it to the VBA.UserForms object and then
     ' show it.
     ''''''''''''''''''''''''''''''''''''''''''''''''''''
-'    For Each Obj In Wkbk.VBProject.VBComponents
+    '    For Each Obj In Wkbk.VBProject.VBComponents
     For Each Obj In UserForms
         If StrComp(Obj.Name, FormName, vbTextCompare) = 0 Then
             '           ''''''''''''''''''''''''''''''''''''
@@ -201,9 +201,9 @@ Public Sub ShowAnyForm( _
             '           ' END DEBUGGING/ILLUSTRATION ONLY
             '           ''''''''''''''''''''''''''''''''''''
             Obj.Show Modal
-'            Dim Frm As MSForms.UserForm
-'            Set Frm = Obj
-'            Frm.Show Modal
+            '            Dim Frm As MSForms.UserForm
+            '            Set Frm = Obj
+            '            Frm.Show Modal
             Exit Sub
         End If
     Next Obj
@@ -220,8 +220,8 @@ Public Sub ShowAnyForm( _
         Set Obj = .Add(FormName)
         If Err.Number <> 0 Then
             GoTo ErrorHandler
-'            MsgBox "Err: " & CStr(Err.Number) & "   " & Err.Description
-'            Exit Sub
+            '            MsgBox "Err: " & CStr(Err.Number) & "   " & Err.Description
+            '            Exit Sub
         End If
         ''''''''''''''''''''''''''''''''''''
         ' START DEBUGGING/ILLUSTRATION ONLY
@@ -375,13 +375,13 @@ Public Function HasVal(ByVal Target As Range) As Boolean
     Const RoutineName As String = Module_Name & "HasVal"
     On Error GoTo ErrorHandler
     
-    Dim Vbl As Variant
+    Dim vbl As Variant
     
     On Error Resume Next
-    Vbl = Target.Validation.Type
+    vbl = Target.Validation.Type
     HasVal = (Err.Number = 0)
 
-'    @Ignore LineLabelNotUsed
+    '    @Ignore LineLabelNotUsed
 Done:
     Exit Function
 ErrorHandler:
@@ -482,4 +482,5 @@ Public Function IsArrayAllocated(ByVal Arr As Variant) As Boolean
                      LBound(Arr, 1) <= UBound(Arr, 1)
     On Error GoTo 0
 End Function
+
 

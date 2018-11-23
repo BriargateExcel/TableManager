@@ -114,7 +114,7 @@ Public Function BuildForm( _
     LogoTotalWidth = LogoWidth + 2 * StandardGap
     Dim pFormObjWidth As Long
     pFormObjWidth = Application.WorksheetFunction.Max( _
-                     FieldWidth, ButtonSetWidth, LogoTotalWidth) + ScrollBarWidth + 2 * StandardGap
+                    FieldWidth, ButtonSetWidth, LogoTotalWidth) + ScrollBarWidth + 2 * StandardGap
         
     Top = Top + ButtonHeight + StandardGap
     Dim pFormObjHeight As Long
@@ -790,21 +790,21 @@ Public Property Get Controls() As ControlsClass: Set Controls = pControls: End P
 
 Public Property Get Enabled() As Boolean: Enabled = pEnabled: End Property
 
-Public Property Let Enabled(ByVal Vbl As Boolean): pEnabled = Vbl: End Property
+Public Property Let Enabled(ByVal vbl As Boolean): pEnabled = vbl: End Property
 
 Public Property Get FormObj() As MSForms.UserForm: Set FormObj = pFormObj: End Property
 
-Public Property Set FormObj(ByVal Vbl As MSForms.UserForm): Set pFormObj = Vbl: End Property
+Public Property Set FormObj(ByVal vbl As MSForms.UserForm): Set pFormObj = vbl: End Property
 
 Public Property Get Name() As String: Name = pFormName: End Property
 
-Public Property Let Name(ByVal Vbl As String): pFormName = Vbl: End Property
+Public Property Let Name(ByVal vbl As String): pFormName = vbl: End Property
 
 Public Property Get Table() As TableClass: Set Table = pTable: End Property
 
 Public Property Get WorksheetName() As String: WorksheetName = pWorksheetName: End Property
 
-Public Property Set Picture(ByVal Vbl As StdPicture): Set pFormObj.Picture = Vbl: End Property
+Public Property Set Picture(ByVal vbl As StdPicture): Set pFormObj.Picture = vbl: End Property
 
 Private Sub Class_Initialize()
     Debug.Assert Initializing

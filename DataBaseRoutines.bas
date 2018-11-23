@@ -22,7 +22,7 @@ Public Function DataBaseFormName() As String
 End Function
 
 Public Sub BuildDataBaseForm( _
-    ByVal Wkbk As Workbook, _
+       ByVal Wkbk As Workbook, _
        ByVal Tbl As TableClass, _
        ByVal ModuleName As String)
 
@@ -125,7 +125,7 @@ Private Sub BuildLabel( _
 End Sub
 
 Private Sub BuildTextBox( _
-    ByVal Wkbk As Workbook, _
+        ByVal Wkbk As Workbook, _
         ByRef Ctl As MSForms.TextBox, _
         ByVal Frm As Object)
     

@@ -22,25 +22,25 @@ Private Sub Class_Initialize()
 End Sub                                          ' Class_Initialize
 
 Public Property Get Worksheet() As Worksheet
-' Only called from WorksheetsClass
+    ' Only called from WorksheetsClass
 
     Set Worksheet = pWorksheet
 End Property
 
 Public Property Set Worksheet(ByVal WS As Worksheet)
-' Only called from WorksheetsClass
+    ' Only called from WorksheetsClass
 
     Set pWorksheet = WS
 End Property
 
 Public Property Get WorksheetEvent() As Object
     Set WorksheetEvent = pWorksheetEvent
-' Only called from WorksheetsClass
+    ' Only called from WorksheetsClass
 
 End Property
 
 Public Property Set WorksheetEvent(ByVal WS As Worksheet)
-' Used in WorksheetsClass, XLAM_Module
+    ' Used in WorksheetsClass, XLAM_Module
 
     Set pWorksheetEvent = WS
 End Property

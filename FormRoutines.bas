@@ -76,7 +76,7 @@ Public Sub PopulateForm( _
        ByVal Tbl As TableClass, _
        ByVal ModuleName As String)
        
-' Populate the form with one row of data
+    ' Populate the form with one row of data
 
     Const RoutineName As String = Module_Name & "PopulateForm"
     On Error GoTo ErrorHandler
@@ -604,4 +604,5 @@ ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 
 End Function                                     ' ValidateList
+
 

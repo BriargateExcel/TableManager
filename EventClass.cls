@@ -39,17 +39,17 @@ Private pWkbk As Workbook
 
 Private LastEvent As String
 
-Public Property Set WorkbookEvent(ByVal Vbl As Workbook): Set pWkbk = Vbl: End Property
+Public Property Set WorkbookEvent(ByVal vbl As Workbook): Set pWkbk = vbl: End Property
 
-Public Property Set SheetEvent(ByVal Vbl As Worksheet): Set pSheetEvent = Vbl: End Property
+Public Property Set SheetEvent(ByVal vbl As Worksheet): Set pSheetEvent = vbl: End Property
 
-Public Property Set FormEvent(ByVal Vbl As MSForms.UserForm): Set pFormEvent = Vbl: End Property
+Public Property Set FormEvent(ByVal vbl As MSForms.UserForm): Set pFormEvent = vbl: End Property
 
-Public Property Set ButtonEvent(ByVal Vbl As MSForms.CommandButton): Set pButtonEvent = Vbl: End Property
+Public Property Set ButtonEvent(ByVal vbl As MSForms.CommandButton): Set pButtonEvent = vbl: End Property
 
-Public Property Set TextEvent(ByVal Vbl As MSForms.TextBox): Set pTextEvent = Vbl: End Property
+Public Property Set TextEvent(ByVal vbl As MSForms.TextBox): Set pTextEvent = vbl: End Property
 
-Public Property Set ComboEvent(ByVal Vbl As MSForms.ComboBox): Set pComboEvent = Vbl: End Property
+Public Property Set ComboEvent(ByVal vbl As MSForms.ComboBox): Set pComboEvent = vbl: End Property
 
 Public Property Set TableObj(ByVal Tbl As TableClass)
     Debug.Assert Initializing
@@ -204,7 +204,7 @@ Private Sub pSheetEvent_BeforeDoubleClick( _
     Set Tbl = New TableClass
     Set Tbl = TableItem(TableName, Module_Name)
     Set Tbl.ActiveTarget = Target
-    If Tbl Is Nothing Then  ' Means the table has no UserForm
+    If Tbl Is Nothing Then                       ' Means the table has no UserForm
         MsgBox "The user cannot edit this table", vbOKOnly Or vbCritical, "Table Not User-Editable"
         Exit Sub
     End If
@@ -398,6 +398,6 @@ ErrorHandler:
 End Sub                                          ' PaintButtons
 
 Public Property Get Name() As String: Name = pName: End Property
-Public Property Let Name(ByVal Vbl As String): pName = Vbl: End Property
+Public Property Let Name(ByVal vbl As String): pName = vbl: End Property
 
 

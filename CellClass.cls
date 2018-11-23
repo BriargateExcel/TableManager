@@ -58,9 +58,9 @@ Public Sub CollectCellData( _
        ByVal CellID As Range, _
        ByVal ModuleName As String)
 
-' CellID is a cell within the Tbl's HeaderRowRange
-' Purpose
-'   Collects all the type data for the column under CellID
+    ' CellID is a cell within the Tbl's HeaderRowRange
+    ' Purpose
+    '   Collects all the type data for the column under CellID
     
     Debug.Assert Initializing
 
@@ -94,7 +94,7 @@ Public Sub CollectCellData( _
     pLocked = DataCell.Locked
     pNumberFormat = DataCell.NumberFormat
     pWrap = DataCell.WrapText
-'    Set pDBRange = CellID.ListObject.DataBodyRange
+    '    Set pDBRange = CellID.ListObject.DataBodyRange
     
     If HasVal(DataCell) Then
         With DataCell.Validation
@@ -149,82 +149,83 @@ Public Property Get Wrap() As Boolean: Wrap = pWrap: End Property
 
 Public Property Get FormControl() As control: Set FormControl = pFormControl: End Property
 
-Public Property Set FormControl(ByVal Vbl As control): Set pFormControl = Vbl: End Property
+Public Property Set FormControl(ByVal vbl As control): Set pFormControl = vbl: End Property
 
 Public Property Get ControlValue() As String: ControlValue = pControlValue: End Property
 
-Public Property Let ControlValue(ByVal Vbl As String): pControlValue = Vbl: End Property
+Public Property Let ControlValue(ByVal vbl As String): pControlValue = vbl: End Property
 
-Public Sub LetCellValue(ByVal RowNum As Long, ByVal Vbl As Variant)
-    pDBRange(RowNum, pDBColNum) = Vbl
+Public Sub LetCellValue(ByVal RowNum As Long, ByVal vbl As Variant)
+    pDBRange(RowNum, pDBColNum) = vbl
 End Sub                                          ' LetCellValue
 
 Public Property Get Length() As Long: Length = Len(pHeaderText): End Property
 
 Public Property Get control() As control: Set control = pControl: End Property
 
-Public Property Set control(ByVal Vbl As control): Set pControl = Vbl: End Property
+Public Property Set control(ByVal vbl As control): Set pControl = vbl: End Property
 
 Public Property Get TableName() As String: TableName = pTableName: End Property
 
 ' Attributes for cells with validation
 Public Property Get CellType() As XlDVType: CellType = pCellValidationType: End Property
 
-Public Property Let CellType(ByVal Vbl As XlDVType): pCellValidationType = Vbl: End Property
+Public Property Let CellType(ByVal vbl As XlDVType): pCellValidationType = vbl: End Property
 
 Public Property Get Operator() As XlFormatConditionOperator: Operator = pOperator: End Property
 
-Public Property Let Operator(ByVal Vbl As XlFormatConditionOperator): pOperator = Vbl: End Property
+Public Property Let Operator(ByVal vbl As XlFormatConditionOperator): pOperator = vbl: End Property
 
 Public Property Get ValidAlertStyle() As XlDVAlertStyle: ValidAlertStyle = pValidAlertStyle: End Property
 
-Public Property Let ValidAlertStyle(ByVal Vbl As XlDVAlertStyle): pValidAlertStyle = Vbl: End Property
+Public Property Let ValidAlertStyle(ByVal vbl As XlDVAlertStyle): pValidAlertStyle = vbl: End Property
 
 Public Property Get ValidationFormula1() As String: ValidationFormula1 = pValidationFormula1: End Property
 
-Public Property Let ValidationFormula1(ByVal Vbl As String): pValidationFormula1 = Vbl: End Property
+Public Property Let ValidationFormula1(ByVal vbl As String): pValidationFormula1 = vbl: End Property
 
 Public Property Get ValidationFormula2() As String: ValidationFormula2 = pValidationFormula2: End Property
 
-Public Property Let ValidationFormula2(ByVal Vbl As String): pValidationFormula2 = Vbl: End Property
+Public Property Let ValidationFormula2(ByVal vbl As String): pValidationFormula2 = vbl: End Property
 
 Public Property Get IgnoreBlank() As Boolean: IgnoreBlank = pIgnoreBlank: End Property
 
-Public Property Let IgnoreBlank(ByVal Vbl As Boolean): pIgnoreBlank = Vbl: End Property
+Public Property Let IgnoreBlank(ByVal vbl As Boolean): pIgnoreBlank = vbl: End Property
 
 Public Property Get ValidationList() As Variant: ValidationList = pValidationList: End Property
 
-Public Property Let InCellDropDown(ByVal Vbl As Boolean): pInCellDropdown = Vbl: End Property
+Public Property Let InCellDropDown(ByVal vbl As Boolean): pInCellDropdown = vbl: End Property
 
 Public Property Get InCellDropDown() As Boolean: InCellDropDown = pInCellDropdown: End Property
 
-Public Property Let ValidationList(ByVal Vbl As Variant): pValidationList = Vbl: End Property
+Public Property Let ValidationList(ByVal vbl As Variant): pValidationList = vbl: End Property
 
 ' Attributes for cells with validation input messages
 Public Property Get ShowInput() As Boolean: ShowInput = pShowInput: End Property
 
-Public Property Let ShowInput(ByVal Vbl As Boolean): pShowInput = Vbl: End Property
+Public Property Let ShowInput(ByVal vbl As Boolean): pShowInput = vbl: End Property
 
 Public Property Get InputTitle() As String: InputTitle = pInputTitle: End Property
 
-Public Property Let InputTitle(ByVal Vbl As String): pInputTitle = Vbl: End Property
+Public Property Let InputTitle(ByVal vbl As String): pInputTitle = vbl: End Property
 
 Public Property Get InputMessage() As String: InputMessage = pInputMessage: End Property
 
-Public Property Let InputMessage(ByVal Vbl As String): pInputMessage = Vbl: End Property
+Public Property Let InputMessage(ByVal vbl As String): pInputMessage = vbl: End Property
 
 ' Attributes for cells with error messages
 Public Property Get ShowError() As Boolean: ShowError = pShowError: End Property
 
-Public Property Let ShowError(ByVal Vbl As Boolean): pShowError = Vbl: End Property
+Public Property Let ShowError(ByVal vbl As Boolean): pShowError = vbl: End Property
 
 Public Property Get ErrorTitle() As String: ErrorTitle = pErrorTitle: End Property
 
-Public Property Let ErrorTitle(ByVal Vbl As String): pErrorTitle = Vbl: End Property
+Public Property Let ErrorTitle(ByVal vbl As String): pErrorTitle = vbl: End Property
 
 Public Property Get ErrorMessage() As String: ErrorMessage = pErrorMessage: End Property
 
-Public Property Let ErrorMessage(ByVal Vbl As String): pErrorMessage = Vbl: End Property
+Public Property Let ErrorMessage(ByVal vbl As String): pErrorMessage = vbl: End Property
+
 
 
 

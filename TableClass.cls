@@ -65,24 +65,24 @@ Private Function ModuleList() As Variant
 End Function                                     ' ModuleList
 
 Public Property Get ActiveRow() As Long
-' Used in EventClass
+    ' Used in EventClass
     ActiveRow = Me.DBRow
 End Property
 
 Public Property Get ActiveTarget() As Range
-' Used in EventClass, TableClass
-Set ActiveTarget = pTarget
+    ' Used in EventClass, TableClass
+    Set ActiveTarget = pTarget
 End Property
 
 Public Property Set ActiveTarget(ByVal Target As Range)
-' Used in EventClass
+    ' Used in EventClass
 
     Target.Select
     Set pTarget = Target
 End Property
 
 Public Property Get DBRange() As Range
-' Used in FormRoutines, TableClass, TableRoutines, CalendarBuilder
+    ' Used in FormRoutines, TableClass, TableRoutines, CalendarBuilder
     Set DBRange = pWkSht.ListObjects(pTableName).DataBodyRange
 End Property
 
@@ -90,15 +90,15 @@ Public Property Get UserForms() As Workbook
     Set UserForms = pUserForms
 End Property
 
-Public Property Set UserForms(ByVal Vbl As Workbook)
-    Set pUserForms = Vbl
+Public Property Set UserForms(ByVal vbl As Workbook)
+    Set pUserForms = vbl
 End Property
 
 Public Property Get DBColRange( _
        ByVal Tbl As TableClass, _
        ByVal ColumnName As String _
        ) As Range
-' Used in TableRoutines, TableClass
+    ' Used in TableRoutines, TableClass
     
     Dim ColNum As Long
     ColNum = Tbl.DBColNumber(ColumnName)
@@ -110,7 +110,7 @@ Public Property Get DBColRange( _
 End Property
 
 Public Property Get DBColNumber(ByVal ColumnName As String) As Long
-' Used in TableRoutines, TableClass
+    ' Used in TableRoutines, TableClass
     
     On Error Resume Next
     DBColNumber = Application.WorksheetFunction.Match(ColumnName, Me.Table.HeaderRowRange, 0)
@@ -123,7 +123,7 @@ Public Property Get DBRowNumber( _
        ByVal Key As String _
        ) As Long
        
-' Used in TableRoutines, TableClass
+    ' Used in TableRoutines, TableClass
     
     Dim KeyRange As Range
     Set KeyRange = Me.DBColRange(Me, ColumnName)
@@ -146,7 +146,7 @@ Public Property Get MaxHeaderLength() As Single: MaxHeaderLength = pMaxHeader: E
 
 Public Property Get Name() As String: Name = pTableName: End Property
 
-Public Property Let Name(ByVal Vbl As String): pTableName = Vbl: End Property
+Public Property Let Name(ByVal vbl As String): pTableName = vbl: End Property
 
 Public Property Get NumColumns() As Long: NumColumns = pCells.Count: End Property
 
@@ -156,7 +156,7 @@ Public Property Get TableCells() As CellsClass: Set TableCells = pCells: End Pro
 
 Public Property Get Target() As Range: Set Target = pTarget: End Property
 
-Public Property Set Target(ByVal Vbl As Range): Set pTarget = Vbl: End Property
+Public Property Set Target(ByVal vbl As Range): Set pTarget = vbl: End Property
 
 Public Property Get WorksheetName() As String: WorksheetName = pWkShtName: End Property
 
@@ -170,13 +170,13 @@ Public Property Set Table(ByVal Tbl As ListObject): Set pTable = Tbl: End Proper
 
 '@Ignore FunctionReturnValueNotUsed
 Public Function CollectTableData( _
-    ByVal Wkbk As Workbook, _
+       ByVal Wkbk As Workbook, _
        ByVal Tbl As TableClass, _
        ByVal ModuleName As String _
        ) As Boolean
-' Used in TableClass
+    ' Used in TableClass
        
-' Call CollectCellData to collect all the type information for each column of the table
+    ' Call CollectCellData to collect all the type information for each column of the table
     
     Const RoutineName As String = Module_Name & "CollectTableData"
     On Error GoTo ErrorHandler
@@ -202,6 +202,15 @@ Public Function CollectTableData( _
         If Not OneCell.Locked Then pLocked = False
     Next Element
     
+    If pLocked Then
+        MsgBox "All cells in the " & _
+               pTableName & _
+               " table are locked. No form created.", _
+               vbOKOnly Or vbCritical, _
+               "All Cells Locked"
+
+    End If
+    
     LoadTable Wkbk, Tbl.Table, pDataTable
 
     CollectTableData = Not pLocked
@@ -217,7 +226,7 @@ End Function                                     ' CollectTableData
 Public Function FirstCell() As Range
     Const RoutineName As String = Module_Name & "FirstCell"
     On Error GoTo ErrorHandler
-' Used in EventClass, TableClass, TableRoutines
+    ' Used in EventClass, TableClass, TableRoutines
     
     On Error Resume Next
     Set FirstCell = pTable.DataBodyRange(1, 1)
@@ -234,7 +243,7 @@ ErrorHandler:
 End Function                                     ' FirstCell
 
 Public Function LastCell() As Range
-' Used in TableClass, EventClass
+    ' Used in TableClass, EventClass
     Const RoutineName As String = Module_Name & "LastCell"
     On Error GoTo ErrorHandler
     
@@ -310,17 +319,17 @@ Public Function SelectedDBCol(ByVal ColumnName As String) As Long
     ' Called in FormRoutines, TableRoutines
     
     Dim Rng As Range
-    Dim Vbl As Variant
+    Dim vbl As Variant
     
     Set Rng = Me.ActiveTarget.ListObject.HeaderRowRange
     On Error Resume Next
-    Vbl = Application.WorksheetFunction.Match(ColumnName, Rng, 0)
+    vbl = Application.WorksheetFunction.Match(ColumnName, Rng, 0)
     If Err.Number <> 0 Then
         SelectedDBCol = 0
         Exit Function
     End If
     On Error GoTo 0
-    SelectedDBCol = Vbl
+    SelectedDBCol = vbl
 End Function                                     ' SelectedDBCol
 
 Public Function ColumnRange(ByVal ColNum As Long) As Range
@@ -331,7 +340,7 @@ Public Function ColumnRange(ByVal ColNum As Long) As Range
 End Function
 
 Public Function CellCount() As Long: CellCount = pCells.Count: End Function
-    ' Called in FormClass, TableClass, FormRoutines, TableRoutines
+' Called in FormClass, TableClass, FormRoutines, TableRoutines
 
 Public Property Get Headers() As Variant
     Headers = pDataTable.Headers
@@ -339,6 +348,10 @@ End Property
 
 Public Property Get Body() As Variant
     Body = pDataTable.Body
+End Property
+
+Public Property Let Body(ByVal vbl As Variant)
+    pDataTable.Body = vbl
 End Property
 
 Public Function GetData( _
@@ -481,7 +494,7 @@ Public Function GetData( _
     Case "Error"
         GetData = ThisSearchTable.Valid
         Exit Function
-    Case "Empty" ' An empty filter means return all the rows
+    Case "Empty"                                 ' An empty filter means return all the rows
         ThisSearchTable = pDataTable
     Case Else
         ' ThisSearchTable is already set up in the ValidFilter call
@@ -498,14 +511,14 @@ Public Function GetData( _
                 GetData = "Error Can't have a specific row and a column filter"
             Else                                 ' 1 row, 1 column, empty filter; one cell
                 GetData = ThisSearchTable.Body(RowNumber, ColumnNumber)
-'                pDataTable.Valid = "Valid"
+                '                pDataTable.Valid = "Valid"
             End If                               ' ColumnFilter <> "Empty"
         Else                                     ' Empty ColumnDesignator
             If ColumnFilter <> "Empty" Then
                 ' The case where RowDesignator <> "Empty" and ColumnFilter <> "Empty" cannot exist
             Else                                 ' 1 row, unspecified column, empty filter; entire row
                 GetData = GetRow(ThisSearchTable, RowDesignator)
-'                pDataTable.Valid = "Valid"
+                '                pDataTable.Valid = "Valid"
             End If                               ' ColumnFilter <> "Empty"
         End If                                   ' ColumnDesignator <> "Empty"
     Else                                         ' Empty RowDesignator
@@ -516,14 +529,14 @@ Public Function GetData( _
                     GetData = "Empty"
                 Case 1                           ' unspecified row, 1 column, filter=1 row; one cell
                     GetData = GetColumn(ThisSearchTable, ColumnNumber)
-'                    pDataTable.Valid = "Valid"
+                    '                    pDataTable.Valid = "Valid"
                 Case Else                        ' unspecified row, 1 column, filter=multiple rows; one column
                     GetData = GetColumn(ThisSearchTable, ColumnNumber)
-'                    pDataTable.Valid = "Valid"
+                    '                    pDataTable.Valid = "Valid"
                 End Select
             Else                                 ' empty row, one column, empty filter; one entire column
                 GetData = GetColumn(ThisSearchTable, ColumnNumber)
-'                pDataTable.Valid = "Valid"
+                '                pDataTable.Valid = "Valid"
             End If                               ' ColumnFilter <> "Empty"
         Else                                     ' Empty ColumnDesignator
             If ColumnFilter <> "Empty" Then      ' Valid ColumnFilter
@@ -541,7 +554,7 @@ Public Function GetData( _
         End If                                   ' ColumnDesignator <> "Empty"
     End If                                       ' RowDesignator <> "Empty"
     
-'    pDataTable.Headers = ThisSearchTable.Headers
+    '    pDataTable.Headers = ThisSearchTable.Headers
 
     '@Ignore LineLabelNotUsed
 Done:
@@ -580,7 +593,7 @@ Private Function GetRow( _
     Dim Ary As Variant
     Dim NumberOfColumns As Long
     Dim LastError As Long
-    On Error Resume Next ' UBound(SearchTable.Headers, 2) raises an error if there's only one column
+    On Error Resume Next                         ' UBound(SearchTable.Headers, 2) raises an error if there's only one column
     NumberOfColumns = UBound(SearchTable.Headers, 2)
     LastError = Err.Number
     On Error GoTo ErrorHandler
@@ -715,11 +728,11 @@ Private Function ValidColumnDesignator( _
     Select Case VarType(ColumnDesignator)
     Case vbInteger, vbLong
         If ColumnDesignator >= LBound(SearchTable.Headers, 2) And _
-            ColumnDesignator <= UBound(SearchTable.Headers, 2) Then
-                ValidColumnDesignator.ColumnNumber = ColumnDesignator
-            Else
-                SearchTable.Valid = "Error Column Designator Out of Range"
-            End If
+           ColumnDesignator <= UBound(SearchTable.Headers, 2) Then
+            ValidColumnDesignator.ColumnNumber = ColumnDesignator
+        Else
+            SearchTable.Valid = "Error Column Designator Out of Range"
+        End If
     Case vbString
         If ColumnDesignator = "Empty" Then
             ' "Empty" is a valid entry; means return an entire row
@@ -1024,15 +1037,14 @@ ErrorHandler:
 
 End Function
 
-
 'Public Sub GoToHome()
 '    Set pTarget = Me.FirstCell
 'End Sub
 
 Private Sub LoadTable( _
-    ByVal Wkbk As Workbook, _
-       ByVal ExcelTable As ListObject, _
-       ByRef DataTable As TableType)
+        ByVal Wkbk As Workbook, _
+        ByVal ExcelTable As ListObject, _
+        ByRef DataTable As TableType)
        
     ' Called in TableClass
        
@@ -1066,4 +1078,5 @@ ErrorHandler:
     RaiseError Err.Number, Err.Source, Routine_Name, Err.Description
 
 End Sub
+
 
