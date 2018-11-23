@@ -578,11 +578,15 @@ Private Function GetRow( _
     End If
     
     Dim Ary As Variant
+    Dim NumberOfColumns As Long
+    Dim LastError As Long
     On Error Resume Next ' UBound(SearchTable.Headers, 2) raises an error if there's only one column
-    ReDim Ary(1, UBound(SearchTable.Headers, 2))
+    NumberOfColumns = UBound(SearchTable.Headers, 2)
+    LastError = Err.Number
     On Error GoTo ErrorHandler
     
-    If Err.Number = 0 Then
+    If LastError = 0 Then
+        ReDim Ary(1, NumberOfColumns)
         Dim I As Long
         For I = 1 To UBound(SearchTable.Headers, 2)
             Ary(1, I) = SearchTable.Body(RowNum, I)
