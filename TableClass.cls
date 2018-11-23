@@ -582,7 +582,7 @@ Private Function GetRow( _
     ReDim Ary(1, UBound(SearchTable.Headers, 2))
     On Error GoTo ErrorHandler
     
-    If Err.Number <> 0 Then
+    If Err.Number = 0 Then
         Dim I As Long
         For I = 1 To UBound(SearchTable.Headers, 2)
             Ary(1, I) = SearchTable.Body(RowNum, I)
@@ -774,7 +774,7 @@ Private Function ValidFilter( _
     
     If ColumnFilter = "Empty" Then
         ' "Empty" is a valid ColumnFilter value
-        ValidFilter.Valid = "Empty"
+        ValidFilter = SearchTable
     Else
         ' Parse the ColumnFilter
         Dim I As Long

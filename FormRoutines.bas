@@ -98,7 +98,7 @@ Public Sub PopulateForm( _
             Set Field = Tbl.TableCells.Item(I - 1, Module_Name)
             Field.ControlValue = Tbl.Headers(1, I)
             If Left$(Field.FormControl.Name, 3) <> "lbl" Then
-                
+                Field.FormControl.Text = TableRow(1, I)
             End If
         Next I
     End If
