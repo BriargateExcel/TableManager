@@ -7,6 +7,8 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+'@Folder("TableManager.Tables")
+
 Option Explicit
 
 Private Const Module_Name As String = "TablesClass."
@@ -14,7 +16,7 @@ Private Const Module_Name As String = "TablesClass."
 Private pAllTables As Scripting.Dictionary
 
 Private Sub Class_Initialize()
-    Debug.Assert TableManager.Initializing
+    Debug.Assert Initializing
 
     Set pAllTables = New Scripting.Dictionary
 End Sub                                          ' Class_Initialize
@@ -29,13 +31,13 @@ Public Property Get Count() As Long: Count = pAllTables.Count: End Property
 Public Property Get Item( _
        ByVal vIndex As Variant, _
        ByVal ModuleName As String _
-       ) As TableManager.TableClass
+       ) As TableClass
     'Attribute Item.VB_UserMemId = 0
 
     Const RoutineName As String = Module_Name & "Get Item"
     On Error Resume Next
     
-    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
+    Debug.Assert InScope(ModuleList, ModuleName)
         
     Set Item = pAllTables.Items()(vIndex)
     If Err.Number = 0 Then
@@ -65,15 +67,16 @@ ErrorHandler:
 End Property
 
 Public Sub Add( _
-       ByVal Tbl As TableManager.TableClass, _
+       ByVal Tbl As TableClass, _
        ByVal ModuleName As String)
+' Used in TableRoutines
     
-    Debug.Assert TableManager.Initializing
+    Debug.Assert Initializing
 
     Const RoutineName As String = Module_Name & "Add"
     On Error GoTo ErrorHandler
            
-    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
+    Debug.Assert InScope(ModuleList, ModuleName)
     
     If Tbl.Name <> vbNullString Then pAllTables.Add Tbl.Name, Tbl
         
@@ -89,11 +92,12 @@ Public Function Exists( _
        ByVal vIndex As Variant, _
        ByVal ModuleName As String _
        ) As Boolean
+' Used in TableRoutines
     
     Const RoutineName As String = Module_Name & "Exists"
     On Error GoTo ErrorHandler
     
-    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
+    Debug.Assert InScope(ModuleList, ModuleName)
     
     Exists = pAllTables.Exists(vIndex)
 
@@ -107,11 +111,12 @@ End Function                                     ' Exists
 Public Sub Remove( _
        ByVal vIndex As Variant, _
        ByVal ModuleName As String)
+' Used in TableRoutines
     
     Const RoutineName As String = Module_Name & "Remove"
     On Error GoTo ErrorHandler
    
-    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
+    Debug.Assert InScope(ModuleList, ModuleName)
     
     If CStr(vIndex) = "*" Then
         Set pAllTables = Nothing

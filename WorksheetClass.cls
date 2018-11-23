@@ -7,24 +7,49 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = True
+'@Folder("TableManager.Worksheets")
+
 Option Explicit
 
 Private pWorksheet As Worksheet
 Private pName As String
 
-Private pWorksheetEvent As TableManager.EventClass
+Private pWorksheetEvent As EventClass
 
 Private Sub Class_Initialize()
-    Debug.Assert TableManager.Initializing
-    Set pWorksheetEvent = New TableManager.EventClass
+    Debug.Assert Initializing
+    Set pWorksheetEvent = New EventClass
 End Sub                                          ' Class_Initialize
 
-Public Property Get Worksheet() As Worksheet: Set Worksheet = pWorksheet: End Property
-Public Property Set Worksheet(ByVal WS As Worksheet): Set pWorksheet = WS: End Property
+Public Property Get Worksheet() As Worksheet
+' Only called from WorksheetsClass
 
-Public Property Get WorksheetEvent() As Object: Set WorksheetEvent = pWorksheetEvent: End Property
-Public Property Set WorksheetEvent(ByVal WS As Worksheet): Set pWorksheetEvent = WS: End Property
+    Set Worksheet = pWorksheet
+End Property
 
-Public Property Get Name() As String: Name = pName: End Property
-Public Property Let Name(ByVal NM As String): pName = NM: End Property
+Public Property Set Worksheet(ByVal WS As Worksheet)
+' Only called from WorksheetsClass
+
+    Set pWorksheet = WS
+End Property
+
+Public Property Get WorksheetEvent() As Object
+    Set WorksheetEvent = pWorksheetEvent
+' Only called from WorksheetsClass
+
+End Property
+
+Public Property Set WorksheetEvent(ByVal WS As Worksheet)
+' Used in WorksheetsClass, XLAM_Module
+
+    Set pWorksheetEvent = WS
+End Property
+
+Public Property Get Name() As String
+    Name = pName
+End Property
+
+Public Property Let Name(ByVal NM As String)
+    pName = NM
+End Property
 

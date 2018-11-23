@@ -7,6 +7,8 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+'@Folder("TableManager.Forms")
+
 'Option Explicit
 '
 'Public Function ShowDialog(ByVal viewModel As Object) As Boolean

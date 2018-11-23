@@ -1,4 +1,8 @@
 Attribute VB_Name = "RibbonSetup"
+'@Folder("TableManager.Main")
+
+Option Explicit
+
 '**************************************************************
 'AUTHOR: Chris Newman, TheSpreadsheetGuru
 'Instructions on how to use this template can be found at:

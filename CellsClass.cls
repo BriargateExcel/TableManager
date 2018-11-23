@@ -7,6 +7,8 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+'@Folder("TableManager.Cells")
+
 Option Explicit
 
 Private Const Module_Name As String = "CellsClass."
@@ -36,7 +38,7 @@ Private Sub Class_Initialize()
 End Sub                                          ' Class_Initialize
 
 Private Function ModuleList() As Variant
-    ModuleList = Array("FormClass.", "FormRoutines.", "TableRoutines.", "CellsClass.", "TableClass.", "ParameterRoutines.")
+    ModuleList = Array("FormClass.", "FormRoutines.", "TableRoutines.", "CellsClass.", "TableClass.", "ParameterRoutines.", "EventClass.")
 End Function                                     ' ModuleList
 
 Public Property Get Count() As Long: Count = pAllCells.Count: End Property
@@ -46,13 +48,13 @@ Public Property Get Count() As Long: Count = pAllCells.Count: End Property
 Public Property Get Item( _
        ByVal vIndex As Variant, _
        ByVal ModuleName As String _
-       ) As TableManager.CellClass
+       ) As CellClass
     'Attribute Item.VB_UserMemId = 0
     
     Const RoutineName As String = Module_Name & "Get Item"
     On Error GoTo ErrorHandler
     
-    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
+    Debug.Assert InScope(ModuleList, ModuleName)
     
     On Error Resume Next
     Set Item = pAllCells.Items()(vIndex)
@@ -62,7 +64,7 @@ Public Property Get Item( _
     End If
     
     On Error Resume Next
-    Set Item = pAllCells(vIndex)
+    Set Item = pAllCells.Items(0)
     On Error GoTo 0
 
     Debug.Assert Not Item Is Nothing
@@ -76,15 +78,15 @@ ErrorHandler:
 End Property
 
 Public Sub Add( _
-       ByVal Cll As TableManager.CellClass, _
+       ByVal Cll As CellClass, _
        ByVal ModuleName As String)
 
-    Debug.Assert TableManager.Initializing
+    Debug.Assert Initializing
 
     Const RoutineName As String = Module_Name & "Add"
     On Error GoTo ErrorHandler
     
-    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
+    Debug.Assert InScope(ModuleList, ModuleName)
     
     On Error GoTo ErrorHandler
     
@@ -102,12 +104,12 @@ Public Sub Remove( _
        ByVal vIndex As Variant, _
        ByVal ModuleName As String)
     
-    Debug.Assert TableManager.Initializing
+    Debug.Assert Initializing
 
     Const RoutineName As String = Module_Name & "Remove"
     On Error GoTo ErrorHandler
     
-    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
+    Debug.Assert InScope(ModuleList, ModuleName)
     
     On Error GoTo ErrorHandler
    
@@ -135,7 +137,7 @@ Public Function Exists( _
     Const RoutineName As String = Module_Name & "Exists"
     On Error GoTo ErrorHandler
     
-    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
+    Debug.Assert InScope(ModuleList, ModuleName)
     
     Exists = pAllCells.Exists(vIndex)
 

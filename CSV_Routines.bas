@@ -1,4 +1,6 @@
 Attribute VB_Name = "CSV_Routines"
+'@Folder("TableManager.DataBase")
+
 Option Explicit
 
 Private Const Module_Name As String = "CSV_Routines."
@@ -7,7 +9,11 @@ Private Function ModuleList() As Variant
     ModuleList = Array("EventClass.", "XLAM_Module.", "PlainDataBaseForm.")
 End Function                                     ' ModuleList
 
-Public Function GetFullFileName(ByVal FileName As String) As String
+Public Function GetFullFileName( _
+    ByVal Wkbk As Workbook, _
+    ByVal Filename As String _
+    ) As String
+    
     Const RoutineName As String = Module_Name & "GetFullFileName"
     On Error GoTo ErrorHandler
     
@@ -16,7 +22,7 @@ Public Function GetFullFileName(ByVal FileName As String) As String
     
     Set FSO = New Scripting.FileSystemObject
 
-    FullFileName = FSO.BuildPath(GetWorkBookPath, FileName)
+    FullFileName = FSO.BuildPath(GetWorkBookPath(Wkbk), Filename)
     
     'check extension and correct if needed
     If InStr(FullFileName, ".csv") = 0 Then
@@ -36,7 +42,9 @@ ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Function
 
-Public Sub InputTable(ByVal ModuleName As String)
+Public Sub InputTable( _
+    ByVal Wkbk As Workbook, _
+    ByVal ModuleName As String)
     
     Const RoutineName As String = Module_Name & "InputTable"
     On Error GoTo ErrorHandler
@@ -44,7 +52,7 @@ Public Sub InputTable(ByVal ModuleName As String)
     Debug.Assert InScope(ModuleList, ModuleName)
     
     Dim FullFileName As String
-    FullFileName = GetFullFileName(ActiveCellTableName)
+    FullFileName = GetFullFileName(Wkbk, ActiveCellTableName)
     
     If Not FileExists(FullFileName) Then
         MsgBox FullFileName & " does not exist", vbOKOnly Or vbCritical, "File Does Not Exist"
@@ -53,9 +61,7 @@ Public Sub InputTable(ByVal ModuleName As String)
     Dim Database As I_DataBase
     Set Database = New CSVClass
     Dim Ary As Variant
-    With Database
-        Ary = .ArrayFromDataBase(FullFileName)
-    End With
+    Ary = Database.ArrayFromDataBase(FullFileName)
     
     ' Check that number column headers match else exit
     Dim HeaderRng As Range
@@ -92,7 +98,7 @@ Public Sub InputTable(ByVal ModuleName As String)
     ClearTable ActiveCellListObject
     
     ' copy the new contents
-    TableManager.CopyToTable ActiveCellListObject, Ary
+    CopyToTable Wkbk, ActiveCellListObject, Ary
     
     '@Ignore LineLabelNotUsed
 Done:
@@ -101,7 +107,9 @@ ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Sub
 
-Public Sub OutputTable(ByVal ModuleName As String)
+Public Sub OutputTable( _
+    ByVal Wkbk As Workbook, _
+    ByVal ModuleName As String)
     
     Const RoutineName As String = Module_Name & "OutputTable"
     On Error GoTo ErrorHandler
@@ -109,7 +117,7 @@ Public Sub OutputTable(ByVal ModuleName As String)
     Debug.Assert InScope(ModuleList, ModuleName)
     
     Dim FullFileName As String
-    FullFileName = GetFullFileName(ActiveCellTableName)
+    FullFileName = GetFullFileName(Wkbk, ActiveCellTableName)
     
     Dim Sht As Worksheet
     Set Sht = ActiveCellWorksheet
@@ -147,10 +155,10 @@ ErrorHandler:
 End Sub
 
 Public Sub ChangeFile( _
-       ByVal Tbl As TableManager.TableClass, _
+       ByVal Tbl As TableClass, _
        ByVal ModuleName As String)
     
-    Const RoutineName As String = Module_Name & "OutputTable"
+    Const RoutineName As String = Module_Name & "ChangeFile"
     On Error GoTo ErrorHandler
     
     Debug.Assert InScope(ModuleList, ModuleName)

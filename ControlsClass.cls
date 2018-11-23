@@ -7,6 +7,8 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+'@Folder("TableManager.Controls")
+
 Option Explicit
 
 Private Const Module_Name As String = "ControlsClass."
@@ -33,7 +35,7 @@ Public Property Get Item( _
     Const RoutineName As String = Module_Name & "Get Item"
     On Error GoTo ErrorHandler
     
-    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
+    Debug.Assert InScope(ModuleList, ModuleName)
     
     On Error Resume Next
     Set Item = pAllControls.Items()(vIndex)
@@ -65,7 +67,7 @@ Public Sub Add( _
     Const RoutineName As String = Module_Name & "Add"
     On Error GoTo ErrorHandler
     
-    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
+    Debug.Assert InScope(ModuleList, ModuleName)
     
     On Error GoTo ErrorHandler
     
@@ -86,9 +88,9 @@ Public Sub Remove( _
     Const RoutineName As String = Module_Name & "Remove"
     On Error GoTo ErrorHandler
    
-    Debug.Assert TableManager.Initializing
+    Debug.Assert Initializing
 
-    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
+    Debug.Assert InScope(ModuleList, ModuleName)
     
     If CStr(vIndex) = "*" Then
         Set pAllControls = Nothing

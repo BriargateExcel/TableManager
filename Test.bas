@@ -1,13 +1,15 @@
 Attribute VB_Name = "test"
+'@Folder("TableManager.Main")
+
 Option Explicit
 
 Const Module_Name As String = "test."
 
 Public Sub test()
-    UnifyDataValidation TableManager.TableItem("ReqTable", Module_Name)
+    UnifyDataValidation TableItem("ReqTable", Module_Name)
 End Sub
 
-Public Sub UnifyDataValidation(ByVal Tbl As TableManager.TableClass)
+Public Sub UnifyDataValidation(ByVal Tbl As TableClass)
     
     Const RoutineName As String = Module_Name & "UnifyDataValidation"
     On Error GoTo ErrorHandler

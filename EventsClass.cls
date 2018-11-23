@@ -7,6 +7,8 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+'@Folder("TableManager.Events")
+
 Option Explicit
 
 Private Const Module_Name As String = "EventsClass."
@@ -27,13 +29,13 @@ Public Property Get Count() As Long: Count = pAllEvents.Count: End Property
 Public Property Get Item( _
        ByVal vIndex As Variant, _
        ByVal ModuleName As String _
-       ) As TableManager.EventClass
+       ) As EventClass
     'Attribute Item.VB_UserMemId = 0
     
     Const RoutineName As String = Module_Name & "Get Item"
     On Error GoTo ErrorHandler
     
-    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
+    Debug.Assert InScope(ModuleList, ModuleName)
        
     On Error Resume Next
     Set Item = pAllEvents.Items()(vIndex)
@@ -57,13 +59,13 @@ ErrorHandler:
 End Property
 
 Public Sub Add( _
-       ByVal Evt As TableManager.EventClass, _
+       ByVal Evt As EventClass, _
        ByVal ModuleName As String)
 
     Const RoutineName As String = Module_Name & "Add"
     On Error GoTo ErrorHandler
            
-    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
+    Debug.Assert InScope(ModuleList, ModuleName)
     
     If Evt.Name <> vbNullString Then pAllEvents.Add Evt.Name, Evt
         
@@ -79,12 +81,12 @@ Public Sub Remove( _
        ByVal vIndex As Variant, _
        ByVal ModuleName As String)
 
-    Debug.Assert TableManager.Initializing
+    Debug.Assert Initializing
     
     Const RoutineName As String = Module_Name & "Remove"
     On Error GoTo ErrorHandler
    
-    Debug.Assert TableManager.InScope(ModuleList, ModuleName)
+    Debug.Assert InScope(ModuleList, ModuleName)
     
     If CStr(vIndex) = "*" Then
         Set pAllEvents = Nothing
