@@ -25,18 +25,16 @@ Public Function GetTable(ByVal TableName As String) As TableClass
     Set GetTable = pAllTbls.Item(TableName, Module_Name)
 End Function
 
+Public Function RemoveTable(ByVal TableName As String) As TableClass
+    pAllTbls.Remove TableName, Module_Name
+End Function
+
 Public Function GetTableData(ByVal TableName As String) As Variant
-    Dim TempTable As TableClass
-    Set TempTable = New TableClass
-    Set TempTable = pAllTbls.Item(TableName, Module_Name)
-    GetTableData = TempTable.Body
+    GetTableData = pAllTbls.Item(TableName, Module_Name).Body
 End Function
 
 Public Function GetTableHeaders(ByVal TableName As String) As Variant
-    Dim TempTable As TableClass
-    Set TempTable = New TableClass
-    Set TempTable = pAllTbls.Item(TableName, Module_Name)
-    GetTableHeaders = TempTable.Headers
+    GetTableHeaders = pAllTbls.Item(TableName, Module_Name).Headers
 End Function
 
 Public Function GetCellValue( _

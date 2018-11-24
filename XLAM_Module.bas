@@ -51,8 +51,8 @@ Public Function GetWorkBookPath(ByVal Wkbk As Workbook) As String
     GetWorkBookPath = Wkbk.Path
 End Function
 
-Public Function InitializeWorkbookForTableManager(ByVal Wkbk As Workbook, _
-    Optional ByVal KeepUserForms As Boolean = True) As WorkbookClass
+Public Sub InitializeWorkbookForTableManager(ByVal Wkbk As Workbook, _
+    Optional ByVal KeepUserForms As Boolean = True)
     
     Const RoutineName As String = Module_Name & "InitializeWorkbookForTableManager"
     On Error GoTo ErrorHandler
@@ -90,7 +90,6 @@ Public Function InitializeWorkbookForTableManager(ByVal Wkbk As Workbook, _
     Dim WkSht As WorksheetClass
     Dim Sht As Worksheet
     Dim TblObj As ListObject
-    Dim WorkbookObj As WorkbookClass
     For Each Sht In Wkbk.Worksheets
         Set WkSht = New WorksheetClass
         Set WkSht.Worksheet = Sht
@@ -110,12 +109,12 @@ Public Function InitializeWorkbookForTableManager(ByVal Wkbk As Workbook, _
 
     '@Ignore LineLabelNotUsed
 Done:
-    Exit Function
+    Exit Sub
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
     '    DisplayError RoutineName
 
-End Function                                     ' InitializeWorkbookForTableManager
+End Sub                                          ' InitializeWorkbookForTableManager
 
 Public Function Initializing() As Boolean
     Initializing = Init
