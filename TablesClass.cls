@@ -27,6 +27,10 @@ End Function                                     ' ModuleList
 
 Public Property Get Count() As Long: Count = pAllTables.Count: End Property
 
+Public Function Tables() As TablesClass
+    Set Tables = pAllTables
+End Function
+
 '@DefaultMember
 Public Property Get Item( _
        ByVal vIndex As Variant, _

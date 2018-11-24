@@ -390,7 +390,7 @@ Public Sub ExtendDataValidationThroughAllTables(ByVal Wkbk As Workbook)
     For I = 0 To pAllTbls.Count - 1
         Set Tbl = Table(I, Module_Name)
         ExtendDataValidationDownTable Tbl
-        Wkbk.Worksheets(Tbl.WorksheetName).Activate
+        Wkbk.Worksheets(Tbl.Worksheet.Name).Activate
         Tbl.FirstCell.Select
     Next I
     
@@ -411,7 +411,6 @@ Public Sub BuildTable( _
        ByVal Wkbk As Workbook, _
        ByVal TblObj As ListObject, _
        ByVal ModuleName As String)
-    ' Used in XLAM_Module, TableRoutines
        
     Const RoutineName As String = Module_Name & "BuildTable"
     On Error GoTo ErrorHandler
@@ -436,8 +435,6 @@ Public Sub BuildTable( _
             
         Set Frm.FormObj = Frm.BuildForm(Tbl, Module_Name)
         Set Tbl.Form = Frm
-        '        Tbl.Form.Name = Frm.FormObj.Name
-        '        Set Tbl.UserForms = Wkbk
     End If
     
     '@Ignore LineLabelNotUsed
@@ -770,7 +767,7 @@ Public Sub CopyToTable( _
     
     ' Copy the file to the table
     Dim Sht As Worksheet
-    Set Sht = Wkbk.Worksheets(Table(TableName, Module_Name).WorksheetName)
+    Set Sht = Wkbk.Worksheets(Table(TableName, Module_Name).Worksheet.Name)
     
     Dim UpperLeftRange As Range
     Dim Tbl As TableClass

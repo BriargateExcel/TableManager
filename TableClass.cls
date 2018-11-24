@@ -14,8 +14,8 @@ Option Explicit
 Private Const Module_Name As String = "TableClass."
 
 Private pTableName As String
-Private pWkShtName As String
 Private pWkSht As Worksheet
+Private pWorkbook As Workbook
 Private pUserForms As Collection
 Private pForm As FormClass
 Private pCells As CellsClass
@@ -158,7 +158,7 @@ Public Property Get Target() As Range: Set Target = pTarget: End Property
 
 Public Property Set Target(ByVal vbl As Range): Set pTarget = vbl: End Property
 
-Public Property Get WorksheetName() As String: WorksheetName = pWkShtName: End Property
+Public Property Get Workbook() As Workbook: Set Workbook = pWorkbook: End Property
 
 Public Property Get Worksheet() As Worksheet: Set Worksheet = pWkSht: End Property
 
@@ -186,8 +186,8 @@ Public Function CollectTableData( _
     Debug.Assert InScope(ModuleList, ModuleName)
     
     pTableName = Tbl.Table.Name
-    pWkShtName = Tbl.Table.Parent.Name
-    Set pWkSht = Wkbk.Worksheets(pWkShtName)
+    Set pWkSht = Wkbk.Worksheets(Tbl.Table.Parent.Name)
+    Set pWorkbook = Wkbk
     pLocked = True
     Dim Element As Range
     Dim OneCell As CellClass

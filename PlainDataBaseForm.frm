@@ -19,10 +19,10 @@ Option Explicit
 
 Private Const Module_Name As String = "PlainDataBaseForm."
 
-Private ptableobj As TableClass
+Private pTableObj As TableClass
 
 Public Sub SetTable(ByVal Tbl As TableClass)
-    Set ptableobj = Tbl
+    Set pTableObj = Tbl
 End Sub
 
 Private Sub CopyButton_Click()
@@ -36,7 +36,7 @@ Private Sub FetchButton_Click()
 End Sub
 
 Private Sub ChangeFileButton_Click()
-    ChangeFile ptableobj, Module_Name
+    ChangeFile pTableObj, Module_Name
 End Sub
 
 Private Sub CancelButton_Click()

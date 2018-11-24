@@ -27,6 +27,10 @@ Public Enum CustomError
 
 End Enum
 
+Public Function NewWorkbookClass() As WorkbookClass
+    Set NewWorkbookClass = New WorkbookClass
+End Function
+    
 Public Sub SetLastControl(ByVal Ctl As control)
     Set LastControl = Ctl
 End Sub
@@ -47,19 +51,13 @@ Public Function GetWorkBookPath(ByVal Wkbk As Workbook) As String
     GetWorkBookPath = Wkbk.Path
 End Function
 
-Public Sub InitializeWorkbookForTableManager(ByVal Wkbk As Workbook)
-    
-    Dim Sht As Worksheet
-    Dim TblObj As ListObject
-    Dim UserFrm As Object
-    Dim WkSht As WorksheetClass
+Public Function InitializeWorkbookForTableManager(ByVal Wkbk As Workbook, _
+    Optional ByVal KeepUserForms As Boolean = True) As WorkbookClass
     
     Const RoutineName As String = Module_Name & "InitializeWorkbookForTableManager"
     On Error GoTo ErrorHandler
     
     SetInitializing
-    
-    Set pMainWorkbook = Wkbk
     
     If Not CheckForVBAProjectAccessEnabled(Wkbk) Then
         MsgBox "You must set the project access for the " & _
@@ -69,20 +67,30 @@ Public Sub InitializeWorkbookForTableManager(ByVal Wkbk As Workbook)
         Stop
     End If
     
-    ' Delete all the old UserForms
-    For Each UserFrm In ThisWorkbook.VBProject.VBComponents
-        If UserFrm.Type = vbext_ct_MSForm And _
-           Left$(UserFrm.Name, 8) = "UserForm" _
-           Then
-            ThisWorkbook.VBProject.VBComponents.Remove UserFrm
-        End If
-    Next UserFrm
+    If Not KeepUserForms Then
+        Set pMainWorkbook = Wkbk
+        
+        ' Delete all the old UserForms from TableManager
+        ' I haven't found a way to create and add a new userform to another workbook
+        Dim UserFrm As Object
+        For Each UserFrm In ThisWorkbook.VBProject.VBComponents
+            If UserFrm.Type = vbext_ct_MSForm And _
+               Left$(UserFrm.Name, 8) = "UserForm" _
+               Then
+                ThisWorkbook.VBProject.VBComponents.Remove UserFrm
+            End If
+        Next UserFrm
+        WorksheetSetNewClass Module_Name
+        TableSetNewClass Module_Name
+    End If
     
-    WorksheetSetNewClass Module_Name
-    TableSetNewClass Module_Name
     
     ' Go through all the worksheets and all the tables on each worksheet
     ' collecting the data and building the form for each table
+    Dim WkSht As WorksheetClass
+    Dim Sht As Worksheet
+    Dim TblObj As ListObject
+    Dim WorkbookObj As WorkbookClass
     For Each Sht In Wkbk.Worksheets
         Set WkSht = New WorksheetClass
         Set WkSht.Worksheet = Sht
@@ -102,12 +110,12 @@ Public Sub InitializeWorkbookForTableManager(ByVal Wkbk As Workbook)
 
     '@Ignore LineLabelNotUsed
 Done:
-    Exit Sub
+    Exit Function
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
     '    DisplayError RoutineName
 
-End Sub                                          ' InitializeWorkbookForTableManager
+End Function                                     ' InitializeWorkbookForTableManager
 
 Public Function Initializing() As Boolean
     Initializing = Init

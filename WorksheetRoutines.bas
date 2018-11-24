@@ -14,7 +14,6 @@ End Function                                     ' ModuleList
 Public Sub WorksheetAdd( _
        ByVal WS As Variant, _
        ByVal ModuleName As String)
-    ' Called from XLAM_Module
     
     Const RoutineName As String = Module_Name & "WorksheetAdd"
     On Error GoTo ErrorHandler
@@ -30,7 +29,6 @@ ErrorHandler:
 End Sub                                          ' WorksheetAdd
 
 Public Sub WorksheetSetNewClass(ByVal ModuleName As String)
-    ' Called from XLAM_Module
     
     Const RoutineName As String = Module_Name & "WorksheetSetNewClass"
     On Error GoTo ErrorHandler
@@ -44,5 +42,7 @@ Done:
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Sub                                          ' WorksheetSetNewClass
+
+
 
 

@@ -15,7 +15,6 @@ Private Const Module_Name As String = "FormClass."
 
 Private pFormName As String
 Private pWorksheetName As String
-'Private pFormObj As VBComponent
 Private pFormObj As Object
 ' pFormObj:
 ' When declared as MSForms.UserForm, it has no height or width
@@ -57,7 +56,7 @@ Public Function BuildForm( _
     Debug.Assert InScope(ModuleList, ModuleName)
     
     Set pTable = Tbl
-    pWorksheetName = Tbl.WorksheetName
+    pWorksheetName = Tbl.Worksheet.Name
     
     ' Create the UserForm
     Dim TempForm As VBComponent
@@ -811,6 +810,6 @@ Private Sub Class_Initialize()
 
     Set pControls = New ControlsClass
     Set pEvents = New EventsClass
-End Sub                                          ' Class_Initialize
+End Sub                                          ' FormClass_Initialize
 
 

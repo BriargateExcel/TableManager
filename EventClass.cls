@@ -16,7 +16,7 @@ Private Const Module_Name As String = "EventClass."
 Private WithEvents pSheetEvent As Worksheet
 Attribute pSheetEvent.VB_VarHelpID = -1
 
-Private ptableobj As TableClass
+Private pTableObj As TableClass
 
 Private WithEvents pFormEvent As MSForms.UserForm
 Attribute pFormEvent.VB_VarHelpID = -1
@@ -39,22 +39,22 @@ Private pWkbk As Workbook
 
 Private LastEvent As String
 
-Public Property Set WorkbookEvent(ByVal vbl As Workbook): Set pWkbk = vbl: End Property
+Public Property Set WorkbookEvent(ByVal WB As Workbook): Set pWkbk = WB: End Property
 
-Public Property Set SheetEvent(ByVal vbl As Worksheet): Set pSheetEvent = vbl: End Property
+Public Property Set SheetEvent(ByVal WS As Worksheet): Set pSheetEvent = WS: End Property
 
-Public Property Set FormEvent(ByVal vbl As MSForms.UserForm): Set pFormEvent = vbl: End Property
+Public Property Set FormEvent(ByVal UF As MSForms.UserForm): Set pFormEvent = UF: End Property
 
-Public Property Set ButtonEvent(ByVal vbl As MSForms.CommandButton): Set pButtonEvent = vbl: End Property
+Public Property Set ButtonEvent(ByVal CB As MSForms.CommandButton): Set pButtonEvent = CB: End Property
 
-Public Property Set TextEvent(ByVal vbl As MSForms.TextBox): Set pTextEvent = vbl: End Property
+Public Property Set TextEvent(ByVal TB As MSForms.TextBox): Set pTextEvent = TB: End Property
 
-Public Property Set ComboEvent(ByVal vbl As MSForms.ComboBox): Set pComboEvent = vbl: End Property
+Public Property Set ComboEvent(ByVal CB As MSForms.ComboBox): Set pComboEvent = CB: End Property
 
 Public Property Set TableObj(ByVal Tbl As TableClass)
     Debug.Assert Initializing
 
-    Set ptableobj = Tbl
+    Set pTableObj = Tbl
 End Property
 
 Public Property Set FormObj(ByVal FO As Object)
@@ -110,7 +110,7 @@ Private Sub pButtonEvent_MouseMove( _
     Const RoutineName As String = Module_Name & "ButtonEvent_MouseMove"
     On Error GoTo ErrorHandler
     
-    If ptableobj Is Nothing Then
+    If pTableObj Is Nothing Then
         ' Processing the database form
         '        Debug.Print "db"
     Else
@@ -189,11 +189,9 @@ Private Sub pSheetEvent_BeforeDoubleClick( _
     Const RoutineName As String = Module_Name & "SheetEvent_BeforeDoubleClick"
     On Error GoTo ErrorHandler
     
-    Dim TableName As String
-    Dim Tbl As TableClass
-    
     Cancel = True
 
+    Dim TableName As String
     TableName = ActiveCellTableName
     If TableName = vbNullString Then
         MsgBox "Please select a cell in the body of the table", _
@@ -201,6 +199,7 @@ Private Sub pSheetEvent_BeforeDoubleClick( _
         Exit Sub
     End If
     
+    Dim Tbl As TableClass
     Set Tbl = New TableClass
     Set Tbl = TableItem(TableName, Module_Name)
     Set Tbl.ActiveTarget = Target
@@ -268,60 +267,60 @@ Private Sub pButtonEvent_Click()
     
     Case "Next Row"
         TurnOnCellDescriptions Tbl, Module_Name
-        ptableobj.NextRow
-        Set ptableobj.ActiveTarget = ptableobj.ActiveTarget.Offset(0, 0)
+        pTableObj.NextRow
+        Set pTableObj.ActiveTarget = pTableObj.ActiveTarget.Offset(0, 0)
         PopulateForm Tbl, Module_Name
     
     Case "Previous Row"
         TurnOnCellDescriptions Tbl, Module_Name
-        ptableobj.PreviousRow
-        Set ptableobj.ActiveTarget = ptableobj.ActiveTarget.Offset(0, 0)
+        pTableObj.PreviousRow
+        Set pTableObj.ActiveTarget = pTableObj.ActiveTarget.Offset(0, 0)
         PopulateForm Tbl, Module_Name
     
     Case "Insert Above"
-        ptableobj.ActiveTarget.ListObject.ListRows.Add ptableobj.ActiveRow
-        Set ptableobj.ActiveTarget = ptableobj.ActiveTarget.Offset(-1, 0)
+        pTableObj.ActiveTarget.ListObject.ListRows.Add pTableObj.ActiveRow
+        Set pTableObj.ActiveTarget = pTableObj.ActiveTarget.Offset(-1, 0)
         ClearForm Tbl, Module_Name
     
     Case "Insert Below"
-        ptableobj.ActiveTarget.ListObject.ListRows.Add ptableobj.ActiveRow + 1
-        Set ptableobj.ActiveTarget = ptableobj.ActiveTarget.Offset(1, 0)
+        pTableObj.ActiveTarget.ListObject.ListRows.Add pTableObj.ActiveRow + 1
+        Set pTableObj.ActiveTarget = pTableObj.ActiveTarget.Offset(1, 0)
         ClearForm Tbl, Module_Name
     
     Case "Insert at Top"
-        ptableobj.ActiveTarget.ListObject.ListRows.Add 1
-        Set ptableobj.ActiveTarget = ptableobj.FirstCell
+        pTableObj.ActiveTarget.ListObject.ListRows.Add 1
+        Set pTableObj.ActiveTarget = pTableObj.FirstCell
         ClearForm Tbl, Module_Name
     
     Case "Insert at Bottom"
-        ptableobj.ActiveTarget.ListObject.ListRows.Add
-        Set ptableobj.ActiveTarget = ptableobj.LastCell
+        pTableObj.ActiveTarget.ListObject.ListRows.Add
+        Set pTableObj.ActiveTarget = pTableObj.LastCell
         ClearForm Tbl, Module_Name
     
     Case "Delete This Row"
-        If ptableobj.LastRow = ptableobj.ActiveRow Then
-            Set Target = ptableobj.ActiveTarget.Offset(-1, 0)
+        If pTableObj.LastRow = pTableObj.ActiveRow Then
+            Set Target = pTableObj.ActiveTarget.Offset(-1, 0)
         Else
-            Set Target = ptableobj.ActiveTarget.Offset(1, 0)
+            Set Target = pTableObj.ActiveTarget.Offset(1, 0)
         End If
-        ptableobj.ActiveTarget.ListObject.ListRows(ptableobj.ActiveRow).Delete
-        Set ptableobj.ActiveTarget = Target
+        pTableObj.ActiveTarget.ListObject.ListRows(pTableObj.ActiveRow).Delete
+        Set pTableObj.ActiveTarget = Target
         PopulateForm Tbl, Module_Name
     
     Case "Go To Top"
-        TurnOnCellDescriptions ptableobj, Module_Name
-        Set ptableobj.ActiveTarget = ptableobj.FirstCell
-        TurnOffCellDescriptions ptableobj, Module_Name
+        TurnOnCellDescriptions pTableObj, Module_Name
+        Set pTableObj.ActiveTarget = pTableObj.FirstCell
+        TurnOffCellDescriptions pTableObj, Module_Name
         PopulateForm Tbl, Module_Name
     
     Case "Go To Bottom"
-        TurnOnCellDescriptions ptableobj, Module_Name
-        Set ptableobj.ActiveTarget = ptableobj.LastCell
-        TurnOffCellDescriptions ptableobj, Module_Name
+        TurnOnCellDescriptions pTableObj, Module_Name
+        Set pTableObj.ActiveTarget = pTableObj.LastCell
+        TurnOffCellDescriptions pTableObj, Module_Name
         PopulateForm Tbl, Module_Name
     
     Case Is = "Cancel"
-        TurnOnCellDescriptions ptableobj, Module_Name
+        TurnOnCellDescriptions pTableObj, Module_Name
         pFormObj.Hide
         Exit Sub
     
@@ -335,7 +334,7 @@ Private Sub pButtonEvent_Click()
         Exit Sub
     
     Case Is = "Change File"
-        ChangeFile ptableobj, Module_Name
+        ChangeFile pTableObj, Module_Name
         Exit Sub
     
     Case Is = "Cancel File Processing"
@@ -378,11 +377,11 @@ Private Sub PaintButtons()
             EnableButton Ctl, Module_Name
             LowLightControl Ctl, Module_Name
                 
-            If Ctl.Caption = "Previous Row" And ptableobj.ActiveRow = 1 Then
+            If Ctl.Caption = "Previous Row" And pTableObj.ActiveRow = 1 Then
                 DisableButton Ctl, Module_Name
             End If
                 
-            If Ctl.Caption = "Next Row" And ptableobj.ActiveRow = ptableobj.LastRow Then
+            If Ctl.Caption = "Next Row" And pTableObj.ActiveRow = pTableObj.LastRow Then
                 DisableButton Ctl, Module_Name
             End If
                 

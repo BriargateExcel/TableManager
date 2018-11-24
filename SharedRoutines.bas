@@ -190,20 +190,10 @@ Public Sub ShowAnyForm( _
     ' add it to the VBA.UserForms object and then
     ' show it.
     ''''''''''''''''''''''''''''''''''''''''''''''''''''
-    '    For Each Obj In Wkbk.VBProject.VBComponents
+    
     For Each Obj In UserForms
         If StrComp(Obj.Name, FormName, vbTextCompare) = 0 Then
-            '           ''''''''''''''''''''''''''''''''''''
-            '           ' START DEBUGGING/ILLUSTRATION ONLY
-            '           ''''''''''''''''''''''''''''''''''''
-            '           Obj.Label1.Caption = "Form Already Loaded"
-            '           ''''''''''''''''''''''''''''''''''''
-            '           ' END DEBUGGING/ILLUSTRATION ONLY
-            '           ''''''''''''''''''''''''''''''''''''
             Obj.Show Modal
-            '            Dim Frm As MSForms.UserForm
-            '            Set Frm = Obj
-            '            Frm.Show Modal
             Exit Sub
         End If
     Next Obj
@@ -220,16 +210,8 @@ Public Sub ShowAnyForm( _
         Set Obj = .Add(FormName)
         If Err.Number <> 0 Then
             GoTo ErrorHandler
-            '            MsgBox "Err: " & CStr(Err.Number) & "   " & Err.Description
-            '            Exit Sub
         End If
-        ''''''''''''''''''''''''''''''''''''
-        ' START DEBUGGING/ILLUSTRATION ONLY
-        ''''''''''''''''''''''''''''''''''''
         Obj.Label1.Caption = "Form Loaded By ShowAnyForm"
-        ''''''''''''''''''''''''''''''''''''
-        ' END DEBUGGING/ILLUSTRATION ONLY
-        ''''''''''''''''''''''''''''''''''''
         Obj.Show Modal
     End With
     
