@@ -30,7 +30,7 @@ End Enum
 Public Function NewWorkbookClass() As WorkbookClass
     Set NewWorkbookClass = New WorkbookClass
 End Function
-    
+
 Public Sub SetLastControl(ByVal Ctl As control)
     Set LastControl = Ctl
 End Sub
@@ -52,7 +52,7 @@ Public Function GetWorkBookPath(ByVal Wkbk As Workbook) As String
 End Function
 
 Public Sub InitializeWorkbookForTableManager(ByVal Wkbk As Workbook, _
-    Optional ByVal KeepUserForms As Boolean = True)
+                                             Optional ByVal KeepUserForms As Boolean = True)
     
     Const RoutineName As String = Module_Name & "InitializeWorkbookForTableManager"
     On Error GoTo ErrorHandler

@@ -14,7 +14,7 @@ Option Explicit
 Private Ary As Variant
 
 Public Sub SetArray( _
-       SearchTable As TableClass, _
+       ByVal SearchTable As TableClass, _
        ByVal RowNum As Long)
     
     ' Assumes all arrays start at 1

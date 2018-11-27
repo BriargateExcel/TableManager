@@ -86,10 +86,10 @@ Public Sub InputTable( _
     For I = 1 To NumFileColumns
         If HeaderRng(I) <> Ary(1, I) Then
             MsgBox "Column " & I & " is called " & HeaderRng(I) & _
-                   " in the table and called " & _
-                   Ary(1, I) & " in the file", _
-                   vbOKOnly Or vbCritical, _
-                   "Column Names Do Not Match"
+                                                                " in the table and called " & _
+                                                                Ary(1, I) & " in the file", _
+                                                                vbOKOnly Or vbCritical, _
+                                                                "Column Names Do Not Match"
             Exit Sub
         End If
     Next I
@@ -154,9 +154,7 @@ ErrorHandler:
 
 End Sub
 
-Public Sub ChangeFile( _
-       ByVal Tbl As TableClass, _
-       ByVal ModuleName As String)
+Public Sub ChangeFile(ByVal ModuleName As String)
     
     Const RoutineName As String = Module_Name & "ChangeFile"
     On Error GoTo ErrorHandler

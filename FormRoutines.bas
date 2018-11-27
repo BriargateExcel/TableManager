@@ -138,7 +138,7 @@ Public Sub ClearForm( _
         Case Else
             MsgBox _
         "This is an illegal field type: " & Left$(Field.FormControl.Name, 3), _
-                                            vbOKOnly Or vbExclamation, "Illegal Field Type"
+        vbOKOnly Or vbExclamation, "Illegal Field Type"
 
         End Select
         

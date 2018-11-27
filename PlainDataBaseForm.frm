@@ -36,7 +36,7 @@ Private Sub FetchButton_Click()
 End Sub
 
 Private Sub ChangeFileButton_Click()
-    ChangeFile pTableObj, Module_Name
+    ChangeFile Module_Name
 End Sub
 
 Private Sub CancelButton_Click()

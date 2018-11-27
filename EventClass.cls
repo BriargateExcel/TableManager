@@ -334,7 +334,7 @@ Private Sub pButtonEvent_Click()
         Exit Sub
     
     Case Is = "Change File"
-        ChangeFile pTableObj, Module_Name
+        ChangeFile Module_Name
         Exit Sub
     
     Case Is = "Cancel File Processing"

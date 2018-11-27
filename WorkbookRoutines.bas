@@ -11,8 +11,7 @@ Private Function ModuleList() As Variant
     ModuleList = Array("XLAM_Module.", "TableRoutines.")
 End Function                                     ' ModuleList
 
-Public Sub AddTableToWorkbook(ByVal Wkbk As WorkbookClass, _
-    ByVal Tbl As TableClass)
+Public Sub AddTableToWorkbook(ByVal Wkbk As WorkbookClass)
     pAllBooks.Add Wkbk, Module_Name
 End Sub
 
@@ -54,7 +53,5 @@ Done:
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Sub                                          ' WorkbookSetNewClass
-
-
 
 

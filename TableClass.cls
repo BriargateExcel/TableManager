@@ -230,6 +230,7 @@ Public Function FirstCell() As Range
     
     On Error Resume Next
     Set FirstCell = pTable.DataBodyRange(1, 1)
+    On Error GoTo 0
     If Err.Number = 91 Then
         Set FirstCell = pTable.HeaderRowRange(2, 1)
     End If
@@ -471,9 +472,7 @@ Public Function GetData( _
     End Select
     
     ' Verify that ColumnDesignator is valid
-    Dim ColumnName As String
     Dim ColumnNumber As Long
-    Dim ColumnCount As Long
     Dim TempColumnDesignator As ColumnDesignatorType
     TempColumnDesignator = ValidColumnDesignator(pDataTable, ColumnDesignator)
     Select Case Left$(TempColumnDesignator.ColumnName, 5)
@@ -728,7 +727,7 @@ Private Function ValidColumnDesignator( _
     Select Case VarType(ColumnDesignator)
     Case vbInteger, vbLong
         If ColumnDesignator >= LBound(SearchTable.Headers, 2) And _
-           ColumnDesignator <= UBound(SearchTable.Headers, 2) Then
+                                                              ColumnDesignator <= UBound(SearchTable.Headers, 2) Then
             ValidColumnDesignator.ColumnNumber = ColumnDesignator
         Else
             SearchTable.Valid = "Error Column Designator Out of Range"

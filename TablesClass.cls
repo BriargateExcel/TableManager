@@ -55,8 +55,8 @@ Public Property Get Item( _
     Set Item = TempTable
     If Err.Number <> 0 Then
         MsgBox "The Form for " & CStr(vIndex) & "does not exist. Rebuild the Forms.", _
-               vbOKOnly Or vbExclamation, _
-               "Form Does Not Exist"
+                                              vbOKOnly Or vbExclamation, _
+                                              "Form Does Not Exist"
         Set Item = Nothing
         Exit Property
     End If

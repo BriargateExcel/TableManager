@@ -78,6 +78,8 @@ Private Function FieldExistsOnWorksheet( _
         
         On Error Resume Next
         FieldExistsOnWorksheet = (Application.WorksheetFunction.Match(FieldName, Tbl.HeaderRowRange, 0) <> 0)
+        On Error GoTo 0
+        
         FieldExistsOnWorksheet = (Err.Number = 0)
     End If
 End Function

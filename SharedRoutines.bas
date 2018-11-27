@@ -63,6 +63,7 @@ Public Function CheckForVBAProjectAccessEnabled(ByVal Wkbk As Workbook) As Boole
     If Val(Application.Version) >= 10 Then
         On Error Resume Next
         Set VBP = Wkbk.VBProject
+        On Error GoTo 0
         If Err.Number <> 0 Then
             MsgBox "Your security settings do not allow this procedure to run." _
                  & vbCrLf & vbCrLf & "To change your security setting:" _
@@ -145,7 +146,7 @@ Public Function InScope( _
                         ModuleName, _
                         True, _
                         CompareMethod.BinaryCompare) _
-                 ) > -1)
+        ) > -1)
         Exit Function
     End If
 
@@ -155,7 +156,7 @@ Public Function InScope( _
                     ModuleName, _
                     True, _
                     CompareMethod.BinaryCompare) _
-             ) > -1)
+        ) > -1)
 
     '@Ignore LineLabelNotUsed
 Done:
@@ -208,6 +209,7 @@ Public Sub ShowAnyForm( _
         On Error Resume Next
         Err.Clear
         Set Obj = .Add(FormName)
+        On Error GoTo 0
         If Err.Number <> 0 Then
             GoTo ErrorHandler
         End If
@@ -361,9 +363,10 @@ Public Function HasVal(ByVal Target As Range) As Boolean
     
     On Error Resume Next
     vbl = Target.Validation.Type
+    On Error GoTo 0
     HasVal = (Err.Number = 0)
 
-    '    @Ignore LineLabelNotUsed
+    '@Ignore LineLabelNotUsed
 Done:
     Exit Function
 ErrorHandler:
@@ -407,6 +410,7 @@ Public Function Contains( _
     On Error Resume Next
     
     Set Obj = Coll(NamePotentiallyInCollection)
+    On Error GoTo 0
     Contains = (Err.Number = 0)
 End Function                                     ' Contains
 

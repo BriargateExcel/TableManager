@@ -44,5 +44,3 @@ ErrorHandler:
 End Sub                                          ' WorksheetSetNewClass
 
 
-
-

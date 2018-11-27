@@ -26,8 +26,6 @@ Private pNumberFormat As Variant
 Private pWrap As Boolean
 Private pFormControl As control
 Private pControlValue As String
-Private pDBColNum As Long
-Private pDBRange As Range
 
 ' Attributes for cells with validation
 Private pCellValidationType As XlDVType
@@ -83,6 +81,8 @@ Public Sub CollectCellData( _
     Set DataCell = CellID.Offset(1, 0)
     
     pColumnWidth = CellID.ColumnWidth
+    
+    Dim pDBColNum As Long
     On Error Resume Next
     pDBColNum = Application.WorksheetFunction.Match(CellID, CellID.ListObject.HeaderRowRange, 0)
     If Err.Number <> 0 Then
@@ -94,7 +94,6 @@ Public Sub CollectCellData( _
     pLocked = DataCell.Locked
     pNumberFormat = DataCell.NumberFormat
     pWrap = DataCell.WrapText
-    '    Set pDBRange = CellID.ListObject.DataBodyRange
     
     If HasVal(DataCell) Then
         With DataCell.Validation
@@ -120,9 +119,9 @@ Public Sub CollectCellData( _
         If pValidationFormula1 <> vbNullString Then
             pValidationList = DataCell.Parent.Evaluate(pValidationFormula1)
             If IsError(pValidationList) Then _
-               pValidationList = Evaluate(pValidationFormula1)
+                                        pValidationList = Evaluate(pValidationFormula1)
             If IsError(pValidationList) Then _
-               pValidationList = Split(pValidationFormula1, ",")
+                                        pValidationList = Split(pValidationFormula1, ",")
         End If
     End If
     
@@ -154,10 +153,6 @@ Public Property Set FormControl(ByVal vbl As control): Set pFormControl = vbl: E
 Public Property Get ControlValue() As String: ControlValue = pControlValue: End Property
 
 Public Property Let ControlValue(ByVal vbl As String): pControlValue = vbl: End Property
-
-Public Sub LetCellValue(ByVal RowNum As Long, ByVal vbl As Variant)
-    pDBRange(RowNum, pDBColNum) = vbl
-End Sub                                          ' LetCellValue
 
 Public Property Get Length() As Long: Length = Len(pHeaderText): End Property
 
@@ -225,6 +220,7 @@ Public Property Let ErrorTitle(ByVal vbl As String): pErrorTitle = vbl: End Prop
 Public Property Get ErrorMessage() As String: ErrorMessage = pErrorMessage: End Property
 
 Public Property Let ErrorMessage(ByVal vbl As String): pErrorMessage = vbl: End Property
+
 
 
 

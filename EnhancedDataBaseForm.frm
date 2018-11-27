@@ -17,7 +17,7 @@ Attribute VB_Exposed = False
 
 
 '
-'Option Explicit
+Option Explicit
 '
 'Implements I_CopyFetchFormView
 '

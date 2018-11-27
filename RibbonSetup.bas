@@ -251,8 +251,8 @@ End Sub
 Sub GetSize(control As IRibbonControl, ByRef Size)
     'PURPOSE: Determine if the button size is large or small
 
-    Const Large As Integer = 1
-    Const Small As Integer = 0
+    Const Large As Long = 1
+    Const Small As Long = 0
 
     Select Case control.ID
     

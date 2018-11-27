@@ -19,7 +19,6 @@ Private pFormObj As Object
 ' pFormObj:
 ' When declared as MSForms.UserForm, it has no height or width
 ' When declared as an object, it has both height and width
-Private pUserForm As MSForms.UserForm
 Private pTable As TableClass
 Private pControls As ControlsClass
 Private pEvents As EventsClass
@@ -136,11 +135,11 @@ Public Function BuildForm( _
     
     For Each Ctl In pFormObj.Controls
         If Left$(Ctl.Name, 3) = "lbl" Or _
-           Left$(Ctl.Name, 3) = "fld" Or _
-           Left$(Ctl.Name, 3) = "dat" Or _
-           Left$(Ctl.Name, 3) = "cmb" Or _
-           Left$(Ctl.Name, 3) = "whl" Or _
-           Left$(Ctl.Name, 3) = "val" Then
+                                Left$(Ctl.Name, 3) = "fld" Or _
+                                Left$(Ctl.Name, 3) = "dat" Or _
+                                Left$(Ctl.Name, 3) = "cmb" Or _
+                                Left$(Ctl.Name, 3) = "whl" Or _
+                                Left$(Ctl.Name, 3) = "val" Then
             Ctl.Left = Ctl.Left + LeftFieldMargin
         End If
         

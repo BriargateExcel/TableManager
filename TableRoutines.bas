@@ -25,9 +25,9 @@ Public Function GetTable(ByVal TableName As String) As TableClass
     Set GetTable = pAllTbls.Item(TableName, Module_Name)
 End Function
 
-Public Function RemoveTable(ByVal TableName As String) As TableClass
+Public Sub RemoveTable(ByVal TableName As String)
     pAllTbls.Remove TableName, Module_Name
-End Function
+End Sub
 
 Public Function GetTableData(ByVal TableName As String) As Variant
     GetTableData = pAllTbls.Item(TableName, Module_Name).Body
@@ -69,22 +69,22 @@ Private Function ParameterDescriptionArray() As Variant
     Dim PDA As Variant                           ' Parameter Description Array
     PDA = Array( _
           Array("Table Name", "xlValidateInputOnly"), _
-                Array("Cell Header Text", "xlValidateInputOnly"), _
-                      Array("Key", "xlValidateList", ListOfYesNo), _
-                      Array("Cell Name", "xlValidateInputOnly"), _
-                            Array("Cell Type", "xlValidateList", ListOfTypes, "WrapText"), _
-                            Array("Operator", "xlValidateList", ListOfOperators, "WrapText"), _
-                            Array("Alert Style", "xlValidateList", ListOfAlertStyles, "WrapText"), _
-                            Array("Formula 1", "xlValidateInputOnly", , "WrapText"), _
-                            Array("Formula 2", "xlValidateInputOnly", , "WrapText"), _
-                            Array("Ignore Blanks", "xlValidateList", ListOfTruefFalse), _
-                            Array("Show Input Message", "xlValidateList", ListOfTruefFalse), _
-                            Array("Input Title", "xlValidateInputOnly"), _
-                                  Array("Input Message", "xlValidateInputOnly", , "WrapText"), _
-                                  Array("Show Error Message", "xlValidateList", ListOfTruefFalse), _
-                                  Array("Error Title", "xlValidateInputOnly"), _
-                                        Array("Error Message", "xlValidateInputOnly", , "WrapText") _
-                                        )
+          Array("Cell Header Text", "xlValidateInputOnly"), _
+          Array("Key", "xlValidateList", ListOfYesNo), _
+          Array("Cell Name", "xlValidateInputOnly"), _
+          Array("Cell Type", "xlValidateList", ListOfTypes, "WrapText"), _
+          Array("Operator", "xlValidateList", ListOfOperators, "WrapText"), _
+          Array("Alert Style", "xlValidateList", ListOfAlertStyles, "WrapText"), _
+          Array("Formula 1", "xlValidateInputOnly", , "WrapText"), _
+          Array("Formula 2", "xlValidateInputOnly", , "WrapText"), _
+          Array("Ignore Blanks", "xlValidateList", ListOfTruefFalse), _
+          Array("Show Input Message", "xlValidateList", ListOfTruefFalse), _
+          Array("Input Title", "xlValidateInputOnly"), _
+          Array("Input Message", "xlValidateInputOnly", , "WrapText"), _
+          Array("Show Error Message", "xlValidateList", ListOfTruefFalse), _
+          Array("Error Title", "xlValidateInputOnly"), _
+          Array("Error Message", "xlValidateInputOnly", , "WrapText") _
+          )
     
     ParameterDescriptionArray = PDA
     
@@ -357,9 +357,11 @@ Private Sub SetCommonValidationParameters( _
     Cll.Copy
     CopyRange.PasteSpecial Paste:=xlPasteValidation, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
 
-    On Error Resume Next
     Dim Wrapper As String
+    On Error Resume Next
     Wrapper = PDA(ColNum)(3)
+    On Error GoTo 0
+    
     If Err.Number <> 0 Then Exit Sub
     If Wrapper = "WrapText" Then
         CopyRange.WrapText = True
@@ -447,6 +449,8 @@ Public Function TableDataCollected() As Boolean
     ' Used in Main
     On Error Resume Next
     TableDataCollected = (pAllTbls.Count <> 0)
+    On Error GoTo 0
+    
     TableDataCollected = (Err.Number = 0)
 End Function
 
@@ -585,7 +589,7 @@ Public Sub PopulateTable( _
         Case Else
             MsgBox _
         "This is an illegal field type: " & Left$(Field.FormControl.Name, 3), _
-                                            vbOKOnly Or vbExclamation, "Illegal Field Type"
+        vbOKOnly Or vbExclamation, "Illegal Field Type"
 
         End Select
         
@@ -793,11 +797,7 @@ Public Sub CopyToTable( _
         Set Cll = Tbl.TableCells.Item(I, Module_Name)
         Set ColRng = Tbl.DBColRange(Tbl, Cll.HeaderText)
         
-        If Cll.Locked Then
-            ColRng.Locked = True
-        Else
-            ColRng.Locked = False
-        End If
+        ColRng.Locked = Cll.Locked
         
         If Cll.CellType <> xlValidateInputOnly Then
             With ColRng.Validation
