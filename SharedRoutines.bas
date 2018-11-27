@@ -363,8 +363,8 @@ Public Function HasVal(ByVal Target As Range) As Boolean
     
     On Error Resume Next
     vbl = Target.Validation.Type
-    On Error GoTo 0
     HasVal = (Err.Number = 0)
+    On Error GoTo 0
 
     '@Ignore LineLabelNotUsed
 Done:
@@ -405,6 +405,9 @@ Public Function Contains( _
        ByVal NamePotentiallyInCollection As String _
        ) As Boolean
     
+    Const RoutineName As String = Module_Name & "Contains"
+    On Error GoTo ErrorHandler
+    
     Dim Obj As Object
 
     On Error Resume Next
@@ -412,6 +415,12 @@ Public Function Contains( _
     Set Obj = Coll(NamePotentiallyInCollection)
     On Error GoTo 0
     Contains = (Err.Number = 0)
+    
+    '@Ignore LineLabelNotUsed
+Done:
+    Exit Function
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Function                                     ' Contains
 
 Public Function FindLastColumnNumber( _

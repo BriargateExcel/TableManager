@@ -40,7 +40,16 @@ Public Function GetLastControl() As control
 End Function
 
 Public Function GetMainWorkbook() As Workbook
+    Const RoutineName As String = Module_Name & "GetMainWorkbook"
+    On Error GoTo ErrorHandler
+    
     Set GetMainWorkbook = pMainWorkbook
+    
+    '@Ignore LineLabelNotUsed
+Done:
+    Exit Function
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Function
 
 Public Sub SetMainWorkbook(ByVal Wkbk As Workbook)

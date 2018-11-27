@@ -6,12 +6,21 @@ Option Explicit
 Private Const Module_Name As String = "ParameterRoutines."
 
 Public Function DarkestColorValue() As Long
+    Const RoutineName As String = Module_Name & "DarkestColorValue"
+    On Error GoTo ErrorHandler
+    
     DarkestColorValue = FieldValue(GetMainWorkbook, _
                                    "ColorTable", _
                                    "Color Name", _
                                    "Darkest Color", _
                                    "Decimal Color Value", _
                                    &H8000000F)
+    
+    '@Ignore LineLabelNotUsed
+Done:
+    Exit Function
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Function
 
 Public Function LightestColorValue() As Long
@@ -32,6 +41,9 @@ Public Function FieldValue( _
        ByVal DefaultValue As Variant _
        ) As Variant
     
+    Const RoutineName As String = Module_Name & "FieldValue"
+    On Error GoTo ErrorHandler
+    
     Dim LocalFieldValue As Variant
     
     If FieldExistsInXLAM(TableName, SearchFieldName) Then
@@ -49,6 +61,12 @@ Public Function FieldValue( _
     End If
     
     FieldValue = LocalFieldValue
+    
+    '@Ignore LineLabelNotUsed
+Done:
+    Exit Function
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Function
 
 Private Function FieldExistsInXLAM( _
@@ -56,6 +74,9 @@ Private Function FieldExistsInXLAM( _
         ByVal FieldName As String _
         ) As Boolean
  
+    Const RoutineName As String = Module_Name & "FieldExistsInXLAM"
+    On Error GoTo ErrorHandler
+    
     FieldExistsInXLAM = False
     
     If TableExists(TableName, Module_Name) Then
@@ -64,6 +85,12 @@ Private Function FieldExistsInXLAM( _
         
         FieldExistsInXLAM = Tbl.TableCells.Exists(FieldName, Module_Name)
     End If
+    
+    '@Ignore LineLabelNotUsed
+Done:
+    Exit Function
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Function
 
 Private Function FieldExistsOnWorksheet( _
@@ -71,6 +98,9 @@ Private Function FieldExistsOnWorksheet( _
         ByVal TableName As String, _
         ByVal FieldName As String _
         ) As Boolean
+    
+    Const RoutineName As String = Module_Name & "FieldExistsOnWorksheet"
+    On Error GoTo ErrorHandler
     
     If TableExistsOnWorksheet(TableName) Then
         Dim Tbl As ListObject
@@ -82,20 +112,47 @@ Private Function FieldExistsOnWorksheet( _
         
         FieldExistsOnWorksheet = (Err.Number = 0)
     End If
+    
+    '@Ignore LineLabelNotUsed
+Done:
+    Exit Function
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Function
 
 Private Function TableExistsOnWorksheet( _
         ByVal TableName As String _
         ) As Boolean
     
+    Const RoutineName As String = Module_Name & "TableExistsOnWorksheet"
+    On Error GoTo ErrorHandler
+    
     TableExistsOnWorksheet = False
     If ParameterSheetExists Then
+        On Error Resume Next
         TableExistsOnWorksheet = Contains(GetMainWorkbook.Worksheets("Parameters").ListObjects, TableName)
+        If Err.Number <> 0 Then TableExistsOnWorksheet = False
+        On Error GoTo 0
     End If
+    
+    '@Ignore LineLabelNotUsed
+Done:
+    Exit Function
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Function
 
 Private Function ParameterSheetExists() As Boolean
+    Const RoutineName As String = Module_Name & "ParameterSheetExists"
+    On Error GoTo ErrorHandler
+    
     ParameterSheetExists = Contains(GetMainWorkbook.Worksheets, "Parameters")
+    
+    '@Ignore LineLabelNotUsed
+Done:
+    Exit Function
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Function
 
 Private Function SearchTable( _

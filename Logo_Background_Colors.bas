@@ -126,7 +126,16 @@ ErrorHandler:
 End Sub                                          ' LowLightControl
 
 Public Function TextureFileExists() As Boolean
+    Const RoutineName As String = Module_Name & "TextureFileExists"
+    On Error GoTo ErrorHandler
+    
     TextureFileExists = (Dir(Workbooks("TableManager.xlam").Path & "\texture.jpg") <> vbNullString)
+    
+    '@Ignore LineLabelNotUsed
+Done:
+    Exit Function
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
 End Function
 
 Public Function LogoFileExists() As Boolean
