@@ -22,7 +22,7 @@ Private Sub Class_Initialize()
 End Sub                                          ' Class_Initialize
 
 Private Function ModuleList() As Variant
-    ModuleList = Array("XLAM_Module.")
+    ModuleList = Array("XLAM_Module.", "WorksheetRoutines.")
 End Function                                     ' ModuleList
 
 Public Property Get Count() As Long: Count = TableCount(pAllSheets.Count): End Property
@@ -93,17 +93,16 @@ Public Sub Remove( _
        ByVal ModuleName As String)
 
     Const RoutineName As String = Module_Name & "Remove"
-    Debug.Assert Initializing
     Debug.Assert InScope(ModuleList, ModuleName)
     
     On Error GoTo ErrorHandler
    
     If CStr(vIndex) = "*" Then
-        TableSetNothing Module_Name
-        TableSetNewDict Module_Name
+        WorksheetSetNothing Module_Name
+        WorksheetSetNewDict Module_Name
     Else
-        If Not TableExists(vIndex, Module_Name) Then Err.Raise 9
-        TableRemove vIndex, Module_Name
+        If Not WorksheetExists(vIndex, Module_Name) Then Err.Raise 9
+        pAllSheets.Remove vIndex
     End If
 
     '@Ignore LineLabelNotUsed
@@ -113,5 +112,25 @@ ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
     
 End Sub                                          ' Remove
+
+Public Function Exists( _
+       ByVal vIndex As Variant, _
+       ByVal ModuleName As String _
+       ) As Boolean
+    ' Used in TableRoutines
+    
+    Const RoutineName As String = Module_Name & "Exists"
+    On Error GoTo ErrorHandler
+    
+    Debug.Assert InScope(ModuleList, ModuleName)
+    
+    Exists = pAllSheets.Exists(vIndex)
+
+    '@Ignore LineLabelNotUsed
+Done:
+    Exit Function
+ErrorHandler:
+    RaiseError Err.Number, Err.Source, RoutineName, Err.Description
+End Function                                     ' Exists
 
 

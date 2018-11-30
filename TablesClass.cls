@@ -91,7 +91,6 @@ Done:
     Exit Sub
 ErrorHandler:
     RaiseError Err.Number, Err.Source, RoutineName, Err.Description
-    
 End Sub                                          ' Add
 
 Public Function Exists( _

@@ -476,7 +476,8 @@ Private Sub PopulateValidationData( _
 End Sub                                          ' PopulateValidationData
 
 Private Function ModuleList() As Variant
-    ModuleList = Array("XLAM_Module.", "TablesClass.", "EventClass.", "TableClass.", "TableRoutines.", "ParameterRoutines.", "DataBaseRoutines.")
+    ModuleList = Array("XLAM_Module.", "TablesClass.", "EventClass.", _
+    "TableClass.", "TableRoutines.", "ParameterRoutines.", "DataBaseRoutines.", "WorksheetClass.", "WorksheetsClass.")
 End Function                                     ' ModuleList
 
 Public Sub TurnOnCellDescriptions( _
@@ -743,7 +744,6 @@ ErrorHandler:
 End Sub                                          ' TableSetNewDict
 
 Public Sub TableSetNothing(ByVal ModuleName As String)
-    ' Used in WorksheetsClass
 
     Const RoutineName As String = Module_Name & "TableSetNothing"
     On Error GoTo ErrorHandler

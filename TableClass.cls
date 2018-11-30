@@ -1066,7 +1066,9 @@ Private Sub LoadTable( _
 
     If Not IsArrayAllocated(DataTable.Body) Then
         DataTable.Headers = Sht.ListObjects(TableName).HeaderRowRange
-        DataTable.Body = Sht.ListObjects(TableName).DataBodyRange
+        If ExcelTable.ListRows.Count > 0 Then
+            DataTable.Body = Sht.ListObjects(TableName).DataBodyRange
+        End If
         DataTable.Valid = "Valid"
     End If
 
