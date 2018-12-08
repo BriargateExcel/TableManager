@@ -6,9 +6,6 @@ Private Const Module_Name As String = "InitializeXLAM."
 Private Const TableManager As String = "TableManager"
 
 Private Sub InstallXLAM()
-
-    Const RoutineName As String = Module_Name & "InstallXLAM"
-    On Error GoTo ErrorHandler
     
     Dim TableManagerFileName As String
     TableManagerFileName = TableManager & ".xlam"
@@ -26,17 +23,6 @@ Private Sub InstallXLAM()
     Set vbProj = ThisWorkbook.VBProject
     vbProj.References.AddFromFile (TableManagerFullPath)
     
-    '@Ignore LineLabelNotUsed
-Done:
-    Exit Sub
-ErrorHandler:
-    Dim Msg As String
-    Msg = "The following error occurred: " & vbCrLf & Err.Description _
-        & vbCrLf & vbCrLf & "Error Location is: "
-
-    Msg = Msg + Err.Source & vbCrLf & RoutineName
-
-    MsgBox Msg, Title:="Error"
 End Sub                                          ' InstallXLAM
 
 Private Sub DeInstallXLAM()
